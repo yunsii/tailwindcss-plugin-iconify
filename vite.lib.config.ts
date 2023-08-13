@@ -3,12 +3,12 @@ import path from 'path'
 import { mergeConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
-import { peerDependencies } from './package.json'
+import { dependencies } from './package.json'
 import baseConfig from './vite.base.config'
 
 import type { UserConfig } from 'vite'
 
-const externalPackages = [...Object.keys(peerDependencies || {})]
+const externalPackages = [...Object.keys(dependencies || {})]
 
 // Creating regexps of the packages to make sure subpaths of the
 // packages are also treated as external
@@ -22,19 +22,29 @@ export default mergeConfig(baseConfig, {
   build: {
     minify: false,
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
-      formats: ['es'],
+      entry: path.resolve(__dirname, 'src/plugin.ts'),
     },
     rollupOptions: {
       // inspired from: https://github.com/vitejs/vite/discussions/1736#discussioncomment-2621441
       // preserveModulesRoot: https://rollupjs.org/guide/en/#outputpreservemodulesroot
-      output: {
-        dir: 'dist',
-        preserveModules: true,
-        preserveModulesRoot: 'src',
-        entryFileNames: '[name].mjs',
-      },
-      external: regexpsOfPackages,
+      output: [
+        {
+          dir: 'dist',
+          preserveModules: true,
+          preserveModulesRoot: 'src',
+          entryFileNames: '[name].mjs',
+          format: 'es',
+          dynamicImportInCjs: true,
+        },
+        {
+          dir: 'dist',
+          preserveModules: true,
+          preserveModulesRoot: 'src',
+          entryFileNames: '[name].cjs',
+          format: 'cjs',
+        },
+      ],
+      external: [...regexpsOfPackages, /^node:.*$/],
     },
     target: 'esnext',
   },
