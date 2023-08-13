@@ -79,7 +79,7 @@ const config: Config = {
       iconSets: {
         custom: customSet.export(),
       },
-      preprocessSets: ['mdi'],
+      preprocessSets: ['mdi', 'svg-spinners'],
       overrideOnly: true,
     }),
   ],
