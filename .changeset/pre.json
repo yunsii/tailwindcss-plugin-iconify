@@ -4,5 +4,7 @@
   "initialVersions": {
     "tailwindcss-plugin-iconify": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "late-foxes-march"
+  ]
 }
