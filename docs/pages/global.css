@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[class^='vp-antd'] svg {
+  display: inline;
+  vertical-align: unset;
+}
+
+[class^='i-'] {
+  @apply w-8 h-8;
+}

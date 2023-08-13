@@ -1,16 +1,6 @@
-# pkg-name
+# tailwindcss-plugin-iconify
 
-[![NPM version](https://img.shields.io/npm/v/pkg-name?color=a1b858&label=)](https://www.npmjs.com/package/pkg-name)
-
-## Usage
-
-- Search and replace all `pkg-name` to `what-you-want-package-name`
-- Update [\_theme.tsx](./docs/pages/_theme.tsx) package href, remove useless navs
-- Update or remove test cases
-- Add some keywords to [package.json](./package.json)
-- Update the author information, like name, link, etc.
-
-Finally, you can remove the [usage section](#usage) completely.
+[![NPM version](https://img.shields.io/npm/v/tailwindcss-plugin-iconify?color=a1b858&label=)](https://www.npmjs.com/package/tailwindcss-plugin-iconify)
 
 ## Build & Publish
 
