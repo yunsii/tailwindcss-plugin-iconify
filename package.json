@@ -8,9 +8,13 @@
   "main": "./dist/plugin.mjs",
   "module": "./dist/plugin.mjs",
   "exports": {
-    "require": "./dist/plugin.cjs",
-    "import": "./dist/plugin.mjs",
-    "local-icon-sets": {
+    ".": {
+      "require": "./dist/plugin.cjs",
+      "import": "./dist/plugin.mjs"
+    },
+    "./*": "./*",
+    "./local-icon-sets": {
+      "types": "./dist/extensions/local-icon-sets.d.ts",
       "require": "./dist/extensions/local-icon-sets.cjs",
       "import": "./dist/extensions/local-icon-sets.mjs"
     }
