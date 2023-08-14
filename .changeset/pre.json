@@ -5,6 +5,7 @@
     "tailwindcss-plugin-iconify": "0.0.0"
   },
   "changesets": [
+    "cold-beans-sit",
     "late-foxes-march",
     "lazy-pumas-rush"
   ]
