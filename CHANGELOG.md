@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 0.0.1-next.3
+
+### Patch Changes
+
+- 🐛 fix: normalize path only
+
 ## 0.0.1-next.2
 
 ### Patch Changes
