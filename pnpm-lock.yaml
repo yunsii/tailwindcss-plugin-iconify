@@ -5,12 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@iconify/tools':
+    specifier: ^3.0.5
+    version: 3.0.5
   '@iconify/types':
     specifier: ^2.0.0
     version: 2.0.0
   '@iconify/utils':
     specifier: ^2.1.7
     version: 2.1.7
+  pathe:
+    specifier: ^1.1.1
+    version: 1.1.1
   tailwindcss:
     specifier: ^3.3.3
     version: 3.3.3(ts-node@10.9.1)
@@ -46,9 +52,6 @@ devDependencies:
   '@iconify-json/svg-spinners':
     specifier: ^1.1.2
     version: 1.1.2
-  '@iconify/tools':
-    specifier: ^3.0.5
-    version: 3.0.5
   '@jannajs/lint':
     specifier: ^2.3.2
     version: 2.3.2(@antfu/eslint-config-react@0.35.3)(@antfu/eslint-config@0.35.3)(@commitlint/cli@17.6.6)(@commitlint/config-conventional@17.6.6)(@commitlint/types@17.4.4)(eslint-config-prettier@8.8.0)(eslint@8.28.0)(lint-staged@13.2.3)(prettier@2.7.1)
@@ -316,6 +319,7 @@ packages:
     dependencies:
       execa: 5.1.1
       find-up: 5.0.0
+    dev: false
 
   /@antfu/ni@0.18.8:
     resolution:
@@ -1498,7 +1502,7 @@ packages:
       tar: 6.1.15
     transitivePeerDependencies:
       - supports-color
-    dev: true
+    dev: false
 
   /@iconify/types@2.0.0:
     resolution:
@@ -1520,6 +1524,7 @@ packages:
       local-pkg: 0.4.3
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution:
@@ -1969,7 +1974,7 @@ packages:
         integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==,
       }
     engines: { node: '>=10.13.0' }
-    dev: true
+    dev: false
 
   /@ts-morph/common@0.19.0:
     resolution:
@@ -2046,7 +2051,7 @@ packages:
       }
     dependencies:
       '@types/node': 18.6.2
-    dev: true
+    dev: false
 
   /@types/debug@4.1.8:
     resolution:
@@ -2255,7 +2260,7 @@ packages:
     dependencies:
       '@types/node': 18.6.2
       minipass: 4.2.8
-    dev: true
+    dev: false
 
   /@types/unist@2.0.6:
     resolution:
@@ -2272,7 +2277,7 @@ packages:
     requiresBuild: true
     dependencies:
       '@types/node': 18.6.2
-    dev: true
+    dev: false
     optional: true
 
   /@typescript-eslint/eslint-plugin@5.60.1(@typescript-eslint/parser@5.60.1)(eslint@8.28.0)(typescript@5.1.6):
@@ -3100,7 +3105,6 @@ packages:
       {
         integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==,
       }
-    dev: true
 
   /boxen@7.0.0:
     resolution:
@@ -3188,7 +3192,7 @@ packages:
       {
         integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==,
       }
-    dev: true
+    dev: false
 
   /buffer-from@1.1.2:
     resolution:
@@ -3476,7 +3480,7 @@ packages:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       domutils: 3.1.0
-    dev: true
+    dev: false
 
   /cheerio@1.0.0-rc.12:
     resolution:
@@ -3492,7 +3496,7 @@ packages:
       htmlparser2: 8.0.2
       parse5: 7.1.2
       parse5-htmlparser2-tree-adapter: 7.0.0
-    dev: true
+    dev: false
 
   /chokidar@3.5.3:
     resolution:
@@ -3517,7 +3521,7 @@ packages:
         integrity: sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==,
       }
     engines: { node: '>=10' }
-    dev: true
+    dev: false
 
   /ci-info@3.8.0:
     resolution:
@@ -3729,7 +3733,7 @@ packages:
         integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==,
       }
     engines: { node: '>= 10' }
-    dev: true
+    dev: false
 
   /commander@9.4.0:
     resolution:
@@ -3950,7 +3954,7 @@ packages:
       domhandler: 5.0.3
       domutils: 3.1.0
       nth-check: 2.1.1
-    dev: true
+    dev: false
 
   /css-tree@2.2.1:
     resolution:
@@ -3961,7 +3965,7 @@ packages:
     dependencies:
       mdn-data: 2.0.28
       source-map-js: 1.0.2
-    dev: true
+    dev: false
 
   /css-tree@2.3.1:
     resolution:
@@ -3972,7 +3976,7 @@ packages:
     dependencies:
       mdn-data: 2.0.30
       source-map-js: 1.0.2
-    dev: true
+    dev: false
 
   /css-what@6.1.0:
     resolution:
@@ -3980,7 +3984,7 @@ packages:
         integrity: sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==,
       }
     engines: { node: '>= 6' }
-    dev: true
+    dev: false
 
   /cssesc@3.0.0:
     resolution:
@@ -3998,7 +4002,7 @@ packages:
     engines: { node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0, npm: '>=7.0.0' }
     dependencies:
       css-tree: 2.2.1
-    dev: true
+    dev: false
 
   /csstype@3.1.0:
     resolution:
@@ -4281,14 +4285,12 @@ packages:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       entities: 4.5.0
-    dev: true
 
   /domelementtype@2.3.0:
     resolution:
       {
         integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==,
       }
-    dev: true
 
   /domhandler@5.0.3:
     resolution:
@@ -4298,7 +4300,6 @@ packages:
     engines: { node: '>= 4' }
     dependencies:
       domelementtype: 2.3.0
-    dev: true
 
   /domutils@3.1.0:
     resolution:
@@ -4309,7 +4310,6 @@ packages:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
-    dev: true
 
   /dot-case@3.0.4:
     resolution:
@@ -4386,7 +4386,6 @@ packages:
       }
     dependencies:
       once: 1.4.0
-    dev: true
 
   /enhanced-resolve@5.15.0:
     resolution:
@@ -4415,7 +4414,6 @@ packages:
         integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==,
       }
     engines: { node: '>=0.12' }
-    dev: true
 
   /error-ex@1.3.2:
     resolution:
@@ -5316,7 +5314,7 @@ packages:
       '@types/yauzl': 2.10.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
+    dev: false
 
   /fast-deep-equal@3.1.3:
     resolution:
@@ -5392,7 +5390,7 @@ packages:
       }
     dependencies:
       pend: 1.2.0
-    dev: true
+    dev: false
 
   /fflate@0.7.4:
     resolution:
@@ -5570,7 +5568,7 @@ packages:
     engines: { node: '>= 8' }
     dependencies:
       minipass: 3.3.6
-    dev: true
+    dev: false
 
   /fs.realpath@1.0.0:
     resolution:
@@ -5657,7 +5655,6 @@ packages:
     engines: { node: '>=8' }
     dependencies:
       pump: 3.0.0
-    dev: true
 
   /get-stream@6.0.1:
     resolution:
@@ -6082,7 +6079,6 @@ packages:
       domhandler: 5.0.3
       domutils: 3.1.0
       entities: 4.5.0
-    dev: true
 
   /human-id@1.0.2:
     resolution:
@@ -7678,14 +7674,14 @@ packages:
       {
         integrity: sha512-aylIc7Z9y4yzHYAJNuESG3hfhC+0Ibp/MAMiaOZgNv4pmEdFyfZhhhny4MNiAfWdBQ1RQ2mfDWmM1x8SvGyp8g==,
       }
-    dev: true
+    dev: false
 
   /mdn-data@2.0.30:
     resolution:
       {
         integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==,
       }
-    dev: true
+    dev: false
 
   /mem@5.1.1:
     resolution:
@@ -8346,7 +8342,7 @@ packages:
     engines: { node: '>=8' }
     dependencies:
       yallist: 4.0.0
-    dev: true
+    dev: false
 
   /minipass@4.2.8:
     resolution:
@@ -8354,7 +8350,7 @@ packages:
         integrity: sha512-fNzuVyifolSLFL4NzpF+wEF4qrgqaaKX0haXPQEdQ7NKAN+WecoKMHV09YcuL/DHxrUsYQOK3MiuDf7Ip2OXfQ==,
       }
     engines: { node: '>=8' }
-    dev: true
+    dev: false
 
   /minipass@5.0.0:
     resolution:
@@ -8362,7 +8358,7 @@ packages:
         integrity: sha512-3FnjYuehv9k6ovOEbyOswadCDPX1piCfhV8ncmYtHOjuPwylVWsghTLo7rabjC3Rx5xD4HDx8Wm1xnMF7S5qFQ==,
       }
     engines: { node: '>=8' }
-    dev: true
+    dev: false
 
   /minipass@7.0.2:
     resolution:
@@ -8381,7 +8377,7 @@ packages:
     dependencies:
       minipass: 3.3.6
       yallist: 4.0.0
-    dev: true
+    dev: false
 
   /mixme@0.5.9:
     resolution:
@@ -8398,7 +8394,7 @@ packages:
       }
     engines: { node: '>=10' }
     hasBin: true
-    dev: true
+    dev: false
 
   /mkdirp@2.1.6:
     resolution:
@@ -8617,7 +8613,6 @@ packages:
       }
     dependencies:
       boolbase: 1.0.0
-    dev: true
 
   /object-assign@4.1.1:
     resolution:
@@ -8966,7 +8961,7 @@ packages:
     dependencies:
       domhandler: 5.0.3
       parse5: 7.1.2
-    dev: true
+    dev: false
 
   /parse5@7.1.2:
     resolution:
@@ -8975,7 +8970,7 @@ packages:
       }
     dependencies:
       entities: 4.5.0
-    dev: true
+    dev: false
 
   /pascal-case@3.1.2:
     resolution:
@@ -9075,7 +9070,6 @@ packages:
       {
         integrity: sha512-d+RQGp0MAYTIaDBIMmOfMwz3E+LOZnxx1HZd5R18mmCZY0QBlK0LDZfPc8FW8Ed2DlvsuE6PRjroDY+wg4+j/Q==,
       }
-    dev: true
 
   /pathval@1.1.1:
     resolution:
@@ -9089,7 +9083,7 @@ packages:
       {
         integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==,
       }
-    dev: true
+    dev: false
 
   /periscopic@3.1.0:
     resolution:
@@ -9372,7 +9366,6 @@ packages:
     dependencies:
       end-of-stream: 1.4.4
       once: 1.4.0
-    dev: true
 
   /punycode@1.4.1:
     resolution:
@@ -10753,7 +10746,7 @@ packages:
       css-tree: 2.3.1
       csso: 5.0.5
       picocolors: 1.0.0
-    dev: true
+    dev: false
 
   /tailwindcss@3.3.3(ts-node@10.9.1):
     resolution:
@@ -10810,7 +10803,7 @@ packages:
       minizlib: 2.1.2
       mkdirp: 1.0.4
       yallist: 4.0.0
-    dev: true
+    dev: false
 
   /term-size@2.2.1:
     resolution:
@@ -12056,7 +12049,6 @@ packages:
       {
         integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==,
       }
-    dev: true
 
   /yaml-eslint-parser@1.2.2:
     resolution:
@@ -12148,7 +12140,7 @@ packages:
     dependencies:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
-    dev: true
+    dev: false
 
   /yn@3.1.1:
     resolution:

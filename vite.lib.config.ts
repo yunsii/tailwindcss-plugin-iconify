@@ -22,7 +22,10 @@ export default mergeConfig(baseConfig, {
   build: {
     minify: false,
     lib: {
-      entry: path.resolve(__dirname, 'src/plugin.ts'),
+      entry: [
+        path.resolve(__dirname, 'src/plugin.ts'),
+        path.resolve(__dirname, 'src/extensions/local-icon-sets.ts'),
+      ],
     },
     rollupOptions: {
       // inspired from: https://github.com/vitejs/vite/discussions/1736#discussioncomment-2621441
