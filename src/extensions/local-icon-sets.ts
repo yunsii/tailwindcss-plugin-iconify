@@ -11,9 +11,6 @@ import pathe from 'pathe'
 import type { IconifyJSON } from '@iconify/types'
 
 export interface GetLocalIconSetsOptions {
-  /**
-   * `path` based on `process.cwd()`
-   */
   define: Record<
     string,
     | string
@@ -29,13 +26,10 @@ export function getLocalIconSets(options: GetLocalIconSetsOptions) {
 
   return Object.keys(iconSetMaps).reduce((prev, current) => {
     const value = iconSetMaps[current]
-    const path = typeof value === 'string' ? value : value.path
+    const _path = typeof value === 'string' ? value : value.path
     const options = typeof value === 'string' ? undefined : value.options
 
-    const customSet = importDirectorySync(
-      pathe.join(process.cwd(), path),
-      options,
-    )
+    const customSet = importDirectorySync(pathe.normalize(_path), options)
 
     // Clean up all icons
     customSet.forEachSync((name, type) => {
