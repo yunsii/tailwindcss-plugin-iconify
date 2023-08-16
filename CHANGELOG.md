@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 0.0.1-next.4
+
+### Patch Changes
+
+- ✨ feat: support preserveColors callback
+
 ## 0.0.1-next.3
 
 ### Patch Changes
