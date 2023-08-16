@@ -8,6 +8,9 @@ import {
 import { specialColorAttributes } from '@iconify/tools/lib/colors/attribs'
 import pathe from 'pathe'
 
+import type { Color } from '@iconify/utils/lib/colors/types'
+import type { ExtendedTagElementWithColors } from '@iconify/tools/lib/colors/parse'
+import type { ColorAttributes } from '@iconify/tools/lib/colors/attribs'
 import type { IconifyJSON } from '@iconify/types'
 
 export interface GetLocalIconSetsOptions {
@@ -19,10 +22,19 @@ export interface GetLocalIconSetsOptions {
         options?: Parameters<typeof importDirectorySync>[1]
       }
   >
+  /** Custom colors should preserved, Do not transform to `currentColor` */
+  preserveColors?: (options: {
+    attr: ColorAttributes
+    colorString: string
+    parsedColor: Color | null
+    tagName?: string
+    item?: ExtendedTagElementWithColors
+  }) => boolean
 }
 
+/** ref: https://iconify.design/docs/libraries/tools/import/directory.html */
 export function getLocalIconSets(options: GetLocalIconSetsOptions) {
-  const iconSetMaps = options.define
+  const { define: iconSetMaps, preserveColors } = options
 
   return Object.keys(iconSetMaps).reduce((prev, current) => {
     const value = iconSetMaps[current]
@@ -53,12 +65,24 @@ export function getLocalIconSets(options: GetLocalIconSetsOptions) {
         // Skip this step if icons have palette
         parseColorsSync(svg, {
           defaultColor: 'currentColor',
-          callback: (attr, colorStr, color, tagName, item) => {
-            if (specialColorAttributes.includes(attr as any)) {
-              return colorStr
+          callback: (attr, colorString, parsedColor, tagName, item) => {
+            if (
+              specialColorAttributes.includes(attr as any) ||
+              (preserveColors &&
+                preserveColors({
+                  attr,
+                  colorString,
+                  parsedColor,
+                  tagName,
+                  item,
+                }))
+            ) {
+              return colorString
             }
             const result =
-              !color || isEmptyColor(color) ? colorStr : 'currentColor'
+              !parsedColor || isEmptyColor(parsedColor)
+                ? colorString
+                : 'currentColor'
             return result
           },
         })
