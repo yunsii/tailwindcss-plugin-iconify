@@ -20,26 +20,28 @@ export interface GetLocalIconSetsOptions {
     | {
         path: string
         options?: Parameters<typeof importDirectorySync>[1]
+        /** Custom colors should preserved, Do not transform to `currentColor` */
+        preserveColors?: (options: {
+          attr: ColorAttributes
+          colorString: string
+          parsedColor: Color | null
+          tagName?: string
+          item?: ExtendedTagElementWithColors
+        }) => boolean
       }
   >
-  /** Custom colors should preserved, Do not transform to `currentColor` */
-  preserveColors?: (options: {
-    attr: ColorAttributes
-    colorString: string
-    parsedColor: Color | null
-    tagName?: string
-    item?: ExtendedTagElementWithColors
-  }) => boolean
 }
 
 /** ref: https://iconify.design/docs/libraries/tools/import/directory.html */
 export function getLocalIconSets(options: GetLocalIconSetsOptions) {
-  const { define: iconSetMaps, preserveColors } = options
+  const { define: iconSetMaps } = options
 
   return Object.keys(iconSetMaps).reduce((prev, current) => {
     const value = iconSetMaps[current]
     const _path = typeof value === 'string' ? value : value.path
     const options = typeof value === 'string' ? undefined : value.options
+    const preserveColors =
+      typeof value === 'string' ? undefined : value.preserveColors
 
     const customSet = importDirectorySync(pathe.normalize(_path), options)
 
