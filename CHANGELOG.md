@@ -1,5 +1,16 @@
 # tailwindcss-plugin-iconify
 
+## 0.0.1
+
+### Patch Changes
+
+- 6a3ade5: 🐛 fix: correct package.json exports
+- e9531ce: docs: about motivation
+- 29de74d: feat: getLocalIconSets
+- 71eeafe: ✨ feat: support preserveColors callback
+- e8f40d0: 🐛 fix: normalize path only
+- 📦 refactor: support preserveColors for every icon set
+
 ## 0.0.1-next.4
 
 ### Patch Changes
