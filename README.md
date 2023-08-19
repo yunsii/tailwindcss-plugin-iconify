@@ -2,6 +2,11 @@
 
 [![NPM version](https://img.shields.io/npm/v/tailwindcss-plugin-iconify?color=a1b858&label=)](https://www.npmjs.com/package/tailwindcss-plugin-iconify)
 
+## Features
+
+- autocomplete by `preprocessSets`
+- [`getLocalIconSets`](./src/extensions/local-icon-sets.ts) extension
+
 ## Motivation
 
 I want to use _tailwind autocomplete_ for **Iconify** icon sets and support _local icon sets_. related issue: [iconify/iconify#241](https://github.com/iconify/iconify/issues/241)
