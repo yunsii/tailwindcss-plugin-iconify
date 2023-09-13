@@ -1,33 +1,38 @@
-import {
-  cleanupSVG,
-  importDirectorySync,
-  isEmptyColor,
-  parseColorsSync,
-  runSVGO,
-} from '@iconify/tools'
-import { specialColorAttributes } from '@iconify/tools/lib/colors/attribs'
+import { IconSet, importDirectorySync } from '@iconify/tools'
 import pathe from 'pathe'
+import fse from 'fs-extra'
+import { validateIconSet } from '@iconify/utils'
 
-import type { Color } from '@iconify/utils/lib/colors/types'
-import type { ExtendedTagElementWithColors } from '@iconify/tools/lib/colors/parse'
-import type { ColorAttributes } from '@iconify/tools/lib/colors/attribs'
 import type { IconifyJSON } from '@iconify/types'
+import type { PreserveColorsFn } from '@/helpers/icon-set'
+
+import { optimizeIconSet } from '@/helpers/icon-set'
 
 export interface GetLocalIconSetsOptions {
+  /**
+   * if value type is `string`, it will import all icons from the directory
+   *
+   * ref: https://iconify.design/docs/libraries/tools/import/directory.html
+   */
   define: Record<
     string,
     | string
     | {
+        /**
+         * Import all icons from directory
+         *
+         * ref: https://iconify.design/docs/libraries/tools/import/directory.html
+         */
         path: string
         options?: Parameters<typeof importDirectorySync>[1]
         /** Custom colors should preserved, Do not transform to `currentColor` */
-        preserveColors?: (options: {
-          attr: ColorAttributes
-          colorString: string
-          parsedColor: Color | null
-          tagName?: string
-          item?: ExtendedTagElementWithColors
-        }) => boolean
+        preserveColors?: PreserveColorsFn
+      }
+    | {
+        /**
+         * Importing Iconify icon set by `IconifyJSON`
+         */
+        iconifyJsonPath: string
       }
   >
 }
@@ -37,74 +42,42 @@ export function getLocalIconSets(options: GetLocalIconSetsOptions) {
   const { define: iconSetMaps } = options
 
   return Object.keys(iconSetMaps).reduce((prev, current) => {
-    const value = iconSetMaps[current]
-    const _path = typeof value === 'string' ? value : value.path
-    const options = typeof value === 'string' ? undefined : value.options
+    const iconSetConfig = iconSetMaps[current]
+
+    if (
+      typeof iconSetConfig !== 'string' &&
+      'iconifyJsonPath' in iconSetConfig
+    ) {
+      const rawData = JSON.parse(
+        fse.readJsonSync(iconSetConfig.iconifyJsonPath, 'utf8'),
+      )
+      const validatedData = validateIconSet(rawData)
+      const iconSet = new IconSet(validatedData)
+
+      return {
+        ...prev,
+        [current]: iconSet.export(),
+      }
+    }
+
+    const _path =
+      typeof iconSetConfig === 'string' ? iconSetConfig : iconSetConfig.path
+    const options =
+      typeof iconSetConfig === 'string' ? undefined : iconSetConfig.options
     const preserveColors =
-      typeof value === 'string' ? undefined : value.preserveColors
+      typeof iconSetConfig === 'string'
+        ? undefined
+        : iconSetConfig.preserveColors
 
-    const customSet = importDirectorySync(pathe.normalize(_path), options)
+    const customIconSet = importDirectorySync(pathe.normalize(_path), options)
 
-    // Clean up all icons
-    customSet.forEachSync((name, type) => {
-      if (type !== 'icon') {
-        return
-      }
-
-      // Get SVG object for icon
-      const svg = customSet.toSVG(name)
-      if (!svg) {
-        // Invalid icon
-        customSet.remove(name)
-        return
-      }
-
-      try {
-        // Clean up icon
-        cleanupSVG(svg)
-
-        // This is a monotone icon, change color to `currentColor`, add it if missing
-        // Skip this step if icons have palette
-        parseColorsSync(svg, {
-          defaultColor: 'currentColor',
-          callback: (attr, colorString, parsedColor, tagName, item) => {
-            if (
-              specialColorAttributes.includes(attr as any) ||
-              (preserveColors &&
-                preserveColors({
-                  attr,
-                  colorString,
-                  parsedColor,
-                  tagName,
-                  item,
-                }))
-            ) {
-              return colorString
-            }
-            const result =
-              !parsedColor || isEmptyColor(parsedColor)
-                ? colorString
-                : 'currentColor'
-            return result
-          },
-        })
-
-        // Optimize icon
-        runSVGO(svg)
-      } catch (err) {
-        // Something went wrong when parsing icon: remove it
-        console.error(`Error parsing ${name}:`, err)
-        customSet.remove(name)
-        return
-      }
-
-      // Update icon in icon set from SVG object
-      customSet.fromSVG(name, svg)
+    optimizeIconSet(customIconSet, {
+      preserveColors,
     })
 
     return {
       ...prev,
-      [current]: customSet.export(),
+      [current]: customIconSet.export(),
     }
   }, {} as Record<string, IconifyJSON>)
 }

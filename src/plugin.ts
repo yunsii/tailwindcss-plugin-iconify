@@ -87,3 +87,5 @@ export function addCleanIconSelectors(
  * Export types
  */
 export type { CleanIconifyPluginOptions, DynamicIconifyPluginOptions }
+
+export { optimizeIconSet } from './helpers/icon-set'
