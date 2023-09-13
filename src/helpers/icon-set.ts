@@ -11,7 +11,8 @@ import type { Color } from '@iconify/utils/lib/colors/types'
 import type { ColorAttributes } from '@iconify/tools/lib/colors/attribs'
 import type { IconSet } from '@iconify/tools'
 
-export type PreserveColorsFn = (options: {
+export type PreserveColorsFn = (data: {
+  iconName: string
   attr: ColorAttributes
   colorString: string
   parsedColor: Color | null
@@ -55,6 +56,7 @@ export function optimizeIconSet(
             specialColorAttributes.includes(attr as any) ||
             (preserveColors &&
               !!preserveColors({
+                iconName: name,
                 attr,
                 colorString,
                 parsedColor,
