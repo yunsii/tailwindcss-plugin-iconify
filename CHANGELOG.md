@@ -1,5 +1,12 @@
 # tailwindcss-plugin-iconify
 
+## 0.1.0
+
+### Minor Changes
+
+- ✨ feat: support load figma icon sets
+- ✨ feat: support iconifyJsonPath
+
 ## 0.0.1
 
 ### Patch Changes
