@@ -11,6 +11,13 @@ import type { Color } from '@iconify/utils/lib/colors/types'
 import type { ColorAttributes } from '@iconify/tools/lib/colors/attribs'
 import type { IconSet } from '@iconify/tools'
 
+// colored icon do not support change icon color
+export const COLORED_POSTFIX = '__colored'
+
+export function normalizeName(name: string) {
+  return name.replace(COLORED_POSTFIX, '')
+}
+
 export type PreserveColorsFn = (data: {
   iconName: string
   attr: ColorAttributes
@@ -75,7 +82,11 @@ export function optimizeIconSet(
       })
 
       // Optimize icon
-      runSVGO(svg)
+      runSVGO(svg, {
+        cleanupIDs: (id) => {
+          return `${normalizeName(name)}_${id}`
+        },
+      })
     } catch (err) {
       // Something went wrong when parsing icon: remove it
       console.error(`Error parsing ${name}:`, err)

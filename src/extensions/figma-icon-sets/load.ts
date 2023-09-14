@@ -2,10 +2,11 @@
 import 'cross-fetch/polyfill'
 import { importFromFigma } from '@iconify/tools'
 
-import { optimizeIconSet } from '../../helpers/icon-set'
-
-// colored icon do not support change icon color
-const COLORED_POSTFIX = '__colored'
+import {
+  COLORED_POSTFIX,
+  normalizeName,
+  optimizeIconSet,
+} from '../../helpers/icon-set'
 
 export interface LoadFigmaIconSetOptions {
   /**
@@ -84,7 +85,7 @@ export async function loadFigmaIconSet(options: LoadFigmaIconSetOptions) {
 
   iconSet.forEach((name) => {
     if (name.endsWith(COLORED_POSTFIX)) {
-      iconSet.rename(name, name.replace(COLORED_POSTFIX, ''))
+      iconSet.rename(name, normalizeName(name))
     }
   })
 
