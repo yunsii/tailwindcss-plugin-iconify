@@ -3,10 +3,10 @@ import pathe from 'pathe'
 import fse from 'fs-extra'
 import { validateIconSet } from '@iconify/utils'
 
-import type { IconifyJSON } from '@iconify/types'
-import type { PreserveColorsFn } from '@/helpers/icon-set'
+import { optimizeIconSet } from '../helpers/icon-set'
 
-import { optimizeIconSet } from '@/helpers/icon-set'
+import type { IconifyJSON } from '@iconify/types'
+import type { PreserveColorsFn } from '../helpers/icon-set'
 
 export interface GetLocalIconSetsOptions {
   /**
