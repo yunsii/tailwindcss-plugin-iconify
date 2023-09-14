@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 0.1.1
+
+### Patch Changes
+
+- 🐛 fix: runSVGO
+
 ## 0.1.0
 
 ### Minor Changes
