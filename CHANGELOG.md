@@ -1,5 +1,12 @@
 # tailwindcss-plugin-iconify
 
+## 0.1.2
+
+### Patch Changes
+
+- 📚 docs: detailed features
+- ✨ feat: support more node types
+
 ## 0.1.1
 
 ### Patch Changes
