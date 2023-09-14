@@ -22,7 +22,9 @@ export interface LoadFigmaIconSetOptions {
    */
   token: string
   /**
-   * Icon set prefix
+   * Icon set prefix, if a icon named start with the prefix, it will be loaded.
+   *
+   * For example, set prefix with "iconify", "iconify-apple" will be loaded.
    *
    * ref: https://iconify.design/docs/libraries/tools/import/figma/#options
    */
@@ -31,7 +33,7 @@ export interface LoadFigmaIconSetOptions {
    * Cache figma data to `.figma-cache`
    */
   cache?: boolean
-  /** Colors will be preserved under the group */
+  /** Colors will be preserved under the specific group */
   preserveColorsGroup?: string
 }
 
@@ -52,10 +54,8 @@ export async function loadFigmaIconSet(options: LoadFigmaIconSetOptions) {
     file: fileId,
     token,
     cacheDir: cache ? '.figma-cache' : undefined,
+    /** Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE' */
     iconNameForNode: (node) => {
-      if (node.type !== 'COMPONENT') {
-        return
-      }
       if (node.name.startsWith(`${prefix}-`)) {
         const newName = node.name.replace(`${prefix}-`, '')
         if (
