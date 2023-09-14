@@ -4,8 +4,24 @@
 
 ## Features
 
-- autocomplete by `preprocessSets`
-- [`getLocalIconSets`](./src/extensions/local-icon-sets.ts) extension
+- `preprocessSets` - support autocomplete for [individual icon sets](https://iconify.design/docs/icons/json.html)
+- [`local-icon-sets`](./src/extensions/local-icon-sets.ts) extension - easy to load local assets
+  - Support import SVG icons directory by default
+  - Support import [IconifyJSON](https://iconify.design/docs/types/iconify-json.html) path
+- [`figma-icon-sets`](./src/extensions/figma-icon-sets/index.ts) extension - easy to load Figma icons
+
+## About Figma icons
+
+[TailwindCSS do not support async plugin for now](https://github.com/tailwindlabs/tailwindcss/discussions/7277), so `figma-icon-sets` extension you can not use directly.
+
+But this library export related node scripts:
+
+- `loadFigmaIconSet` to load [IconSet](https://iconify.design/docs/libraries/tools/icon-set/#iconset-class) from figma file
+- `writeIconifyJSON` to write a corresponding JSON file and a SVG icons preview HTML file
+
+### Icon limitations
+
+ref: [iconify.design/import/figma](https://iconify.design/docs/libraries/tools/import/figma/#limitations)
 
 ## Motivation
 
