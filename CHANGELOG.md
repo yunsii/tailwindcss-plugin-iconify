@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 0.1.3
+
+### Patch Changes
+
+- release latest
+
 ## 0.1.2
 
 ### Patch Changes
