@@ -10,13 +10,24 @@
   "exports": {
     ".": {
       "require": "./dist/plugin.cjs",
-      "import": "./dist/plugin.mjs"
+      "import": "./dist/plugin.mjs",
+      "types": "./dist/plugin.d.ts"
     },
     "./*": "./*",
     "./local-icon-sets": {
-      "types": "./dist/extensions/local-icon-sets.d.ts",
       "require": "./dist/extensions/local-icon-sets.cjs",
-      "import": "./dist/extensions/local-icon-sets.mjs"
+      "import": "./dist/extensions/local-icon-sets.mjs",
+      "types": "./dist/extensions/local-icon-sets.d.ts"
+    },
+    "./figma-icon-sets": {
+      "types": "./dist/extensions/figma-icon-sets/index.d.ts",
+      "require": "./dist/extensions/figma-icon-sets/index.cjs",
+      "import": "./dist/extensions/figma-icon-sets/index.mjs"
+    },
+    "./figma-icon-sets/node": {
+      "types": "./dist/extensions/figma-icon-sets/node.d.ts",
+      "require": "./dist/extensions/figma-icon-sets/node.cjs",
+      "import": "./dist/extensions/figma-icon-sets/node.mjs"
     }
   },
   "types": "./dist/plugin.d.ts",
