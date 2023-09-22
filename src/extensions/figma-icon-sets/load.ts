@@ -33,7 +33,7 @@ export interface LoadFigmaIconSetOptions {
    * Cache figma data to `.figma-cache`
    */
   cache?: boolean
-  /** Colors will be preserved under the specific group */
+  /** Colors will be preserved under the 'FRAME' | 'GROUP' | 'SECTION' */
   preserveColorsGroup?: string
 }
 
@@ -56,13 +56,17 @@ export async function loadFigmaIconSet(options: LoadFigmaIconSetOptions) {
     cacheDir: cache ? '.figma-cache' : undefined,
     /** Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE' */
     iconNameForNode: (node) => {
+      if (['COMPONENT', 'INSTANCE'].includes(node.type)) {
+        return
+      }
       if (node.name.startsWith(`${prefix}-`)) {
         const newName = node.name.replace(`${prefix}-`, '')
         if (
           preserveColorsGroup &&
           node.parents.some((item) => {
             return (
-              item.type === 'GROUP' && item.name.trim() === preserveColorsGroup
+              ['FRAME', 'GROUP', 'SECTION'].includes(item.type) &&
+              item.name.trim() === preserveColorsGroup
             )
           })
         ) {
