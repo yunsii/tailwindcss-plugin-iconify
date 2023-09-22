@@ -48,9 +48,7 @@ export function getLocalIconSets(options: GetLocalIconSetsOptions) {
       typeof iconSetConfig !== 'string' &&
       'iconifyJsonPath' in iconSetConfig
     ) {
-      const rawData = JSON.parse(
-        fse.readJsonSync(iconSetConfig.iconifyJsonPath, 'utf8'),
-      )
+      const rawData = fse.readJsonSync(iconSetConfig.iconifyJsonPath, 'utf8')
       const validatedData = validateIconSet(rawData)
       const iconSet = new IconSet(validatedData)
 
