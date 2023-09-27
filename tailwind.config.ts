@@ -17,6 +17,15 @@ const config: Config = {
   },
   plugins: [
     addDynamicIconSelectors({
+      // `it` abbr for `icon-specific-static`
+      prefix: 'iss',
+      iconSets,
+      preprocessSets: {
+        'mdi': ['home', 'arrow-collapse-right'],
+        'svg-spinners': ['pulse-2'],
+      },
+    }),
+    addDynamicIconSelectors({
       prefix: 'i',
       iconSets,
       preprocessSets,

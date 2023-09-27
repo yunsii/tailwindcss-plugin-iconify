@@ -1,10 +1,8 @@
 import plugin from 'tailwindcss/plugin'
-import { parseIconSet } from '@iconify/utils'
-import { getIconsCSSData } from '@iconify/utils/lib/css/icons'
 
 import { getCSSRulesForIcons } from './clean'
-import { getDynamicCSSRules, transformCSSDataToRules } from './dynamic'
-import { ensureLoadIconSet } from './loader'
+import { getDynamicCSSRules } from './dynamic'
+import { getIconSetIconStyles } from './helpers/icon-set'
 
 import type {
   CleanIconifyPluginOptions,
@@ -23,35 +21,40 @@ export function addDynamicIconSelectors(
     ...Object.keys(iconSets).map((item) => {
       return {
         iconSetName: item,
-        type: 'custom',
       }
     }),
-    ...preprocessSets.map((item) => {
-      return {
-        iconSetName: item,
-        type: 'preset',
-      }
-    }),
+    ...(Array.isArray(preprocessSets)
+      ? preprocessSets.map((item) => {
+          return {
+            iconSetName: item,
+          }
+        })
+      : []),
   ]
 
-  const values: Record<string, Record<string, string>> = {}
+  let iconStyles: Record<string, Record<string, string>> = {}
   mergedPreprocessSets.forEach((item) => {
-    const iconSet = ensureLoadIconSet(item.iconSetName, options)
-    parseIconSet(iconSet, (name, data) => {
-      if (!data) {
-        return
-      }
-
-      const generated = getIconsCSSData(iconSet, [name], {
-        iconSelector: '.icon',
-      })
-
-      values[`${item.iconSetName}--${name}`] = transformCSSDataToRules(
-        generated,
-        options,
-      )
+    const iconSetIconStyles = getIconSetIconStyles(item.iconSetName, {
+      pluginOptions: options,
     })
+    iconStyles = {
+      ...iconStyles,
+      ...iconSetIconStyles,
+    }
   })
+  if (!Array.isArray(preprocessSets)) {
+    Object.keys(preprocessSets).forEach((iconSetName) => {
+      const staticIconNames = preprocessSets[iconSetName]
+      const iconSetIconStyles = getIconSetIconStyles(iconSetName, {
+        pluginOptions: options,
+        staticIconNames,
+      })
+      iconStyles = {
+        ...iconStyles,
+        ...iconSetIconStyles,
+      }
+    })
+  }
 
   return plugin(({ matchComponents }) => {
     matchComponents(
@@ -64,7 +67,7 @@ export function addDynamicIconSelectors(
         },
       },
       {
-        values,
+        values: iconStyles,
       },
     )
   })
