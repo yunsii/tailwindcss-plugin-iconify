@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.0.2
+
+### Patch Changes
+
+- 📦 refactor: use files config
+
 ## 1.0.1
 
 ### Patch Changes
