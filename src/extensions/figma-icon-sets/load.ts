@@ -56,7 +56,7 @@ export async function loadFigmaIconSet(options: LoadFigmaIconSetOptions) {
     cacheDir: cache ? '.figma-cache' : undefined,
     /** Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE' */
     iconNameForNode: (node) => {
-      if (['COMPONENT', 'INSTANCE'].includes(node.type)) {
+      if (!['COMPONENT', 'INSTANCE'].includes(node.type)) {
         return
       }
       if (node.name.startsWith(`${prefix}-`)) {
