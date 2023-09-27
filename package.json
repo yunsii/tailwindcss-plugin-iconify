@@ -1,7 +1,7 @@
 {
   "name": "tailwindcss-plugin-iconify",
   "description": "",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "author": "Yuns <yuns.xie@qq.com>",
   "license": "MIT",
   "type": "module",

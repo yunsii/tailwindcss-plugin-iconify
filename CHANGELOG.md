@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.2.4
+
+### Patch Changes
+
+- 🐛 fix: repeat "-"
+
 ## 1.2.3
 
 ### Patch Changes
