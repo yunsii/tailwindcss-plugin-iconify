@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.2.1
+
+### Patch Changes
+
+- 🐛 fix: normalize icon name
+
 ## 1.2.0
 
 ### Minor Changes
