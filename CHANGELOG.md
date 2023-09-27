@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.2.3
+
+### Patch Changes
+
+- 🐛 fix: process normalizedName
+
 ## 1.2.2
 
 ### Patch Changes
