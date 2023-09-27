@@ -1,14 +1,19 @@
-import { type LoadFigmaIconSetOptions, loadFigmaIconSet } from './load'
+import { type ImportFigmaIconSetOptions, importFigmaIconSets } from './import'
+
+import type { IconifyJSON } from '@iconify/types'
 
 /**
  * tailwind do not support async plugin for now
  *
  * ref: https://github.com/tailwindlabs/tailwindcss/discussions/7277
  */
-export async function getFigmaIconSet(options: LoadFigmaIconSetOptions) {
-  const iconSet = await loadFigmaIconSet(options)
+export async function getFigmaIconSets(options: ImportFigmaIconSetOptions) {
+  const iconSets = await importFigmaIconSets(options)
 
-  return {
-    [options.prefix]: iconSet.export(),
-  }
+  return iconSets.reduce((previous, current) => {
+    return {
+      ...previous,
+      [current.prefix]: current.export(),
+    }
+  }, {}) as Record<string, IconifyJSON>
 }

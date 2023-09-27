@@ -16,8 +16,9 @@
 
 But this library export related node scripts:
 
-- `loadFigmaIconSet` to load [IconSet](https://iconify.design/docs/libraries/tools/icon-set/#iconset-class) from figma file
-- `writeIconifyJSON` to write a corresponding JSON file and a SVG icons preview HTML file
+- `importFigmaIconSets` to import [IconSet](https://iconify.design/docs/libraries/tools/icon-set/#iconset-class)s from figma files
+- `writeIconifyJSONs` to write corresponding JSON files and SVG icons preview HTMLs
+- `loadFigmaIconSets` = `importFigmaIconSets` + `writeIconifyJSONs`
 
 ### Icon limitations
 

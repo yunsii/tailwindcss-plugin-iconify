@@ -1,2 +1,3 @@
-export { loadFigmaIconSet } from './load'
-export { writeIconifyJSON } from './write'
+export { importFigmaIconSets } from './import'
+export { writeIconifyJSONs } from './write'
+export { loadFigmaIconSets } from './load'

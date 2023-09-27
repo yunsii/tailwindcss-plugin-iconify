@@ -3,28 +3,29 @@ import pathe from 'pathe'
 
 import type { IconSet } from '@iconify/tools'
 
-export interface WriteIconifyJSONOptions {
+export interface WriteIconifyJSONsOptions {
   outputDir: string
 }
 
-export function writeIconifyJSON(
-  iconSet: IconSet,
-  options: WriteIconifyJSONOptions,
+export function writeIconifyJSONs(
+  iconSets: IconSet[],
+  options: WriteIconifyJSONsOptions,
 ) {
   const { outputDir } = options
 
-  const composedOutputDir = pathe.normalize(
-    pathe.join(outputDir, iconSet.prefix),
-  )
-  fse.ensureDirSync(composedOutputDir)
+  for (const iconSet of iconSets) {
+    const composedOutputDir = pathe.normalize(
+      pathe.join(outputDir, iconSet.prefix),
+    )
+    fse.ensureDirSync(composedOutputDir)
 
-  fse.writeJsonSync(
-    pathe.join(composedOutputDir, `icons.json`),
-    iconSet.export(),
-  )
-  fse.writeFileSync(
-    pathe.join(composedOutputDir, `icons.html`),
-    `
+    fse.writeJsonSync(
+      pathe.join(composedOutputDir, `icons.json`),
+      iconSet.export(),
+    )
+    fse.writeFileSync(
+      pathe.join(composedOutputDir, `icons.html`),
+      `
 <html>
 <style>
 svg {
@@ -48,5 +49,6 @@ svg:hover {
 </body>
 </html>
 `,
-  )
+    )
+  }
 }

@@ -24,3 +24,4 @@ dist-docs
 
 # custom
 coverage
+.figma-cache
