@@ -80,7 +80,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
         }
         if (node.name.startsWith(`${prefix}-`)) {
           const newName = node.name.replace(`${prefix}-`, '')
-          const normalizedName = newName.toLowerCase().replace(/ /g, '-')
+          const normalizedName = newName.trim().toLowerCase().replace(/ /g, '-')
 
           if (newName !== normalizedName) {
             warningNames.push({
