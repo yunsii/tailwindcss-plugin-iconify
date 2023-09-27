@@ -4,7 +4,7 @@ import { importFromFigma, mergeIconSets } from '@iconify/tools'
 
 import {
   COLORED_POSTFIX,
-  normalizeName,
+  normalizeColoredName,
   optimizeIconSet,
 } from '../../helpers/icon-set'
 
@@ -65,6 +65,8 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   async function importFigmaFile(file: FigmaIconifyFile) {
     const { id, pages, prefix } = file
 
+    const warningNames: { from: string; to: string }[] = []
+
     const result = await importFromFigma({
       prefix,
       file: id,
@@ -81,7 +83,10 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
           const normalizedName = newName.toLowerCase().replace(/ /g, '-')
 
           if (newName !== normalizedName) {
-            console.warn(`Icon [${newName}] normalized to [${normalizeName}]`)
+            warningNames.push({
+              from: newName,
+              to: normalizedName,
+            })
           }
 
           if (
@@ -102,6 +107,10 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
       },
     })
 
+    warningNames.forEach((item) => {
+      console.warn(`Icon [${item.from}] normalized to [${item.to}]`)
+    })
+
     const iconSet = result.iconSet
 
     optimizeIconSet(iconSet, {
@@ -112,7 +121,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
 
     iconSet.forEach((name) => {
       if (name.endsWith(COLORED_POSTFIX)) {
-        iconSet.rename(name, normalizeName(name))
+        iconSet.rename(name, normalizeColoredName(name))
       }
     })
 

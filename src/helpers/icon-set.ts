@@ -14,7 +14,7 @@ import type { IconSet } from '@iconify/tools'
 // colored icon do not support change icon color
 export const COLORED_POSTFIX = '__colored'
 
-export function normalizeName(name: string) {
+export function normalizeColoredName(name: string) {
   return name.replace(COLORED_POSTFIX, '')
 }
 
@@ -84,7 +84,7 @@ export function optimizeIconSet(
       // Optimize icon
       runSVGO(svg, {
         cleanupIDs: (id) => {
-          return `${normalizeName(name)}_${id}`
+          return `${normalizeColoredName(name)}_${id}`
         },
       })
     } catch (err) {
