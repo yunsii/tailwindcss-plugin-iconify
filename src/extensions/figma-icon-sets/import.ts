@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import 'cross-fetch/polyfill'
-import { importFromFigma } from '@iconify/tools'
+import { importFromFigma, mergeIconSets } from '@iconify/tools'
 
 import {
   COLORED_POSTFIX,
@@ -121,5 +121,38 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
       files.length - okIconSets.length
     }`,
   )
-  return okIconSets
+
+  const iconSetsMap = okIconSets.reduce((previous, current) => {
+    return {
+      ...previous,
+      [current.prefix]:
+        current.prefix in previous
+          ? [...previous[current.prefix], current]
+          : [current],
+    }
+  }, {} as Record<string, IconSet[]>)
+
+  const mergedIconSets: IconSet[] = []
+
+  Object.keys(iconSetsMap).forEach((prefix) => {
+    const prefixIconSets = iconSetsMap[prefix]
+    if (prefixIconSets.length === 1) {
+      mergedIconSets.push(iconSetsMap[prefix][0])
+      return
+    }
+
+    mergedIconSets.push(
+      prefixIconSets.slice(1).reduce((previous, current) => {
+        return mergeIconSets(previous, current)
+      }, prefixIconSets[0]),
+    )
+  })
+
+  if (mergedIconSets.length !== okIconSets.length) {
+    console.log(
+      `Merged icon sets from ${okIconSets.length} to ${mergedIconSets.length}`,
+    )
+  }
+
+  return mergedIconSets
 }
