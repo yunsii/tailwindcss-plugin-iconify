@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.1.0
+
+### Minor Changes
+
+- ✨ feat: support merge same prefix IconSet
+
 ## 1.0.2
 
 ### Patch Changes
