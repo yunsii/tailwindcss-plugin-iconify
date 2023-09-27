@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-
 import { type WriteIconifyJSONsOptions, writeIconifyJSONs } from './write'
 import { type ImportFigmaIconSetOptions, importFigmaIconSets } from './import'
 

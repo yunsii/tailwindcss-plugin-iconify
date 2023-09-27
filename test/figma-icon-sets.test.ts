@@ -11,10 +11,14 @@ it(
   'Basic',
   async () => {
     const iconSets = await importFigmaIconSets({
-      // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
-      fileIds: ['PMVacJLndw38SM0MNyRXTy'],
+      files: [
+        {
+          // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
+          id: 'PMVacJLndw38SM0MNyRXTy',
+          prefix: 'test',
+        },
+      ],
       token: process.env.VITE_FIGMA_TOKEN!,
-      prefix: 'test',
       preserveColorsGroup: 'test-colored',
       cache: true,
     })

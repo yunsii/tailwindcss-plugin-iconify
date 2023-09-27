@@ -12,25 +12,26 @@ import type { IconSet } from '@iconify/tools'
 
 export interface ImportFigmaIconSetOptions {
   /**
-   * Figma file ids
-   *
-   * ref: https://iconify.design/docs/libraries/tools/import/figma/file-id.html
+   * Figma files
    */
-  fileIds: string[]
+  files: {
+    /** https://iconify.design/docs/libraries/tools/import/figma/file-id.html */
+    id: string
+    /**
+     * Icon set prefix, if a icon named start with the prefix, it will be imported.
+     *
+     * For example, set prefix with "iconify", "iconify-apple" will be imported.
+     *
+     * ref: https://iconify.design/docs/libraries/tools/import/figma/#options
+     */
+    prefix: string
+  }[]
   /**
    * Figma token
    *
    * token: https://iconify.design/docs/libraries/tools/import/figma/token.html
    */
   token: string
-  /**
-   * Icon set prefix, if a icon named start with the prefix, it will be imported.
-   *
-   * For example, set prefix with "iconify", "iconify-apple" will be imported.
-   *
-   * ref: https://iconify.design/docs/libraries/tools/import/figma/#options
-   */
-  prefix: string
   /**
    * Whether cache figma data to `.figma-cache`, default: false.
    */
@@ -41,7 +42,7 @@ export interface ImportFigmaIconSetOptions {
 
 /** Icon component in Figma will be imported */
 export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
-  const { fileIds, token, prefix, cache = false, preserveColorsGroup } = options
+  const { files, token, cache = false, preserveColorsGroup } = options
 
   if (typeof token !== 'string') {
     throw new TypeError('token type error')
@@ -50,7 +51,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
     throw new Error('token not found')
   }
 
-  async function importFile(fileId: string) {
+  async function importFile(fileId: string, prefix: string) {
     const result = await importFromFigma({
       prefix,
       file: fileId,
@@ -99,8 +100,8 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   }
 
   const iconSetsResult = await Promise.allSettled(
-    fileIds.map(async (item) => {
-      return await importFile(item)
+    files.map(async (item) => {
+      return await importFile(item.id, item.prefix)
     }),
   )
 
@@ -109,15 +110,15 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   for (const [index, item] of iconSetsResult.entries()) {
     if (item.status === 'fulfilled') {
       okIconSets.push(item.value)
-      console.log(`file id: ${fileIds[index]} import success.`)
+      console.log(`file id: ${files[index].id} import success.`)
     } else {
-      console.error(`file id: ${fileIds[index]} import failed:`, item.reason)
+      console.error(`file id: ${files[index].id} import failed:`, item.reason)
     }
   }
 
   console.log(
     `Icon sets imported: ${okIconSets.length}, failed: ${
-      fileIds.length - okIconSets.length
+      files.length - okIconSets.length
     }`,
   )
   return okIconSets
