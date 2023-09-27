@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.0.1
+
+### Patch Changes
+
+- chore: fix publish 1.0.0
+
 ## 1.0.0
 
 ### Major Changes
