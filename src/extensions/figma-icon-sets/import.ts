@@ -78,6 +78,12 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
         }
         if (node.name.startsWith(`${prefix}-`)) {
           const newName = node.name.replace(`${prefix}-`, '')
+          const normalizedName = newName.toLowerCase().replace(/ /g, '-')
+
+          if (newName !== normalizedName) {
+            console.warn(`Icon [${newName}] normalized to [${normalizeName}]`)
+          }
+
           if (
             preserveColorsGroup &&
             node.parents.some((item) => {
@@ -88,10 +94,10 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
             })
           ) {
             console.log('colored icon', node.name)
-            return `${newName}${COLORED_POSTFIX}`
+            return `${normalizedName}${COLORED_POSTFIX}`
           }
           console.log('icon', node.name)
-          return newName
+          return normalizedName
         }
       },
     })
