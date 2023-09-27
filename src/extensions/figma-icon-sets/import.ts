@@ -8,24 +8,30 @@ import {
   optimizeIconSet,
 } from '../../helpers/icon-set'
 
+import type { FigmaImportOptions } from '@iconify/tools/lib/import/figma/types/options.js'
 import type { IconSet } from '@iconify/tools'
+
+export interface FigmaIconifyFile {
+  /** https://iconify.design/docs/libraries/tools/import/figma/file-id.html */
+  id: FigmaImportOptions['file']
+  pages?: FigmaImportOptions['pages']
+  /**
+   * Icon set prefix, if a icon named start with the prefix, it will be imported.
+   *
+   * For example, set prefix with "iconify", "iconify-apple" will be imported.
+   *
+   * If icons have the same names, it will be merged into one icon.
+   *
+   * ref: https://iconify.design/docs/libraries/tools/import/figma/#options
+   */
+  prefix: FigmaImportOptions['prefix']
+}
 
 export interface ImportFigmaIconSetOptions {
   /**
    * Figma files
    */
-  files: {
-    /** https://iconify.design/docs/libraries/tools/import/figma/file-id.html */
-    id: string
-    /**
-     * Icon set prefix, if a icon named start with the prefix, it will be imported.
-     *
-     * For example, set prefix with "iconify", "iconify-apple" will be imported.
-     *
-     * ref: https://iconify.design/docs/libraries/tools/import/figma/#options
-     */
-    prefix: string
-  }[]
+  files: FigmaIconifyFile[]
   /**
    * Figma token
    *
@@ -36,7 +42,12 @@ export interface ImportFigmaIconSetOptions {
    * Whether cache figma data to `.figma-cache`, default: false.
    */
   cache?: boolean
-  /** Colors will be preserved under the 'FRAME' | 'GROUP' | 'SECTION', named with `preserveColorsGroup` */
+  /**
+   * Colors will be preserved under the 'FRAME' | 'GROUP' | 'SECTION', named with `preserveColorsGroup`
+   *
+   * For example, set preserveColorsGroup with "colored",
+   * icons colors will be preserved under named with "colored" 'FRAME' | 'GROUP' | 'SECTION' node.
+   */
   preserveColorsGroup?: string
 }
 
@@ -51,12 +62,15 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
     throw new Error('token not found')
   }
 
-  async function importFile(fileId: string, prefix: string) {
+  async function importFigmaFile(file: FigmaIconifyFile) {
+    const { id, pages, prefix } = file
+
     const result = await importFromFigma({
       prefix,
-      file: fileId,
+      file: id,
+      pages,
       token,
-      cacheDir: cache ? '.figma-cache' : undefined,
+      cacheDir: cache ? `.figma-cache/${prefix}` : undefined,
       /** Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE' */
       iconNameForNode: (node) => {
         if (!['COMPONENT', 'INSTANCE', 'FRAME'].includes(node.type)) {
@@ -101,7 +115,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
 
   const iconSetsResult = await Promise.allSettled(
     files.map(async (item) => {
-      return await importFile(item.id, item.prefix)
+      return await importFigmaFile(item)
     }),
   )
 

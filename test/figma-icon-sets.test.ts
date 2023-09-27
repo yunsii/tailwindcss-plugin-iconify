@@ -15,7 +15,20 @@ it(
         {
           // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
           id: 'PMVacJLndw38SM0MNyRXTy',
+          pages: ['Page 1'],
           prefix: 'test',
+        },
+        {
+          // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
+          id: 'PMVacJLndw38SM0MNyRXTy',
+          pages: ['Page 2'],
+          prefix: 'test',
+        },
+        {
+          // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
+          id: 'PMVacJLndw38SM0MNyRXTy',
+          pages: ['Page 3'],
+          prefix: 'common',
         },
       ],
       token: process.env.VITE_FIGMA_TOKEN!,
