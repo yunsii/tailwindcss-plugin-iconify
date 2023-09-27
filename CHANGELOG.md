@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.2.2
+
+### Patch Changes
+
+- 🐛 fix: console warningNames
+
 ## 1.2.1
 
 ### Patch Changes
