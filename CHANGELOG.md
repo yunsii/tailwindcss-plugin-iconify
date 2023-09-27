@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.3.0
+
+### Minor Changes
+
+- ✨ feat: support specific static icons
+
 ## 1.2.4
 
 ### Patch Changes
