@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.0.0
+
+### Major Changes
+
+- ✨ feat: support multiple figma files
+
 ## 0.1.6
 
 ### Patch Changes
