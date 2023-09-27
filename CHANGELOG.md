@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.2.0
+
+### Minor Changes
+
+- ✨ feat: support pages config
+
 ## 1.1.0
 
 ### Minor Changes
