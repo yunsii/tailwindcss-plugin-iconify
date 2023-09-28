@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.3.1
+
+### Patch Changes
+
+- ✨ feat: use '\*' match all icon set
+
 ## 1.3.0
 
 ### Minor Changes
