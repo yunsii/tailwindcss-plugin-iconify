@@ -48,5 +48,5 @@ export interface DynamicIconifyPluginOptions
    * }
    * ```
    */
-  preprocessSets?: string[] | Record<string, string[]>
+  preprocessSets?: string[] | Record<string, string[] | '*'>
 }

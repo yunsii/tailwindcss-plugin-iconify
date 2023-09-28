@@ -47,7 +47,8 @@ export function addDynamicIconSelectors(
       const staticIconNames = preprocessSets[iconSetName]
       const iconSetIconStyles = getIconSetIconStyles(iconSetName, {
         pluginOptions: options,
-        staticIconNames,
+        staticIconNames:
+          typeof staticIconNames === 'string' ? null : staticIconNames,
       })
       iconStyles = {
         ...iconStyles,

@@ -107,7 +107,7 @@ export function optimizeIconSet(
 
 export interface GetIconSetIconStylesOptions {
   pluginOptions: DynamicIconifyPluginOptions
-  staticIconNames?: string[]
+  staticIconNames?: string[] | null
 }
 
 export function getIconSetIconStyles(
