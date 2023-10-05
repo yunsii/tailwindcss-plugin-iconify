@@ -2,7 +2,7 @@
 
 Use any icon from Iconify (support local icons directly and figma icon sets), for TailwindCSS.
 
-[![NPM version](https://img.shields.io/npm/v/tailwindcss-plugin-iconify?color=a1b858&label=)](https://www.npmjs.com/package/tailwindcss-plugin-iconify)
+[![NPM version](https://img.shields.io/npm/v/tailwindcss-plugin-iconify?color=a1b858&label=)](https://www.npmjs.com/package/tailwindcss-plugin-iconify) [![Download monthly](https://img.shields.io/npm/dm/tailwindcss-plugin-iconify.svg)](https://www.npmjs.com/package/tailwindcss-plugin-iconify)
 
 ## Features
 
