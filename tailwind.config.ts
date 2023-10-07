@@ -17,7 +17,7 @@ const config: Config = {
   },
   plugins: [
     addDynamicIconSelectors({
-      // `it` abbr for `icon-specific-static`
+      // `iss` abbr for `icon-specific-static`
       prefix: 'iss',
       iconSets,
       preprocessSets: {
