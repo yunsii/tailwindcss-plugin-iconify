@@ -8,6 +8,7 @@ import {
   optimizeIconSet,
 } from '../../helpers/icon-set'
 
+import type { DocumentNotModified } from '@iconify/tools/lib/download/types/modified.js'
 import type { FigmaImportOptions } from '@iconify/tools/lib/import/figma/types/options.js'
 import type { IconSet } from '@iconify/tools'
 
@@ -42,6 +43,11 @@ export interface ImportFigmaIconSetOptions {
    * Whether cache figma data to `.figma-cache`, default: false.
    */
   cache?: boolean
+  /** ref: https://iconify.design/docs/libraries/tools/import/figma/#cache-options */
+  cacheOptions?: Pick<
+    FigmaImportOptions,
+    'cacheAPITTL' | 'cacheSVGTTL' | 'ifModifiedSince'
+  >
   /**
    * Colors will be preserved under the 'FRAME' | 'GROUP' | 'SECTION', named with `preserveColorsGroup`
    *
@@ -53,7 +59,13 @@ export interface ImportFigmaIconSetOptions {
 
 /** Icon component in Figma will be imported */
 export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
-  const { files, token, cache = false, preserveColorsGroup } = options
+  const {
+    files,
+    token,
+    cache = false,
+    cacheOptions,
+    preserveColorsGroup,
+  } = options
 
   if (typeof token !== 'string') {
     throw new TypeError('token type error')
@@ -62,7 +74,9 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
     throw new Error('token not found')
   }
 
-  async function importFigmaFile(file: FigmaIconifyFile) {
+  async function importFigmaFile(
+    file: FigmaIconifyFile,
+  ): Promise<IconSet | DocumentNotModified> {
     const { id, pages, prefix } = file
 
     const warningNames: { from: string; to: string }[] = []
@@ -73,6 +87,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
       pages,
       token,
       cacheDir: cache ? `.figma-cache/${prefix}` : undefined,
+      ...cacheOptions,
       /** Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE' */
       iconNameForNode: (node) => {
         if (!['COMPONENT', 'INSTANCE', 'FRAME'].includes(node.type)) {
@@ -111,6 +126,10 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
       },
     })
 
+    if (typeof result === 'string') {
+      return result
+    }
+
     warningNames.forEach((item) => {
       console.warn(`Icon [${item.from}] normalized to [${item.to}]`)
     })
@@ -142,6 +161,10 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
 
   for (const [index, item] of iconSetsResult.entries()) {
     if (item.status === 'fulfilled') {
+      if (item.value === 'not_modified') {
+        console.log(`file id: ${files[index].id} not modified.`)
+        continue
+      }
       okIconSets.push(item.value)
       console.log(`file id: ${files[index].id} import success.`)
     } else {
