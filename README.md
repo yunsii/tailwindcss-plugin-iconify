@@ -35,6 +35,10 @@ I want to use _tailwind autocomplete_ for **Iconify** icon sets and support _loc
 - [@egoist/tailwindcss-icons](https://github.com/egoist/tailwindcss-icons)
 - [@iconify/tailwind](https://github.com/iconify/iconify/tree/main/plugins/tailwind?rgh-link-date=2023-08-13T05%3A08%3A09Z)
 
+## Related
+
+- [unplugin-iconify](https://github.com/yunsii/unplugin-iconify) - Unplugin for iconify.
+
 ## Build & Publish
 
 - `npm run build`
