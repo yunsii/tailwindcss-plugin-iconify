@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.3.2
+
+### Patch Changes
+
+- 🐛 fix: import icons from icon, variation types only
+
 ## 1.3.1
 
 ### Patch Changes
