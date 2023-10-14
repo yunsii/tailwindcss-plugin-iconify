@@ -1,11 +1,11 @@
 import {
+  IconSet,
   cleanupSVG,
   isEmptyColor,
   parseColorsSync,
   runSVGO,
 } from '@iconify/tools'
 import { specialColorAttributes } from '@iconify/tools/lib/colors/attribs'
-import { parseIconSet } from '@iconify/utils'
 import { getIconsCSSData } from '@iconify/utils/lib/css/icons'
 
 import { transformCSSDataToRules } from '../dynamic'
@@ -14,7 +14,6 @@ import { ensureLoadIconSet } from '../loader'
 import type { ExtendedTagElementWithColors } from '@iconify/tools/lib/colors/parse'
 import type { Color } from '@iconify/utils/lib/colors/types'
 import type { ColorAttributes } from '@iconify/tools/lib/colors/attribs'
-import type { IconSet } from '@iconify/tools'
 import type { DynamicIconifyPluginOptions } from '../options'
 
 // colored icon do not support change icon color
@@ -117,24 +116,26 @@ export function getIconSetIconStyles(
   const { pluginOptions, staticIconNames } = options
 
   const values: Record<string, Record<string, string>> = {}
-  const iconSet = ensureLoadIconSet(iconSetName, pluginOptions)
-  parseIconSet(iconSet, (name, data) => {
-    if (!data) {
-      return
-    }
-    if (staticIconNames && !staticIconNames.includes(name)) {
-      return
-    }
+  const iconSetJson = ensureLoadIconSet(iconSetName, pluginOptions)
+  const iconSet = new IconSet(iconSetJson)
 
-    const generated = getIconsCSSData(iconSet, [name], {
-      iconSelector: '.icon',
-    })
+  iconSet.forEach(
+    (name) => {
+      if (staticIconNames && !staticIconNames.includes(name)) {
+        return
+      }
 
-    values[`${iconSetName}--${name}`] = transformCSSDataToRules(
-      generated,
-      pluginOptions,
-    )
-  })
+      const generated = getIconsCSSData(iconSetJson, [name], {
+        iconSelector: '.icon',
+      })
+
+      values[`${iconSetName}--${name}`] = transformCSSDataToRules(
+        generated,
+        pluginOptions,
+      )
+    },
+    ['icon', 'variation'],
+  )
 
   return values
 }
