@@ -2,14 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-[class^='vp-antd'] svg {
+[class^='i-'],
+[class^='iss-'] {
+  @apply w-8 h-8;
+}
+
+.vp-local-navCtn svg {
   display: inline;
   vertical-align: unset;
 }
 
-[class^='i-'],
-[class^='iss-'] {
-  @apply w-8 h-8;
+.markdown-body li {
+  list-style: disc;
 }
 
 .markdown-body img {
