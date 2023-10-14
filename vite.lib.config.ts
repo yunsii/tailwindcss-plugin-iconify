@@ -3,12 +3,15 @@ import path from 'path'
 import { defineConfig, loadEnv, mergeConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
-import { dependencies } from './package.json'
+import { dependencies, peerDependencies } from './package.json'
 import baseConfig from './vite.base.config'
 
 import type { UserConfig } from 'vite'
 
-const externalPackages = [...Object.keys(dependencies || {})]
+const externalPackages = [
+  ...Object.keys(dependencies || {}),
+  ...Object.keys(peerDependencies || {}),
+]
 
 // Creating regexps of the packages to make sure subpaths of the
 // packages are also treated as external
