@@ -11,3 +11,7 @@
 [class^='iss-'] {
   @apply w-8 h-8;
 }
+
+.markdown-body img {
+  display: inline-block;
+}
