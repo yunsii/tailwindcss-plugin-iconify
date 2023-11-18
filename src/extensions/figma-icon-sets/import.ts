@@ -13,9 +13,12 @@ import type { FigmaImportOptions } from '@iconify/tools/lib/import/figma/types/o
 import type { IconSet } from '@iconify/tools'
 
 export interface FigmaIconifyFile {
-  /** https://iconify.design/docs/libraries/tools/import/figma/file-id.html */
+  /** ref: https://iconify.design/docs/libraries/tools/import/figma/file-id.html */
   id: FigmaImportOptions['file']
+  /** @deprecated Even specific pages, it still download full file, recommend to use `nodeIds` instead */
   pages?: FigmaImportOptions['pages']
+  /** ref: https://iconify.design/docs/libraries/tools/import/figma/#options-for-finding-icons-in-figma-document */
+  nodeIds?: FigmaImportOptions['ids']
   /**
    * Icon set prefix, if a icon named start with the prefix, it will be imported.
    *
@@ -43,7 +46,9 @@ export interface ImportFigmaIconSetOptions {
    * Whether cache figma data to `.figma-cache`, default: false.
    */
   cache?: boolean
-  /** ref: https://iconify.design/docs/libraries/tools/import/figma/#cache-options */
+  /**
+   * ref: https://iconify.design/docs/libraries/tools/import/figma/#cache-options
+   */
   cacheOptions?: Pick<
     FigmaImportOptions,
     'cacheAPITTL' | 'cacheSVGTTL' | 'ifModifiedSince'
@@ -77,16 +82,19 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   async function importFigmaFile(
     file: FigmaIconifyFile,
   ): Promise<IconSet | DocumentNotModified> {
-    const { id, pages, prefix } = file
+    const { id, pages, nodeIds, prefix } = file
 
     const warningNames: { from: string; to: string }[] = []
 
     const result = await importFromFigma({
       prefix,
       file: id,
+      ids: nodeIds,
       pages,
       token,
       cacheDir: cache ? `.figma-cache/${prefix}` : undefined,
+      /** ref: https://iconify.design/docs/libraries/tools/import/figma/#options-for-retrieving-figma-document */
+      ifModifiedSince: true,
       ...cacheOptions,
       /** Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE' */
       iconNameForNode: (node) => {
