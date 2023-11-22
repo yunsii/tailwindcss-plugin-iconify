@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
 import 'cross-fetch/polyfill'
 import { importFromFigma, mergeIconSets } from '@iconify/tools'
+import consola from 'consola'
 
 import {
   COLORED_POSTFIX,
@@ -44,6 +44,9 @@ export interface ImportFigmaIconSetOptions {
   token: string
   /**
    * Whether cache figma data to `.figma-cache`, default: false.
+   *
+   * If you use cache, you can set `cacheOptions.ifModifiedSince: true` also,
+   * except you have duplicated `files.id`
    */
   cache?: boolean
   /**
@@ -93,8 +96,6 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
       pages,
       token,
       cacheDir: cache ? `.figma-cache/${prefix}` : undefined,
-      /** ref: https://iconify.design/docs/libraries/tools/import/figma/#options-for-retrieving-figma-document */
-      ifModifiedSince: true,
       ...cacheOptions,
       /** Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE' */
       iconNameForNode: (node) => {
@@ -125,10 +126,10 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
               )
             })
           ) {
-            console.log('colored icon', node.name)
+            consola.log('colored icon', node.name)
             return `${normalizedName}${COLORED_POSTFIX}`
           }
-          console.log('icon', node.name)
+          consola.log('icon', node.name)
           return normalizedName
         }
       },
@@ -139,7 +140,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
     }
 
     warningNames.forEach((item) => {
-      console.warn(`Icon [${item.from}] normalized to [${item.to}]`)
+      consola.warn(`Icon [${item.from}] normalized to [${item.to}]`)
     })
 
     const iconSet = result.iconSet
@@ -170,17 +171,17 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   for (const [index, item] of iconSetsResult.entries()) {
     if (item.status === 'fulfilled') {
       if (item.value === 'not_modified') {
-        console.log(`file id: ${files[index].id} not modified.`)
+        consola.log(`file id: ${files[index].id} not modified.`)
         continue
       }
       okIconSets.push(item.value)
-      console.log(`file id: ${files[index].id} import success.`)
+      consola.log(`file id: ${files[index].id} import success.`)
     } else {
-      console.error(`file id: ${files[index].id} import failed:`, item.reason)
+      consola.error(`file id: ${files[index].id} import failed:`, item.reason)
     }
   }
 
-  console.log(
+  consola.log(
     `Icon sets imported: ${okIconSets.length}, failed: ${
       files.length - okIconSets.length
     }`,
@@ -213,7 +214,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   })
 
   if (mergedIconSets.length !== okIconSets.length) {
-    console.log(
+    consola.log(
       `Merged icon sets from ${okIconSets.length} to ${mergedIconSets.length}`,
     )
   }

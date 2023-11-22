@@ -128,6 +128,7 @@
     "@iconify/tools": "^3.0.5",
     "@iconify/types": "^2.0.0",
     "@iconify/utils": "^2.1.7",
+    "consola": "^3.2.3",
     "cross-fetch": "^4.0.0",
     "fs-extra": "^11.1.1",
     "pathe": "^1.1.1"

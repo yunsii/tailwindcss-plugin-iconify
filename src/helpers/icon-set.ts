@@ -7,6 +7,8 @@ import {
 } from '@iconify/tools'
 import { specialColorAttributes } from '@iconify/tools/lib/colors/attribs'
 import { getIconsCSSData } from '@iconify/utils/lib/css/icons'
+import fse from 'fs-extra'
+import { validateIconSet } from '@iconify/utils'
 
 import { transformCSSDataToRules } from '../dynamic'
 import { ensureLoadIconSet } from '../loader'
@@ -138,4 +140,18 @@ export function getIconSetIconStyles(
   )
 
   return values
+}
+
+export function loadIconifyJsonPath(path: string) {
+  try {
+    if (fse.existsSync(path)) {
+      const rawData = fse.readJsonSync(path, 'utf8')
+      const validatedData = validateIconSet(rawData)
+      return new IconSet(validatedData)
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(`loadIconifyJsonPath ${path} failed`)
+  }
+  return null
 }

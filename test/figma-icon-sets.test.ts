@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
 import pathe from 'pathe'
 import { expect, it } from 'vitest'
+import consola from 'consola'
 
 import {
   importFigmaIconSets,
@@ -15,19 +15,13 @@ it(
         {
           // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
           id: 'PMVacJLndw38SM0MNyRXTy',
-          pages: ['Page 1'],
+          nodeIds: ['0-1', '113-3'],
           prefix: 'test',
         },
         {
-          // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
+          // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=116-4&mode=design&t=Oda5b2fjO9W4y2vX-0
           id: 'PMVacJLndw38SM0MNyRXTy',
-          pages: ['Page 2'],
-          prefix: 'test',
-        },
-        {
-          // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
-          id: 'PMVacJLndw38SM0MNyRXTy',
-          pages: ['Page 3'],
+          nodeIds: ['116-4'],
           prefix: 'common',
         },
       ],
@@ -35,8 +29,9 @@ it(
       preserveColorsGroup: 'test-colored',
       cache: true,
     })
+
     iconSets.forEach((iconSet) => {
-      console.log('Found', iconSet.prefix, iconSet.count(), 'icons')
+      consola.log('Found', iconSet.prefix, iconSet.count(), 'icons')
     })
 
     writeIconifyJSONs(
@@ -45,14 +40,19 @@ it(
         return item
       }),
       {
-        outputDir: pathe.join(__dirname, '__snapshots__', 'figma'),
+        outputDir: pathe.join(__dirname, '__output__', 'figma'),
       },
     )
 
     iconSets.forEach((iconSet) => {
       const iconifyJSON = iconSet.export()
       iconifyJSON.lastModified = 0
-      expect(iconifyJSON).toMatchSnapshot()
+      const snapshotFile = pathe.join(
+        __dirname,
+        '__output__',
+        `icons-${iconSet.prefix}.txt`,
+      )
+      expect(iconifyJSON).toMatchFileSnapshot(snapshotFile)
     })
   },
   {

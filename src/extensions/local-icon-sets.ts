@@ -1,9 +1,7 @@
-import { IconSet, importDirectorySync } from '@iconify/tools'
+import { importDirectorySync } from '@iconify/tools'
 import pathe from 'pathe'
-import fse from 'fs-extra'
-import { validateIconSet } from '@iconify/utils'
 
-import { optimizeIconSet } from '../helpers/icon-set'
+import { loadIconifyJsonPath, optimizeIconSet } from '../helpers/icon-set'
 
 import type { IconifyJSON } from '@iconify/types'
 import type { PreserveColorsFn } from '../helpers/icon-set'
@@ -48,14 +46,15 @@ export function getLocalIconSets(options: GetLocalIconSetsOptions) {
       typeof iconSetConfig !== 'string' &&
       'iconifyJsonPath' in iconSetConfig
     ) {
-      const rawData = fse.readJsonSync(iconSetConfig.iconifyJsonPath, 'utf8')
-      const validatedData = validateIconSet(rawData)
-      const iconSet = new IconSet(validatedData)
+      const iconSet = loadIconifyJsonPath(iconSetConfig.iconifyJsonPath)
 
-      return {
-        ...prev,
-        [current]: iconSet.export(),
+      if (iconSet) {
+        return {
+          ...prev,
+          [current]: iconSet.export(),
+        }
       }
+      return prev
     }
 
     const _path =

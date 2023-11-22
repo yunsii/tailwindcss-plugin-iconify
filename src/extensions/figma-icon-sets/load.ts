@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+import consola from 'consola'
+
 import { type WriteIconifyJSONsOptions, writeIconifyJSONs } from './write'
 import { type ImportFigmaIconSetOptions, importFigmaIconSets } from './import'
 
@@ -13,7 +14,7 @@ export async function loadFigmaIconSets(options: LoadFigmaIconSetOptions) {
 
   const iconSets = await importFigmaIconSets(importOptions)
   iconSets.forEach((iconSet) => {
-    console.log('Found', iconSet.prefix, iconSet.count(), 'icons')
+    consola.log('Found', iconSet.prefix, iconSet.count(), 'icons')
   })
 
   writeIconifyJSONs(iconSets, writeOptions)
