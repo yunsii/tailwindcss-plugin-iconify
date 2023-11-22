@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.3.4
+
+### Patch Changes
+
+- ✨ feat: print icon set changes
+
 ## 1.3.3
 
 ### Patch Changes
