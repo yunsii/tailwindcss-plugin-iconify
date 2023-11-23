@@ -1,6 +1,7 @@
 import fse from 'fs-extra'
 import pathe from 'pathe'
 import consola from 'consola'
+import { mergeIconSets } from '@iconify/tools'
 
 import type { IconSet } from '@iconify/tools'
 
@@ -8,13 +9,20 @@ import { loadIconifyJsonPath } from '@/helpers/icon-set'
 
 export interface WriteIconifyJSONsOptions {
   outputDir: string
+  /**
+   * write mode, default 'overwrite'
+   *
+   * - overwrite, write icon sets directly
+   * - override, merge new icon sets to local icon sets
+   */
+  mode?: 'overwrite' | 'override'
 }
 
 export function writeIconifyJSONs(
   iconSets: IconSet[],
   options: WriteIconifyJSONsOptions,
 ) {
-  const { outputDir } = options
+  const { mode, outputDir } = options
 
   for (const iconSet of iconSets) {
     const composedOutputDir = pathe.normalize(
@@ -50,26 +58,38 @@ export function writeIconifyJSONs(
 
     const logPrefix = `[write-icon-set][${iconSet.prefix}]`
 
+    const writeIconSet: IconSet =
+      mode === 'override' && prevIconSet
+        ? mergeIconSets(prevIconSet, iconSet)
+        : iconSet
+
     if (!prevIconNames) {
-      consola.success(`${logPrefix} Initialize with ${iconSet.count()} icons`)
+      consola.success(
+        `${logPrefix} Initialize with ${writeIconSet.count()} icons`,
+      )
     } else {
       if (addedIconNames.length) {
         consola.success(
           `${logPrefix} Added icons:\n${addedIconNames.join('\n')}`,
         )
       }
-      if (removedIconNames.length) {
+      if (mode === 'overwrite' && removedIconNames.length) {
         consola.warn(
           `${logPrefix} Removed icons:\n${removedIconNames.join('\n')}`,
         )
       }
-      if (!addedIconNames.length && !removedIconNames.length) {
+      if (
+        (mode === 'overwrite' &&
+          !addedIconNames.length &&
+          !removedIconNames.length) ||
+        (mode === 'override' && !addedIconNames.length)
+      ) {
         consola.log(`${logPrefix} No icons changed`)
         continue
       }
     }
 
-    fse.writeJsonSync(targetIconsJsonPath, iconSet.export())
+    fse.writeJsonSync(targetIconsJsonPath, writeIconSet.export())
     fse.writeFileSync(
       pathe.join(composedOutputDir, `icons.html`),
       `
@@ -86,10 +106,10 @@ svg:hover {
 }
 </style>
 <body>
-  ${iconSet
+  ${writeIconSet
     .list()
     .map((item) => {
-      const svgStr = iconSet.toSVG(item)?.toString()
+      const svgStr = writeIconSet.toSVG(item)?.toString()
       return `<span title="${item}">${svgStr}</span>`
     })
     .join('')}
