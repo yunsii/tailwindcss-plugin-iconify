@@ -104,7 +104,7 @@ svg:hover {
 </style>
 <body>
   ${writeIconSet
-    .list()
+    .list(['icon', 'variation', 'alias'])
     .map((item) => {
       const svgStr = writeIconSet.toSVG(item)?.toString()
       return `<span title="${item}">${svgStr}</span>`
