@@ -121,23 +121,20 @@ export function getIconSetIconStyles(
   const iconSetJson = ensureLoadIconSet(iconSetName, pluginOptions)
   const iconSet = new IconSet(iconSetJson)
 
-  iconSet.forEach(
-    (name) => {
-      if (staticIconNames && !staticIconNames.includes(name)) {
-        return
-      }
+  iconSet.forEach((name) => {
+    if (staticIconNames && !staticIconNames.includes(name)) {
+      return
+    }
 
-      const generated = getIconsCSSData(iconSetJson, [name], {
-        iconSelector: '.icon',
-      })
+    const generated = getIconsCSSData(iconSetJson, [name], {
+      iconSelector: '.icon',
+    })
 
-      values[`${iconSetName}--${name}`] = transformCSSDataToRules(
-        generated,
-        pluginOptions,
-      )
-    },
-    ['icon', 'variation'],
-  )
+    values[`${iconSetName}--${name}`] = transformCSSDataToRules(
+      generated,
+      pluginOptions,
+    )
+  })
 
   return values
 }

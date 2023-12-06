@@ -35,12 +35,9 @@ export function writeIconifyJSONs(
     const prevIconSet = loadIconifyJsonPath(targetIconsJsonPath)
 
     const prevIconNames: string[] = []
-    prevIconSet?.forEach(
-      (name) => {
-        prevIconNames.push(name)
-      },
-      ['icon', 'variation'],
-    )
+    prevIconSet?.forEach((name) => {
+      prevIconNames.push(name)
+    })
 
     const addedIconNames: string[] = []
     iconSet.forEach((name) => {
