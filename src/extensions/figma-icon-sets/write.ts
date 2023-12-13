@@ -86,7 +86,9 @@ export function writeIconifyJSONs(
       }
     }
 
-    fse.writeJsonSync(targetIconsJsonPath, writeIconSet.export())
+    fse.writeJsonSync(targetIconsJsonPath, writeIconSet.export(), {
+      spaces: 2,
+    })
     fse.writeFileSync(
       pathe.join(composedOutputDir, `icons.html`),
       `
@@ -109,7 +111,7 @@ svg:hover {
       const svgStr = writeIconSet.toSVG(item)?.toString()
       return `<span title="${item}">${svgStr}</span>`
     })
-    .join('')}
+    .join('\n  ')}
 </body>
 </html>
 `,

@@ -34,6 +34,7 @@ it(
       consola.log('Found', iconSet.prefix, iconSet.count(), 'icons')
     })
 
+    // TODO unit test
     writeIconifyJSONs(
       iconSets.map((item) => {
         item.lastModified = 0

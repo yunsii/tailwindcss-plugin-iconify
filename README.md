@@ -22,6 +22,8 @@ But this library export related node scripts:
 - `writeIconifyJSONs` to write corresponding JSON files and SVG icons preview HTMLs
 - `loadFigmaIconSets` = `importFigmaIconSets` + `writeIconifyJSONs`
 
+> [!IMPORTANT] For better git auto merge, you should ignore `icons.json` and `icons.html` for code formatting.
+
 ### Icon limitations
 
 ref: [iconify.design/import/figma](https://iconify.design/docs/libraries/tools/import/figma/#limitations)
