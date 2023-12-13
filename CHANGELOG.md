@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.4.2
+
+### Patch Changes
+
+- 🐛 fix: polish output files
+
 ## 1.4.1
 
 ### Patch Changes
