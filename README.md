@@ -1,8 +1,8 @@
 # tailwindcss-plugin-iconify
 
-Use any SVG icon powered by Iconify for Tailwind CSS, easy to use local icons and figma icons in particular.
-
 [![NPM version](https://img.shields.io/npm/v/tailwindcss-plugin-iconify?color=a1b858&label=)](https://www.npmjs.com/package/tailwindcss-plugin-iconify) [![Download monthly](https://img.shields.io/npm/dm/tailwindcss-plugin-iconify.svg)](https://www.npmjs.com/package/tailwindcss-plugin-iconify)
+
+Use any SVG icon powered by Iconify for Tailwind CSS, easy to use local icons and figma icons in particular.
 
 ## Features
 
@@ -22,7 +22,12 @@ But this library export related node scripts:
 - `writeIconifyJSONs` to write corresponding JSON files and SVG icons preview HTMLs
 - `loadFigmaIconSets` = `importFigmaIconSets` + `writeIconifyJSONs`
 
-> [!IMPORTANT] For better git auto merge, you should ignore `icons.json` and `icons.html` for code formatting.
+<!-- prettier-ignore-start -->
+
+> [!IMPORTANT]
+> For better git auto merge, you should ignore `icons.json` and `icons.html` for code formatting.
+
+<!-- prettier-ignore-end -->
 
 ### Icon limitations
 
