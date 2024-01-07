@@ -22,12 +22,8 @@ But this library export related node scripts:
 - `writeIconifyJSONs` to write corresponding JSON files and SVG icons preview HTMLs
 - `loadFigmaIconSets` = `importFigmaIconSets` + `writeIconifyJSONs`
 
-<!-- prettier-ignore-start -->
-
 > [!IMPORTANT]
 > For better git auto merge, you should ignore `icons.json` and `icons.html` for code formatting.
-
-<!-- prettier-ignore-end -->
 
 ### Icon limitations
 
