@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.4.3
+
+### Patch Changes
+
+- ✨ feat: use regexp to ensure valid icon name
+
 ## 1.4.2
 
 ### Patch Changes
