@@ -148,7 +148,7 @@ export function loadIconifyJsonPath(path: string) {
     }
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.log(`loadIconifyJsonPath ${path} failed`)
+    console.log(`loadIconifyJsonPath ${path} failed:`, err)
   }
   return null
 }
