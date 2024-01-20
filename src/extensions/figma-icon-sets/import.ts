@@ -87,8 +87,6 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   ): Promise<IconSet | DocumentNotModified> {
     const { id, pages, nodeIds, prefix } = file
 
-    const warningNames: { from: string; to: string }[] = []
-
     const result = await importFromFigma({
       prefix,
       file: id,
@@ -104,17 +102,17 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
         }
         if (node.name.startsWith(`${prefix}-`)) {
           const newName = node.name.replace(`${prefix}-`, '')
-          const normalizedName = newName
-            .trim()
-            .toLowerCase()
-            .replace(/ /g, '-')
-            .replace(/-{2,}/g, '-')
-
-          if (newName !== normalizedName) {
-            warningNames.push({
-              from: newName,
-              to: normalizedName,
-            })
+          const nameRegExp = /^[a-z]([a-z0-9]|-)*[a-z0-9]$/
+          if (!nameRegExp.test(newName)) {
+            throw new Error(
+              `Unexpected icon name: ${node.name}, regexp: ${nameRegExp}`,
+            )
+          }
+          const unexpectedHyphensRegExp = /-{2,}/
+          if (unexpectedHyphensRegExp.test(newName)) {
+            throw new Error(
+              `Unexpected icon name: ${node.name}, contains duplicate hyphens`,
+            )
           }
 
           if (
@@ -127,10 +125,10 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
             })
           ) {
             consola.log('colored icon', node.name)
-            return `${normalizedName}${COLORED_POSTFIX}`
+            return `${newName}${COLORED_POSTFIX}`
           }
           consola.log('icon', node.name)
-          return normalizedName
+          return newName
         }
       },
     })
@@ -138,10 +136,6 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
     if (typeof result === 'string') {
       return result
     }
-
-    warningNames.forEach((item) => {
-      consola.warn(`Icon [${item.from}] normalized to [${item.to}]`)
-    })
 
     const iconSet = result.iconSet
 
