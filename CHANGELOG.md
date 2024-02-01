@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.4.4
+
+### Patch Changes
+
+- 🐛 fix: match icon full name
+
 ## 1.4.3
 
 ### Patch Changes
