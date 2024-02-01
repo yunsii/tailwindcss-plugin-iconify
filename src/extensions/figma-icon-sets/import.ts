@@ -101,13 +101,13 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
           return
         }
         if (node.name.startsWith(`${prefix}-`)) {
-          const newName = node.name.replace(`${prefix}-`, '')
           const nameRegExp = /^[a-z]([a-z0-9]|-)*[a-z0-9]$/
-          if (!nameRegExp.test(newName)) {
+          if (!nameRegExp.test(node.name)) {
             throw new Error(
               `Unexpected icon name: ${node.name}, regexp: ${nameRegExp}`,
             )
           }
+          const newName = node.name.replace(`${prefix}-`, '')
           const unexpectedHyphensRegExp = /-{2,}/
           if (unexpectedHyphensRegExp.test(newName)) {
             throw new Error(
