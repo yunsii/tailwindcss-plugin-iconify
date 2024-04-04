@@ -2,7 +2,7 @@ import {
   IconSet,
   cleanupSVG,
   isEmptyColor,
-  parseColorsSync,
+  parseColors,
   runSVGO,
 } from '@iconify/tools'
 import { specialColorAttributes } from '@iconify/tools/lib/colors/attribs'
@@ -63,7 +63,7 @@ export function optimizeIconSet(
 
       // This is a monotone icon, change color to `currentColor`, add it if missing
       // Skip this step if icons have palette
-      parseColorsSync(svg, {
+      parseColors(svg, {
         defaultColor: 'currentColor',
         callback: (attr, colorString, parsedColor, tagName, item) => {
           if (
