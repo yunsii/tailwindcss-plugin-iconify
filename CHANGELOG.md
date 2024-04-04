@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.4.5
+
+### Patch Changes
+
+- update @iconify/tools
+
 ## 1.4.4
 
 ### Patch Changes
