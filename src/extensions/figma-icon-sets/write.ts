@@ -15,13 +15,14 @@ export interface WriteIconifyJSONsOptions {
    * - override, merge new icon sets to local icon sets
    */
   mode?: 'overwrite' | 'override'
+  afterWrite?: (iconSets: IconSet[]) => void
 }
 
 export function writeIconifyJSONs(
   iconSets: IconSet[],
   options: WriteIconifyJSONsOptions,
 ) {
-  const { mode, outputDir } = options
+  const { mode, outputDir, afterWrite } = options
 
   function getTargetIconsJsonPath(iconSet: IconSet) {
     const composedOutputDir = pathe.normalize(
@@ -126,4 +127,6 @@ export function writeIconifyJSONs(
       `,
     )
   }
+
+  afterWrite?.(writableIconSets.map((item) => item.writeIconSet))
 }
