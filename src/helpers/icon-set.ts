@@ -1,21 +1,22 @@
 import {
-  IconSet,
   cleanupSVG,
+  IconSet,
   isEmptyColor,
   parseColors,
   runSVGO,
 } from '@iconify/tools'
 import { specialColorAttributes } from '@iconify/tools/lib/colors/attribs'
+import { validateIconSet } from '@iconify/utils'
 import { getIconsCSSData } from '@iconify/utils/lib/css/icons'
 import fse from 'fs-extra'
-import { validateIconSet } from '@iconify/utils'
+
+import type { ColorAttributes } from '@iconify/tools/lib/colors/attribs'
+import type { ExtendedTagElementWithColors } from '@iconify/tools/lib/colors/parse'
+import type { Color } from '@iconify/utils/lib/colors/types'
 
 import { transformCSSDataToRules } from '../dynamic'
 import { ensureLoadIconSet } from '../loader'
 
-import type { ExtendedTagElementWithColors } from '@iconify/tools/lib/colors/parse'
-import type { Color } from '@iconify/utils/lib/colors/types'
-import type { ColorAttributes } from '@iconify/tools/lib/colors/attribs'
 import type { DynamicIconifyPluginOptions } from '../options'
 
 // colored icon do not support change icon color
@@ -67,9 +68,9 @@ export function optimizeIconSet(
         defaultColor: 'currentColor',
         callback: (attr, colorString, parsedColor, tagName, item) => {
           if (
-            specialColorAttributes.includes(attr as any) ||
-            (preserveColors &&
-              !!preserveColors({
+            specialColorAttributes.includes(attr as any)
+            || (preserveColors
+              && !!preserveColors({
                 iconName: name,
                 attr,
                 colorString,
@@ -80,8 +81,8 @@ export function optimizeIconSet(
           ) {
             return colorString
           }
-          const result =
-            !parsedColor || isEmptyColor(parsedColor)
+          const result
+            = !parsedColor || isEmptyColor(parsedColor)
               ? colorString
               : 'currentColor'
           return result

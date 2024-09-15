@@ -1,6 +1,9 @@
-import 'cross-fetch/polyfill'
 import { importFromFigma, mergeIconSets } from '@iconify/tools'
 import consola from 'consola'
+
+import type { IconSet } from '@iconify/tools'
+import type { DocumentNotModified } from '@iconify/tools/lib/download/types/modified.js'
+import type { FigmaImportOptions } from '@iconify/tools/lib/import/figma/types/options.js'
 
 import {
   COLORED_POSTFIX,
@@ -8,9 +11,7 @@ import {
   optimizeIconSet,
 } from '../../helpers/icon-set'
 
-import type { DocumentNotModified } from '@iconify/tools/lib/download/types/modified.js'
-import type { FigmaImportOptions } from '@iconify/tools/lib/import/figma/types/options.js'
-import type { IconSet } from '@iconify/tools'
+import 'cross-fetch/polyfill'
 
 export interface FigmaIconifyFile {
   /** ref: https://iconify.design/docs/libraries/tools/import/figma/file-id.html */
@@ -101,7 +102,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
           return
         }
         if (node.name.startsWith(`${prefix}-`)) {
-          const nameRegExp = /^[a-z]([a-z0-9]|-)*[a-z0-9]$/
+          const nameRegExp = /^[a-z]([a-z0-9\-])*[a-z0-9]$/
           if (!nameRegExp.test(node.name)) {
             throw new Error(
               `Unexpected icon name: ${node.name}, regexp: ${nameRegExp}`,
@@ -116,11 +117,11 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
           }
 
           if (
-            preserveColorsGroup &&
-            node.parents.some((item) => {
+            preserveColorsGroup
+            && node.parents.some((item) => {
               return (
-                ['FRAME', 'GROUP', 'SECTION'].includes(item.type) &&
-                item.name.trim() === preserveColorsGroup
+                ['FRAME', 'GROUP', 'SECTION'].includes(item.type)
+                && item.name.trim() === preserveColorsGroup
               )
             })
           ) {

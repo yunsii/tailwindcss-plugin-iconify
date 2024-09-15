@@ -1,7 +1,7 @@
-import { addDynamicIconSelectors } from './src/plugin'
-import { getLocalIconSets } from './src/extensions/local-icon-sets'
-
 import type { Config } from 'tailwindcss'
+
+import { getLocalIconSets } from './src/extensions/local-icon-sets'
+import { addDynamicIconSelectors } from './src/plugin'
 
 const iconSets = getLocalIconSets({
   define: {

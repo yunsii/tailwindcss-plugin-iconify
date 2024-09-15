@@ -1,9 +1,10 @@
 import { importDirectorySync } from '@iconify/tools'
 import pathe from 'pathe'
 
+import type { IconifyJSON } from '@iconify/types'
+
 import { loadIconifyJsonPath, optimizeIconSet } from '../helpers/icon-set'
 
-import type { IconifyJSON } from '@iconify/types'
 import type { PreserveColorsFn } from '../helpers/icon-set'
 
 export interface GetLocalIconSetsOptions {
@@ -16,22 +17,22 @@ export interface GetLocalIconSetsOptions {
     string,
     | string
     | {
-        /**
-         * Import all icons from directory
-         *
-         * ref: https://iconify.design/docs/libraries/tools/import/directory.html
-         */
-        path: string
-        options?: Parameters<typeof importDirectorySync>[1]
-        /** Custom colors should preserved, Do not transform to `currentColor` */
-        preserveColors?: PreserveColorsFn
-      }
+      /**
+       * Import all icons from directory
+       *
+       * ref: https://iconify.design/docs/libraries/tools/import/directory.html
+       */
+      path: string
+      options?: Parameters<typeof importDirectorySync>[1]
+      /** Custom colors should preserved, Do not transform to `currentColor` */
+      preserveColors?: PreserveColorsFn
+    }
     | {
-        /**
-         * Importing Iconify icon set by `IconifyJSON`
-         */
-        iconifyJsonPath: string
-      }
+      /**
+       * Importing Iconify icon set by `IconifyJSON`
+       */
+      iconifyJsonPath: string
+    }
   >
 }
 
@@ -43,8 +44,8 @@ export function getLocalIconSets(options: GetLocalIconSetsOptions) {
     const iconSetConfig = iconSetMaps[current]
 
     if (
-      typeof iconSetConfig !== 'string' &&
-      'iconifyJsonPath' in iconSetConfig
+      typeof iconSetConfig !== 'string'
+      && 'iconifyJsonPath' in iconSetConfig
     ) {
       const iconSet = loadIconifyJsonPath(iconSetConfig.iconifyJsonPath)
 
@@ -57,12 +58,12 @@ export function getLocalIconSets(options: GetLocalIconSetsOptions) {
       return prev
     }
 
-    const _path =
-      typeof iconSetConfig === 'string' ? iconSetConfig : iconSetConfig.path
-    const options =
-      typeof iconSetConfig === 'string' ? undefined : iconSetConfig.options
-    const preserveColors =
-      typeof iconSetConfig === 'string'
+    const _path
+      = typeof iconSetConfig === 'string' ? iconSetConfig : iconSetConfig.path
+    const options
+      = typeof iconSetConfig === 'string' ? undefined : iconSetConfig.options
+    const preserveColors
+      = typeof iconSetConfig === 'string'
         ? undefined
         : iconSetConfig.preserveColors
 

@@ -1,4 +1,5 @@
 import type { IconCSSIconSetOptions } from '@iconify/utils/lib/css/types'
+
 import type { IconifyPluginLoaderOptions } from './loader'
 
 /**
@@ -12,7 +13,7 @@ export interface CommonIconifyPluginOptions
  */
 export interface CleanIconifyPluginOptions
   extends CommonIconifyPluginOptions,
-    IconCSSIconSetOptions {}
+  IconCSSIconSetOptions {}
 
 /**
  * Options for dynamic class names

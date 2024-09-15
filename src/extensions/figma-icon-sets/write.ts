@@ -1,11 +1,10 @@
+import { loadIconifyJsonPath } from '@/helpers/icon-set'
+import { mergeIconSets } from '@iconify/tools'
+import consola from 'consola'
 import fse from 'fs-extra'
 import pathe from 'pathe'
-import consola from 'consola'
-import { mergeIconSets } from '@iconify/tools'
 
 import type { IconSet } from '@iconify/tools'
-
-import { loadIconifyJsonPath } from '@/helpers/icon-set'
 
 export interface WriteIconifyJSONsOptions {
   outputDir: string
@@ -55,8 +54,8 @@ export function writeIconifyJSONs(
 
     const logPrefix = `[write-icon-set][${iconSet.prefix}]`
 
-    const writeIconSet: IconSet =
-      mode === 'override' && prevIconSet
+    const writeIconSet: IconSet
+      = mode === 'override' && prevIconSet
         ? mergeIconSets(prevIconSet, iconSet)
         : iconSet
 
@@ -76,10 +75,10 @@ export function writeIconifyJSONs(
         )
       }
       if (
-        (mode === 'overwrite' &&
-          !addedIconNames.length &&
-          !removedIconNames.length) ||
-        (mode === 'override' && !addedIconNames.length)
+        (mode === 'overwrite'
+          && !addedIconNames.length
+          && !removedIconNames.length)
+          || (mode === 'override' && !addedIconNames.length)
       ) {
         consola.log(`${logPrefix} No icons changed`)
         continue
@@ -92,29 +91,29 @@ export function writeIconifyJSONs(
     fse.writeFileSync(
       pathe.join(composedOutputDir, `icons.html`),
       `
-<html>
-<style>
-svg {
-  width: 32px;
-  height: 32px;
-}
+        <html>
+        <style>
+        svg {
+          width: 32px;
+          height: 32px;
+        }
 
-svg:hover {
-  background: #ddd;
-  color: gray;
-}
-</style>
-<body>
-  ${writeIconSet
-    .list(['icon', 'variation', 'alias'])
-    .map((item) => {
-      const svgStr = writeIconSet.toSVG(item)?.toString()
-      return `<span title="${item}">${svgStr}</span>`
-    })
-    .join('\n  ')}
-</body>
-</html>
-`,
+        svg:hover {
+          background: #ddd;
+          color: gray;
+        }
+        </style>
+        <body>
+          ${writeIconSet
+              .list(['icon', 'variation', 'alias'])
+              .map((item) => {
+                const svgStr = writeIconSet.toSVG(item)?.toString()
+                return `<span title="${item}">${svgStr}</span>`
+              })
+              .join('\n  ')}
+        </body>
+        </html>
+      `,
     )
   }
 }

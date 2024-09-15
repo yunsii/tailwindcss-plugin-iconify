@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import { getDynamicCSSRules } from '../src/dynamic'
 
-describe('Testing dynamic CSS rules', () => {
-  it('One icon', () => {
+describe('testing dynamic CSS rules', () => {
+  it('one icon', () => {
     const data = getDynamicCSSRules('mdi-light--home')
     expect(typeof data['--svg']).toBe('string')
     expect(data).toEqual({
@@ -21,7 +21,7 @@ describe('Testing dynamic CSS rules', () => {
     })
   })
 
-  it('Only selectors that override icon', () => {
+  it('only selectors that override icon', () => {
     const data = getDynamicCSSRules('mdi-light--home', {
       overrideOnly: true,
     })
@@ -31,7 +31,7 @@ describe('Testing dynamic CSS rules', () => {
     })
   })
 
-  it('Missing icon', () => {
+  it('missing icon', () => {
     let threw = false
     try {
       getDynamicCSSRules('mdi-light--missing-icon-name')
@@ -41,7 +41,7 @@ describe('Testing dynamic CSS rules', () => {
     expect(threw).toBe(true)
   })
 
-  it('Bad icon name', () => {
+  it('bad icon name', () => {
     let threw = false
     try {
       getDynamicCSSRules('mdi-home')
@@ -51,7 +51,7 @@ describe('Testing dynamic CSS rules', () => {
     expect(threw).toBe(true)
   })
 
-  it('Bad icon set', () => {
+  it('bad icon set', () => {
     let threw = false
     try {
       getDynamicCSSRules('test123:home')

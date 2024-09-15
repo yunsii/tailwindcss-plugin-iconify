@@ -25,10 +25,10 @@ export function addDynamicIconSelectors(
     }),
     ...(Array.isArray(preprocessSets)
       ? preprocessSets.map((item) => {
-          return {
-            iconSetName: item,
-          }
-        })
+        return {
+          iconSetName: item,
+        }
+      })
       : []),
   ]
 

@@ -1,7 +1,7 @@
 import consola from 'consola'
 
-import { type WriteIconifyJSONsOptions, writeIconifyJSONs } from './write'
 import { type ImportFigmaIconSetOptions, importFigmaIconSets } from './import'
+import { writeIconifyJSONs, type WriteIconifyJSONsOptions } from './write'
 
 export interface LoadFigmaIconSetOptions {
   import: ImportFigmaIconSetOptions

@@ -1,6 +1,6 @@
+import consola from 'consola'
 import pathe from 'pathe'
 import { expect, it } from 'vitest'
-import consola from 'consola'
 
 import {
   importFigmaIconSets,
@@ -8,14 +8,14 @@ import {
 } from '../src/extensions/figma-icon-sets/node'
 
 it(
-  'Basic',
+  'basic',
   async () => {
     const iconSets = await importFigmaIconSets({
       files: [
         {
           // ref: https://www.figma.com/file/PMVacJLndw38SM0MNyRXTy/Untitled?type=design&node-id=0%3A1&mode=design&t=iCPCkoSBt6QNqlOk-1
           id: 'PMVacJLndw38SM0MNyRXTy',
-          nodeIds: ['0-1', '113-3'],
+          nodeIds: ['111-8', '113-3'],
           prefix: 'test',
         },
         {

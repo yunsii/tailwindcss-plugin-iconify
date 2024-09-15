@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import { getCSSRulesForIcons } from '../src/clean'
 
-describe('Testing clean CSS rules', () => {
-  it('One icon', () => {
+describe('testing clean CSS rules', () => {
+  it('one icon', () => {
     const data = getCSSRulesForIcons('mdi-light:home')
     expect(Object.keys(data)).toEqual([
       '.icon--mdi-light',
@@ -12,7 +12,7 @@ describe('Testing clean CSS rules', () => {
     expect(Object.keys(data['.icon--mdi-light--home'])).toEqual(['--svg'])
   })
 
-  it('Multiple icons from same icon set', () => {
+  it('multiple icons from same icon set', () => {
     const data = getCSSRulesForIcons([
       // By name
       'mdi-light:home',
@@ -33,7 +33,7 @@ describe('Testing clean CSS rules', () => {
     ])
   })
 
-  it('Multiple icon sets', () => {
+  it('multiple icon sets', () => {
     const data = getCSSRulesForIcons([
       // MDI Light
       'mdi-light:home',
@@ -48,7 +48,7 @@ describe('Testing clean CSS rules', () => {
     ])
   })
 
-  it('Bad class name', () => {
+  it('bad class name', () => {
     let threw = false
     try {
       getCSSRulesForIcons(['icon--mdi-light--home test'])
@@ -58,7 +58,7 @@ describe('Testing clean CSS rules', () => {
     expect(threw).toBe(true)
   })
 
-  it('Bad icon set', () => {
+  it('bad icon set', () => {
     let threw = false
     try {
       getCSSRulesForIcons('test123:home')

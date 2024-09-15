@@ -11,10 +11,10 @@ export function getIconNames(
   // Add entry
   const add = (prefix: string, name: string) => {
     if (
-      typeof prefix === 'string' &&
-      prefix.match(matchIconName) &&
-      typeof name === 'string' &&
-      name.match(matchIconName)
+      typeof prefix === 'string'
+      && prefix.match(matchIconName)
+      && typeof name === 'string'
+      && name.match(matchIconName)
     ) {
       ;(prefixes[prefix] || (prefixes[prefix] = new Set())).add(name)
     }
