@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.5.0
+
+### Minor Changes
+
+- ✨ feat: support aboutWrite callback
+
 ## 1.4.5
 
 ### Patch Changes
