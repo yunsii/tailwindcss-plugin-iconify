@@ -23,43 +23,53 @@ export function writeIconifyJSONs(
 ) {
   const { mode, outputDir } = options
 
-  for (const iconSet of iconSets) {
+  function getTargetIconsJsonPath(iconSet: IconSet) {
     const composedOutputDir = pathe.normalize(
       pathe.join(outputDir, iconSet.prefix),
     )
     fse.ensureDirSync(composedOutputDir)
 
     const targetIconsJsonPath = pathe.join(composedOutputDir, `icons.json`)
+    return { targetIconsJsonPath, targetIconsJsonDir: composedOutputDir }
+  }
 
+  const writableIconSets = iconSets.map((iconSet) => {
+    const { targetIconsJsonPath, targetIconsJsonDir } = getTargetIconsJsonPath(iconSet)
     const prevIconSet = loadIconifyJsonPath(targetIconsJsonPath)
-
-    const prevIconNames: string[] = []
-    prevIconSet?.forEach((name) => {
-      prevIconNames.push(name)
-    })
 
     const addedIconNames: string[] = []
     iconSet.forEach((name) => {
-      if (!prevIconNames.includes(name)) {
+      if (!prevIconSet?.exists(name)) {
         addedIconNames.push(name)
       }
     })
 
     const removedIconNames: string[] = []
-    prevIconNames.forEach((name) => {
+    prevIconSet?.forEach((name) => {
       if (!iconSet.exists(name)) {
         removedIconNames.push(name)
       }
     })
-
-    const logPrefix = `[write-icon-set][${iconSet.prefix}]`
 
     const writeIconSet: IconSet
       = mode === 'override' && prevIconSet
         ? mergeIconSets(prevIconSet, iconSet)
         : iconSet
 
-    if (!prevIconNames) {
+    return {
+      prevIconSet,
+      writeIconSet,
+      addedIconNames,
+      removedIconNames,
+      targetIconsJsonDir,
+      targetIconsJsonPath,
+    }
+  })
+
+  for (const { prevIconSet, writeIconSet, addedIconNames, removedIconNames, targetIconsJsonDir, targetIconsJsonPath } of writableIconSets) {
+    const logPrefix = `[write-icon-set][${writeIconSet.prefix}]`
+
+    if (!prevIconSet) {
       consola.success(
         `${logPrefix} Initialize with ${writeIconSet.count()} icons`,
       )
@@ -89,7 +99,7 @@ export function writeIconifyJSONs(
       spaces: 2,
     })
     fse.writeFileSync(
-      pathe.join(composedOutputDir, `icons.html`),
+      pathe.join(targetIconsJsonDir, `icons.html`),
       `
         <html>
         <style>
