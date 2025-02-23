@@ -1,6 +1,9 @@
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 
 import type { IconifyJSON } from '@iconify/types'
+
+const require = createRequire(import.meta.url)
 
 /**
  * Callback for loading icon set
