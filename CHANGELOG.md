@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.5.1
+
+### Patch Changes
+
+- 🐛 fix: create require
+
 ## 1.5.0
 
 ### Minor Changes
