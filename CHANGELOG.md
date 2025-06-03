@@ -1,5 +1,11 @@
 # tailwindcss-plugin-iconify
 
+## 1.5.2
+
+### Patch Changes
+
+- 🐛 fix: support staticIconNames for custom iconSets
+
 ## 1.5.1
 
 ### Patch Changes
