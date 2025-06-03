@@ -17,45 +17,43 @@ export function addDynamicIconSelectors(
 ) {
   const { prefix = 'icon', preprocessSets = [], iconSets = {} } = options
 
-  const mergedPreprocessSets = [
-    ...Object.keys(iconSets).map((item) => {
-      return {
-        iconSetName: item,
-      }
-    }),
-    ...(Array.isArray(preprocessSets)
-      ? preprocessSets.map((item) => {
-        return {
-          iconSetName: item,
-        }
-      })
-      : []),
-  ]
-
   let iconStyles: Record<string, Record<string, string>> = {}
-  mergedPreprocessSets.forEach((item) => {
-    const iconSetIconStyles = getIconSetIconStyles(item.iconSetName, {
+
+  const mergedStaticIconNames: Record<string, string[] | '*' | null> = {
+    // Load all icon styles for custom iconSets by default
+    ...(Object.keys(iconSets).reduce(
+      (acc, iconSetName) => {
+        return {
+          ...acc,
+          [iconSetName]: '*',
+        }
+      },
+      {},
+    )),
+    ...(Array.isArray(preprocessSets)
+      ? preprocessSets.reduce(
+        (acc, item) => {
+          return {
+            ...acc,
+            [item]: '*',
+          }
+        },
+        {},
+      )
+      : preprocessSets),
+  }
+
+  Object.keys(mergedStaticIconNames).forEach((iconSetName) => {
+    const staticIconNames = mergedStaticIconNames[iconSetName]
+    const iconSetIconStyles = getIconSetIconStyles(iconSetName, {
       pluginOptions: options,
+      staticIconNames,
     })
     iconStyles = {
       ...iconStyles,
       ...iconSetIconStyles,
     }
   })
-  if (!Array.isArray(preprocessSets)) {
-    Object.keys(preprocessSets).forEach((iconSetName) => {
-      const staticIconNames = preprocessSets[iconSetName]
-      const iconSetIconStyles = getIconSetIconStyles(iconSetName, {
-        pluginOptions: options,
-        staticIconNames:
-          typeof staticIconNames === 'string' ? null : staticIconNames,
-      })
-      iconStyles = {
-        ...iconStyles,
-        ...iconSetIconStyles,
-      }
-    })
-  }
 
   return plugin(({ matchComponents }) => {
     matchComponents(

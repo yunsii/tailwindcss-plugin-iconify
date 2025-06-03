@@ -109,21 +109,26 @@ export function optimizeIconSet(
 
 export interface GetIconSetIconStylesOptions {
   pluginOptions: DynamicIconifyPluginOptions
-  staticIconNames?: string[] | null
+  /** Export all icon styles by default */
+  staticIconNames?: string[] | '*' | null
 }
 
 export function getIconSetIconStyles(
   iconSetName: string,
   options: GetIconSetIconStylesOptions,
 ) {
-  const { pluginOptions, staticIconNames } = options
+  const { pluginOptions, staticIconNames = '*' } = options
 
   const values: Record<string, Record<string, string>> = {}
   const iconSetJson = ensureLoadIconSet(iconSetName, pluginOptions)
   const iconSet = new IconSet(iconSetJson)
 
+  if (!staticIconNames) {
+    return values
+  }
+
   iconSet.forEach((name) => {
-    if (staticIconNames && !staticIconNames.includes(name)) {
+    if (Array.isArray(staticIconNames) && !staticIconNames.includes(name)) {
       return
     }
 
