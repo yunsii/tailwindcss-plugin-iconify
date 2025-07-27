@@ -1,5 +1,3 @@
-import consola from 'consola'
-
 import type { FigmaImportNodeData } from '@iconify/tools/lib/import/figma/types/nodes'
 
 import { COLORED_POSTFIX } from '../../../../helpers/icon-set'
@@ -47,10 +45,8 @@ export function iconNameForNode(
         )
       })
     ) {
-      consola.log('colored icon', node.name)
       return `${newName}${COLORED_POSTFIX}`
     }
-    consola.log('icon', node.name)
     return newName
   }
 }
