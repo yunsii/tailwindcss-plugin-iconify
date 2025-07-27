@@ -9,6 +9,7 @@ import type {
   DynamicIconifyPluginOptions,
 } from './options'
 
+import 'tailwindcss/types/config'
 /**
  * Generate styles for dynamic selector: class="icon-[mdi-light--home]"
  */

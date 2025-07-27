@@ -77,7 +77,7 @@ export async function importFigmaFile(
     token,
     cacheDir: cache ? `.figma-cache/${prefix}` : undefined,
     ...cacheOptions,
-    iconNameForNode: (node: any) => iconNameForNode(node, { prefix, preserveColorsGroup }),
+    iconNameForNode: (node) => iconNameForNode(node, { prefix, preserveColorsGroup }),
   })
 
   if (typeof result === 'string') {

@@ -1,5 +1,7 @@
 import consola from 'consola'
 
+import type { FigmaImportNodeData } from '@iconify/tools/lib/import/figma/types/nodes'
+
 import { COLORED_POSTFIX } from '../../../../helpers/icon-set'
 
 export interface ProcessNodeOptions {
@@ -12,7 +14,7 @@ export interface ProcessNodeOptions {
  * Support node type: 'FRAME' | 'COMPONENT' | 'INSTANCE'
  */
 export function iconNameForNode(
-  node: any,
+  node: FigmaImportNodeData,
   options: ProcessNodeOptions,
 ): string | undefined {
   const { prefix, preserveColorsGroup } = options

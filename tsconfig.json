@@ -4,7 +4,6 @@
     "jsx": "react",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "useDefineForClassFields": true,
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
@@ -16,6 +15,7 @@
     "allowJs": false,
     "strict": true,
     "declaration": true,
+    "declarationMap": true,
     "noEmit": true,
     "outDir": "./dist",
     "allowSyntheticDefaultImports": true,

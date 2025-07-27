@@ -2,7 +2,7 @@
   "name": "tailwindcss-plugin-iconify",
   "type": "module",
   "version": "1.5.2",
-  "packageManager": "pnpm@9.10.0",
+  "packageManager": "pnpm@10.13.1",
   "description": "Use any SVG icon powered by Iconify for Tailwind CSS, easy to use local icons and figma icons in particular.",
   "author": "Yuns <yuns.xie@qq.com>",
   "license": "MIT",
@@ -63,7 +63,9 @@
     "lint:fix": "eslint --flag unstable_ts_config --fix .",
     "test": "vitest --config vite.lib.config.ts",
     "test:ui": "vitest --config vite.lib.config.ts --ui",
-    "coverage": "vitest run --config vite.lib.config.ts --coverage"
+    "coverage": "vitest run --config vite.lib.config.ts --coverage",
+    "typecheck": "tsc --noEmit",
+    "typecheck:preview": "tsgo --noEmit"
   },
   "peerDependencies": {
     "tailwindcss": ">=3"
@@ -96,6 +98,8 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@types/react-test-renderer": "^18.3.0",
+    "@typescript/native-preview": "7.0.0-dev.20250726.1",
+    "@typescript/native-preview-linux-x64": "7.0.0-dev.20250726.1",
     "@vitejs/plugin-react": "^4.3.1",
     "@vitest/coverage-v8": "^2.1.1",
     "@vitest/ui": "^2.1.1",
