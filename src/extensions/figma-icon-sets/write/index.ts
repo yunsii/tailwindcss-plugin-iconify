@@ -77,12 +77,12 @@ export function writeIconifyJSONs(
     } else {
       if (addedIconNames.length) {
         consola.success(
-          `${logPrefix} Added icons:\n${addedIconNames.join('\n')}`,
+          `${logPrefix} Added icons:\n${addedIconNames.join(', ')}`,
         )
       }
       if (mode === 'overwrite' && removedIconNames.length) {
         consola.warn(
-          `${logPrefix} Removed icons:\n${removedIconNames.join('\n')}`,
+          `${logPrefix} Removed icons:\n${removedIconNames.join(', ')}`,
         )
       }
       if (
