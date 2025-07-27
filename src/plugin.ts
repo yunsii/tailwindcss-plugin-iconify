@@ -9,7 +9,8 @@ import type {
   DynamicIconifyPluginOptions,
 } from './options'
 
-import 'tailwindcss/types/config'
+export { optimizeIconSet } from './helpers/icon-set'
+
 /**
  * Generate styles for dynamic selector: class="icon-[mdi-light--home]"
  */
@@ -91,4 +92,4 @@ export function addCleanIconSelectors(
  */
 export type { CleanIconifyPluginOptions, DynamicIconifyPluginOptions }
 
-export { optimizeIconSet } from './helpers/icon-set'
+export type * as TwConfig from 'tailwindcss/types/config'
