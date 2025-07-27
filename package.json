@@ -1,7 +1,7 @@
 {
   "name": "tailwindcss-plugin-iconify",
   "type": "module",
-  "version": "1.5.2",
+  "version": "2.0.0",
   "packageManager": "pnpm@10.13.1",
   "description": "Use any SVG icon powered by Iconify for Tailwind CSS, easy to use local icons and figma icons in particular.",
   "author": "Yuns <yuns.xie@qq.com>",

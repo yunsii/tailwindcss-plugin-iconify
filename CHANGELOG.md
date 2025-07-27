@@ -1,5 +1,12 @@
 # tailwindcss-plugin-iconify
 
+## 2.0.0
+
+### Major Changes
+
+- Restructured file organization
+- Use incremental-update mode by default
+
 ## 1.5.2
 
 ### Patch Changes
