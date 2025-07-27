@@ -1,5 +1,4 @@
-import consola from 'consola'
-
+import { logger } from './helpers/logger'
 import { type ImportFigmaIconSetOptions, importFigmaIconSets } from './import'
 import { writeIconifyJSONs, type WriteIconifyJSONsOptions } from './write'
 
@@ -14,7 +13,7 @@ export async function loadFigmaIconSets(options: LoadFigmaIconSetOptions) {
 
   const iconSets = await importFigmaIconSets(importOptions)
   iconSets.forEach((iconSet) => {
-    consola.log('Found', iconSet.prefix, iconSet.count(), 'icons')
+    logger.log('Found', iconSet.prefix, iconSet.count(), 'icons')
   })
 
   writeIconifyJSONs(iconSets, writeOptions)

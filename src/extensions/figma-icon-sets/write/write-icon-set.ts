@@ -1,8 +1,9 @@
-import consola from 'consola'
 import fse from 'fs-extra'
 import pathe from 'pathe'
 
 import type { IconSet } from '@iconify/tools'
+
+import { logger } from '../helpers/logger'
 
 import type { CalcWritableIconSetBaseOptions } from './writable-icon-set'
 
@@ -20,17 +21,17 @@ export function writeIconSet(options: WriteIconSetOptions): boolean {
   const logPrefix = `[write-icon-set][${writeIconSet.prefix}]`
 
   if (!prevIconSet) {
-    consola.success(
+    logger.success(
       `${logPrefix} Initialize with ${writeIconSet.count()} icons`,
     )
   } else {
     if (addedIconNames.length) {
-      consola.success(
+      logger.success(
         `${logPrefix} Added icons:\n${addedIconNames.join(', ')}`,
       )
     }
     if (mode === 'full-update' && removedIconNames.length) {
-      consola.warn(
+      logger.warn(
         `${logPrefix} Removed icons:\n${removedIconNames.join(', ')}`,
       )
     }
@@ -40,7 +41,7 @@ export function writeIconSet(options: WriteIconSetOptions): boolean {
         && !removedIconNames.length)
         || (mode === 'incremental-update' && !addedIconNames.length)
     ) {
-      consola.log(`${logPrefix} No icons changed`)
+      logger.log(`${logPrefix} No icons changed`)
       return false
     }
   }

@@ -1,8 +1,8 @@
 import { mergeIconSets } from '@iconify/tools'
-import consola from 'consola'
 
 import type { IconSet } from '@iconify/tools'
 
+import { logger } from '../helpers/logger'
 import { importFigmaFile } from './import-from-figma'
 
 import type { FigmaIconifyFile, ImportFigmaFileOptions } from './import-from-figma'
@@ -41,11 +41,11 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
 
   for (const [index, item] of iconSetsResult.entries()) {
     if (item === 'not_modified') {
-      consola.log(`file id: ${figmaFiles[index].id} not modified.`)
+      logger.log(`file id: ${figmaFiles[index].id} not modified.`)
       continue
     }
     okIconSets.push(item)
-    consola.log(`file id: ${figmaFiles[index].id} import success.`)
+    logger.log(`file id: ${figmaFiles[index].id} import success.`)
   }
 
   const iconSetsMap = okIconSets.reduce((previous, current) => {
@@ -75,7 +75,7 @@ export async function importFigmaIconSets(options: ImportFigmaIconSetOptions) {
   })
 
   if (mergedIconSets.length !== okIconSets.length) {
-    consola.log(
+    logger.log(
       `Merged icon sets from ${okIconSets.length} to ${mergedIconSets.length}`,
     )
   }
