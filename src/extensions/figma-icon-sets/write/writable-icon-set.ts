@@ -18,12 +18,12 @@ export function getTargetIconsJsonPath(iconSet: IconSet, outputDir: string) {
 export interface CalcWritableIconSetBaseOptions {
   outputDir: string
   /**
-   * write mode, default 'overwrite'
+   * write mode, default 'incremental-update'
    *
-   * - overwrite, write icon sets directly
-   * - override, merge new icon sets to local icon sets
+   * - full-update, write icon sets directly (overwrite all icons)
+   * - incremental-update, merge new icon sets to local icon sets (no deletion allowed)
    */
-  mode?: 'overwrite' | 'override'
+  mode?: 'full-update' | 'incremental-update'
 }
 
 export interface CalcWritableIconSetOptions extends CalcWritableIconSetBaseOptions {
@@ -33,7 +33,7 @@ export interface CalcWritableIconSetOptions extends CalcWritableIconSetBaseOptio
 export function calcWritableIconSet(
   options: CalcWritableIconSetOptions,
 ) {
-  const { iconSet, outputDir, mode = 'overwrite' } = options
+  const { iconSet, outputDir, mode = 'incremental-update' } = options
   const { targetIconsJsonPath, targetIconsJsonDir } = getTargetIconsJsonPath(iconSet, outputDir)
   const prevIconSet = loadIconifyJsonPath(targetIconsJsonPath)
 
@@ -51,8 +51,15 @@ export function calcWritableIconSet(
     }
   })
 
+  // In incremental-update mode, throw error if there are icons to be removed
+  if (mode === 'incremental-update' && removedIconNames.length > 0) {
+    throw new Error(
+      `Cannot remove icons in incremental-update mode. Icons to be removed: ${removedIconNames.join(', ')}. Use full-update mode if you want to remove icons.`,
+    )
+  }
+
   const writeIconSet: IconSet
-    = mode === 'override' && prevIconSet
+    = mode === 'incremental-update' && prevIconSet
       ? mergeIconSets(prevIconSet, iconSet)
       : iconSet
 

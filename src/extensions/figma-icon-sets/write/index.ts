@@ -13,7 +13,7 @@ export function writeIconifyJSONs(
   iconSets: IconSet[],
   options: WriteIconifyJSONsOptions,
 ) {
-  const { mode, outputDir, afterWrite } = options
+  const { mode = 'incremental-update', outputDir, afterWrite } = options
 
   const writableIconSets = iconSets.map((iconSet) => {
     return calcWritableIconSet({ iconSet, outputDir, mode })
@@ -22,7 +22,7 @@ export function writeIconifyJSONs(
   for (const writableIconSetData of writableIconSets) {
     const hasChanges = writeIconSet({
       ...writableIconSetData,
-      mode: mode || 'overwrite',
+      mode,
     })
 
     if (!hasChanges) {

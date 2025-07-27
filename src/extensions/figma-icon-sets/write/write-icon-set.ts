@@ -4,14 +4,15 @@ import pathe from 'pathe'
 
 import type { IconSet } from '@iconify/tools'
 
-export interface WriteIconSetOptions {
+import type { CalcWritableIconSetBaseOptions } from './writable-icon-set'
+
+export interface WriteIconSetOptions extends Pick<CalcWritableIconSetBaseOptions, 'mode'> {
   prevIconSet: IconSet | null
   writeIconSet: IconSet
   addedIconNames: string[]
   removedIconNames: string[]
   targetIconsJsonDir: string
   targetIconsJsonPath: string
-  mode: 'overwrite' | 'override'
 }
 
 export function writeIconSet(options: WriteIconSetOptions): boolean {
@@ -28,16 +29,16 @@ export function writeIconSet(options: WriteIconSetOptions): boolean {
         `${logPrefix} Added icons:\n${addedIconNames.join(', ')}`,
       )
     }
-    if (mode === 'overwrite' && removedIconNames.length) {
+    if (mode === 'full-update' && removedIconNames.length) {
       consola.warn(
         `${logPrefix} Removed icons:\n${removedIconNames.join(', ')}`,
       )
     }
     if (
-      (mode === 'overwrite'
+      (mode === 'full-update'
         && !addedIconNames.length
         && !removedIconNames.length)
-        || (mode === 'override' && !addedIconNames.length)
+        || (mode === 'incremental-update' && !addedIconNames.length)
     ) {
       consola.log(`${logPrefix} No icons changed`)
       return false
