@@ -3,9 +3,9 @@ import pathe from 'pathe'
 
 import type { IconSet } from '@iconify/tools'
 
-import { logger } from '../helpers/logger'
-
 import type { CalcWritableIconSetBaseOptions } from './writable-icon-set'
+
+export type WriteIconSetStatus = 'initialized' | 'updated' | 'unchanged'
 
 export interface WriteIconSetOptions extends Pick<CalcWritableIconSetBaseOptions, 'mode'> {
   prevIconSet: IconSet | null
@@ -16,34 +16,33 @@ export interface WriteIconSetOptions extends Pick<CalcWritableIconSetBaseOptions
   targetIconsJsonPath: string
 }
 
-export function writeIconSet(options: WriteIconSetOptions): boolean {
-  const { prevIconSet, writeIconSet, addedIconNames, removedIconNames, targetIconsJsonDir, targetIconsJsonPath, mode } = options
-  const logPrefix = `[write-icon-set][${writeIconSet.prefix}]`
+export interface WriteIconSetResult {
+  prefix: string
+  status: WriteIconSetStatus
+  total: number
+  addedIconNames: string[]
+  removedIconNames: string[]
+}
 
-  if (!prevIconSet) {
-    logger.success(
-      `${logPrefix} Initialize with ${writeIconSet.count()} icons`,
-    )
-  } else {
-    if (addedIconNames.length) {
-      logger.success(
-        `${logPrefix} Added icons:\n${addedIconNames.join(', ')}`,
-      )
-    }
-    if (mode === 'full-update' && removedIconNames.length) {
-      logger.warn(
-        `${logPrefix} Removed icons:\n${removedIconNames.join(', ')}`,
-      )
-    }
-    if (
-      (mode === 'full-update'
-        && !addedIconNames.length
-        && !removedIconNames.length)
-        || (mode === 'incremental-update' && !addedIconNames.length)
-    ) {
-      logger.log(`${logPrefix} No icons changed`)
-      return false
-    }
+export function writeIconSet(options: WriteIconSetOptions): WriteIconSetResult {
+  const { prevIconSet, writeIconSet, addedIconNames, removedIconNames, targetIconsJsonDir, targetIconsJsonPath, mode } = options
+
+  const result: Omit<WriteIconSetResult, 'status'> = {
+    prefix: writeIconSet.prefix,
+    total: writeIconSet.count(),
+    addedIconNames,
+    removedIconNames,
+  }
+
+  const unchanged
+    = !!prevIconSet
+    && ((mode === 'full-update'
+      && !addedIconNames.length
+      && !removedIconNames.length)
+      || (mode === 'incremental-update' && !addedIconNames.length))
+
+  if (unchanged) {
+    return { ...result, status: 'unchanged' }
   }
 
   fse.writeJsonSync(targetIconsJsonPath, writeIconSet.export(), {
@@ -82,5 +81,5 @@ export function writeIconSet(options: WriteIconSetOptions): boolean {
     htmlContent,
   )
 
-  return true
+  return { ...result, status: prevIconSet ? 'updated' : 'initialized' }
 }
