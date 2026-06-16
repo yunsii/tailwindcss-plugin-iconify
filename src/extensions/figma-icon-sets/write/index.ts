@@ -108,7 +108,7 @@ function printWriteSummary(
     ].join('\n')
 
     logger.box({
-      title: '⚠️  ICONS DELETED',
+      title: 'ICONS DELETED',
       message,
       style: {
         borderColor: 'red',
