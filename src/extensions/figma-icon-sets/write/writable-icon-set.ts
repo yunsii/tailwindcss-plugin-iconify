@@ -37,6 +37,23 @@ export function calcWritableIconSet(
   const { targetIconsJsonPath, targetIconsJsonDir } = getTargetIconsJsonPath(iconSet, outputDir)
   const prevIconSet = loadIconifyJsonPath(targetIconsJsonPath)
 
+  // `loadIconifyJsonPath` returns null both when the local file is missing and
+  // when it exists but fails to load. In incremental-update mode the latter must
+  // not be treated as a fresh initialization: writing the imported set directly
+  // would overwrite the existing file and drop any icons it still contains.
+  // Only a genuinely missing local file may initialize; otherwise fail loudly.
+  if (
+    mode === 'incremental-update'
+    && !prevIconSet
+    && fse.existsSync(targetIconsJsonPath)
+  ) {
+    throw new Error(
+      `Local icon set "${targetIconsJsonPath}" exists but could not be loaded. `
+      + `Refusing to overwrite it in incremental-update mode to avoid losing icons. `
+      + `Fix or remove the file, or use full-update mode.`,
+    )
+  }
+
   const addedIconNames: string[] = []
   iconSet.forEach((name) => {
     if (!prevIconSet?.exists(name)) {
