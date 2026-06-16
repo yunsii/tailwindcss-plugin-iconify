@@ -65,7 +65,9 @@
     "test:ui": "vitest --config vite.lib.config.ts --ui",
     "coverage": "vitest run --config vite.lib.config.ts --coverage",
     "typecheck": "tsc --noEmit",
-    "typecheck:preview": "tsgo --noEmit"
+    "typecheck:preview": "tsgo --noEmit",
+    "changeset": "changeset",
+    "changeset:publish": "changeset publish"
   },
   "peerDependencies": {
     "tailwindcss": ">=3"
