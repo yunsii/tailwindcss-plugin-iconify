@@ -1,5 +1,15 @@
 # tailwindcss-plugin-iconify
 
+## 2.1.0
+
+### Minor Changes
+
+- 9b54de5: ✨ feat: report icon set changes (added / updated / removed) in a write summary table, and detect content-updated icons
+
+### Patch Changes
+
+- 9b54de5: 🐛 fix: avoid incremental-update overwriting an unloadable local icon set; no longer silently skip content-only icon updates
+
 ## 2.0.0
 
 ### Major Changes
