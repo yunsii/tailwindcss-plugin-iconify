@@ -46,25 +46,47 @@ function printWriteSummary(
     return
   }
 
+  // `full-update` is the only mode that can remove icons (incremental-update
+  // throws on removal), so only show the Removed column when it is meaningful.
+  const showRemoved = mode === 'full-update'
+
+  const headers = ['Prefix', 'Status', 'Total', 'Added', 'Updated']
+  if (showRemoved) {
+    headers.push('Removed')
+  }
+
   const table = renderTable(
-    ['Prefix', 'Status', 'Total', 'Added', 'Removed'],
-    results.map((result) => [
-      result.prefix,
-      STATUS_LABEL[result.status],
-      String(result.total),
-      result.addedIconNames.length ? `+${result.addedIconNames.length}` : '0',
-      result.removedIconNames.length ? `-${result.removedIconNames.length}` : '0',
-    ]),
+    headers,
+    results.map((result) => {
+      const row = [
+        result.prefix,
+        STATUS_LABEL[result.status],
+        String(result.total),
+        result.addedIconNames.length ? `+${result.addedIconNames.length}` : '0',
+        result.updatedIconNames.length ? `~${result.updatedIconNames.length}` : '0',
+      ]
+      if (showRemoved) {
+        row.push(
+          result.removedIconNames.length ? `-${result.removedIconNames.length}` : '0',
+        )
+      }
+      return row
+    }),
   )
 
   logger.log(`Icon sets write summary (mode: ${mode})\n${table}`)
 
-  // Detailed list of newly added icons, kept separate from the table so long
-  // name lists do not break column alignment.
+  // Detailed per-icon changes, kept separate from the table so long name lists
+  // do not break column alignment.
   for (const result of results) {
     if (result.addedIconNames.length) {
       logger.success(
         `[${result.prefix}] +${result.addedIconNames.length} added: ${result.addedIconNames.join(', ')}`,
+      )
+    }
+    if (result.updatedIconNames.length) {
+      logger.info(
+        `[${result.prefix}] ~${result.updatedIconNames.length} updated: ${result.updatedIconNames.join(', ')}`,
       )
     }
   }

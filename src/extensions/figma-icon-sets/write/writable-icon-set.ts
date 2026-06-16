@@ -55,9 +55,13 @@ export function calcWritableIconSet(
   }
 
   const addedIconNames: string[] = []
+  const updatedIconNames: string[] = []
   iconSet.forEach((name) => {
     if (!prevIconSet?.exists(name)) {
       addedIconNames.push(name)
+    } else if (isIconContentChanged(prevIconSet, iconSet, name)) {
+      // Icon exists in both sets but its resolved content differs.
+      updatedIconNames.push(name)
     }
   })
 
@@ -84,8 +88,24 @@ export function calcWritableIconSet(
     prevIconSet,
     writeIconSet,
     addedIconNames,
+    updatedIconNames,
     removedIconNames,
     targetIconsJsonDir,
     targetIconsJsonPath,
   }
+}
+
+/**
+ * Whether an icon present in both sets changed its resolved content (body /
+ * dimensions). Both sets go through the same optimize pipeline, so a stable
+ * source resolves identically and only real edits are reported.
+ */
+function isIconContentChanged(
+  prevIconSet: IconSet,
+  nextIconSet: IconSet,
+  name: string,
+) {
+  const prevResolved = prevIconSet.resolve(name, true)
+  const nextResolved = nextIconSet.resolve(name, true)
+  return JSON.stringify(prevResolved) !== JSON.stringify(nextResolved)
 }

@@ -11,6 +11,7 @@ export interface WriteIconSetOptions extends Pick<CalcWritableIconSetBaseOptions
   prevIconSet: IconSet | null
   writeIconSet: IconSet
   addedIconNames: string[]
+  updatedIconNames: string[]
   removedIconNames: string[]
   targetIconsJsonDir: string
   targetIconsJsonPath: string
@@ -21,25 +22,26 @@ export interface WriteIconSetResult {
   status: WriteIconSetStatus
   total: number
   addedIconNames: string[]
+  updatedIconNames: string[]
   removedIconNames: string[]
 }
 
 export function writeIconSet(options: WriteIconSetOptions): WriteIconSetResult {
-  const { prevIconSet, writeIconSet, addedIconNames, removedIconNames, targetIconsJsonDir, targetIconsJsonPath, mode } = options
+  const { prevIconSet, writeIconSet, addedIconNames, updatedIconNames, removedIconNames, targetIconsJsonDir, targetIconsJsonPath, mode } = options
 
   const result: Omit<WriteIconSetResult, 'status'> = {
     prefix: writeIconSet.prefix,
     total: writeIconSet.count(),
     addedIconNames,
+    updatedIconNames,
     removedIconNames,
   }
 
   const unchanged
     = !!prevIconSet
-    && ((mode === 'full-update'
-      && !addedIconNames.length
-      && !removedIconNames.length)
-      || (mode === 'incremental-update' && !addedIconNames.length))
+    && !addedIconNames.length
+    && !updatedIconNames.length
+    && (mode === 'incremental-update' || !removedIconNames.length)
 
   if (unchanged) {
     return { ...result, status: 'unchanged' }
