@@ -8,6 +8,7 @@ export default defineIconcatPackageConfig({
   dirname,
   entries: [
     'src/index.ts',
+    'src/rolldown.ts',
     'src/vite.ts',
   ],
   alias: {
