@@ -12,6 +12,7 @@ export interface IconcatChunkGraphNode {
   entryFile?: string | null
   imports?: string[]
   dynamicImports?: string[]
+  moduleDeps?: Record<string, string[]>
   modules: string[]
 }
 
@@ -42,6 +43,7 @@ export async function buildIconcatBundleFromGraph(
     modules: Array.from(modules.entries()).map(([file, code]) => ({
       file,
       code,
+      deps: graph.moduleDeps[file] || [],
     })),
   }
 }
@@ -50,12 +52,14 @@ export function traverseIconcatChunkGraph(
   options: BuildIconcatBundleFromGraphOptions,
 ): {
   entries: IconcatEntry[]
+  moduleDeps: Record<string, string[]>
   modules: string[]
 } {
   const chunkByFileName = new Map(
     options.chunks.map((chunk) => [chunk.fileName, chunk]),
   )
   const modules = new Set<string>()
+  const moduleDeps = new Map<string, Set<string>>()
   const entries: IconcatEntry[] = []
   const shouldCollectModule = options.shouldCollectModule || isCollectableModuleId
 
@@ -76,6 +80,22 @@ export function traverseIconcatChunkGraph(
       modules.add(file)
     })
 
+    collectChunkModuleDeps(chunk, chunkByFileName).forEach(([id, deps]) => {
+      if (!shouldCollectModule(id)) {
+        return
+      }
+
+      const file = normalizeFile(id, options.cwd)
+      const bucket = moduleDeps.get(file) || new Set<string>()
+      moduleDeps.set(file, bucket)
+
+      deps.forEach((dep) => {
+        if (shouldCollectModule(dep)) {
+          bucket.add(normalizeFile(dep, options.cwd))
+        }
+      })
+    })
+
     const file = normalizeFile(chunk.entryFile, options.cwd)
     entries.push({
       name: file,
@@ -86,6 +106,11 @@ export function traverseIconcatChunkGraph(
 
   return {
     entries: entries.sort((a, b) => a.file.localeCompare(b.file)),
+    moduleDeps: Object.fromEntries(
+      Array.from(moduleDeps.entries())
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([file, deps]) => [file, Array.from(deps).sort()]),
+    ),
     modules: Array.from(modules).sort(),
   }
 }
@@ -115,6 +140,25 @@ function collectChunkModuleIds(
     ...[...(chunk.imports || []), ...(chunk.dynamicImports || [])].flatMap((fileName) => {
       const imported = chunkByFileName.get(fileName)
       return imported ? collectChunkModuleIds(imported, chunkByFileName, seen) : []
+    }),
+  ]
+}
+
+function collectChunkModuleDeps(
+  chunk: IconcatChunkGraphNode,
+  chunkByFileName: Map<string, IconcatChunkGraphNode>,
+  seen = new Set<string>(),
+): Array<[string, string[]]> {
+  if (seen.has(chunk.fileName)) {
+    return []
+  }
+  seen.add(chunk.fileName)
+
+  return [
+    ...Object.entries(chunk.moduleDeps || {}),
+    ...[...(chunk.imports || []), ...(chunk.dynamicImports || [])].flatMap((fileName) => {
+      const imported = chunkByFileName.get(fileName)
+      return imported ? collectChunkModuleDeps(imported, chunkByFileName, seen) : []
     }),
   ]
 }

@@ -9,6 +9,7 @@
     "build:docs": "turbo run build:docs --filter=@iconcat/tailwind",
     "bench:extractor": "pnpm --filter @iconcat/extractor run bench",
     "bench:extractor:memory": "pnpm --filter @iconcat/extractor run bench:memory",
+    "bench:extractor:persistent": "pnpm --filter @iconcat/extractor run bench:persistent",
     "dev": "pnpm --filter @iconcat/tailwind run dev",
     "dev:iconcat": "node scripts/dev/start.mjs",
     "lint": "eslint .",

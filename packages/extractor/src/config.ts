@@ -54,6 +54,7 @@ export interface IconcatEntry {
 export interface IconcatModule {
   file: string
   code: string
+  deps?: string[]
 }
 
 export interface IconcatBundleCacheInput {
@@ -89,6 +90,7 @@ export interface IconcatExtractionCache {
     input: IconcatModuleCacheInput,
     value: IconcatModuleCacheValue,
   ) => Promise<void> | void
+  flush?: () => Promise<void> | void
 }
 
 export interface ExtractIconCatalogResult {

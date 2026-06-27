@@ -42,4 +42,10 @@ export type {
   BuildIconcatBundleFromGraphOptions,
   IconcatChunkGraphNode,
 } from './graph'
+export { createPersistentIconcatExtractionCache } from './persistent-cache'
+export type {
+  PersistentIconcatExtractionCache,
+  PersistentIconcatExtractionCacheOptions,
+  PersistentIconcatExtractionCacheStats,
+} from './persistent-cache'
 export { extractSourceIcons } from './source'

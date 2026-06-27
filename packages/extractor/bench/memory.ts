@@ -7,6 +7,7 @@ import { resolve } from 'pathe'
 import {
   createEsbuildBundler,
   createMemoryIconcatExtractionCache,
+  createPersistentIconcatExtractionCache,
   extractIconCatalog,
 } from '../src'
 import { createRolldownBundler } from '../src/rolldown'
@@ -19,12 +20,14 @@ import {
 
 import type {
   IconcatBundler,
-  MemoryIconcatExtractionCache,
+  IconcatExtractionCache,
 } from '../src'
+
+type MemoryMode = 'cold' | 'cache-prime' | 'warm-cache' | 'persistent-warm'
 
 interface MemorySample {
   bundler: string
-  mode: string
+  mode: MemoryMode
   heapDelta: number
   rssDelta: number
   cachePayload: number
@@ -47,6 +50,7 @@ async function main() {
     samples.push(await measure(bundler, 'cold'))
     samples.push(await measure(bundler, 'cache-prime'))
     samples.push(await measure(bundler, 'warm-cache'))
+    samples.push(await measure(bundler, 'persistent-warm'))
   }
 
   await rm(root, { recursive: true, force: true })
@@ -55,17 +59,18 @@ async function main() {
 
 async function measure(
   bundler: IconcatBundler,
-  mode: 'cold' | 'cache-prime' | 'warm-cache',
+  mode: MemoryMode,
 ): Promise<MemorySample> {
   const cwd = resolve(root, `${bundler.name}-${mode}`)
-  const cache = mode === 'cold'
-    ? undefined
-    : createMemoryIconcatExtractionCache()
+  const cache = await createCache(cwd, mode)
 
   await rm(cwd, { recursive: true, force: true })
   await writeScenario(cwd, scenario)
 
   if (mode === 'warm-cache') {
+    await runExtraction(cwd, bundler, cache)
+  }
+  if (mode === 'persistent-warm') {
     await runExtraction(cwd, bundler, cache)
   }
 
@@ -92,7 +97,7 @@ async function measure(
 async function runExtraction(
   cwd: string,
   bundler: IconcatBundler,
-  cache?: MemoryIconcatExtractionCache,
+  cache?: IconcatExtractionCache,
 ) {
   return extractIconCatalog({
     cwd,
@@ -102,7 +107,22 @@ async function runExtraction(
   })
 }
 
-function getCachePayloadBytes(cache: MemoryIconcatExtractionCache) {
+async function createCache(
+  cwd: string,
+  mode: MemorySample['mode'],
+) {
+  if (mode === 'cold') {
+    return undefined
+  }
+
+  if (mode === 'persistent-warm') {
+    return createPersistentIconcatExtractionCache({ cwd })
+  }
+
+  return createMemoryIconcatExtractionCache()
+}
+
+function getCachePayloadBytes(cache: NonNullable<Awaited<ReturnType<typeof createCache>>>) {
   const stats = cache.stats()
 
   return stats.bundleCodeBytes + stats.moduleIconBytes

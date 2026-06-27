@@ -32,8 +32,22 @@ custom `IconcatExtractionCache` implementation. The cache has two levels:
   reuses icon scanning results when a file is rewritten with identical content.
 
 Content hash is the correctness boundary. mtime and file size are intentionally
-not part of the public cache key because they can change when content does not,
-and they can stay misleading across generated files or filesystem syncs.
+not part of the public cache key because they can change when content does not.
+The persistent cache may still use mtime and size internally as a fast path to
+skip rereading unchanged files; if either value changes, Iconcat rereads the
+file and compares the content hash.
+
+The persistent cache uses a Merkle dependency graph. Each module stores:
+
+```text
+selfHash = hash(source content)
+subtreeHash = hash(selfHash + sorted(direct child subtreeHash))
+```
+
+When a cached file changes but the old dependency graph still exists, Iconcat
+updates the changed module code, refreshes the Merkle hashes, and reuses the
+bundle graph. If an import graph change is not represented by the cached graph,
+the next bundler miss refreshes the graph.
 
 ## Entry Graph Benchmark
 
@@ -73,10 +87,43 @@ Example local result from this repository on June 27, 2026:
 
 | Scenario      | esbuild cold | esbuild warm-cache | Rolldown cold | Rolldown warm-cache |
 | ------------- | -----------: | -----------------: | ------------: | ------------------: |
-| small         |      36.19ms |            18.56ms |       37.09ms |             16.97ms |
-| medium        |     208.13ms |           137.84ms |      267.41ms |            143.70ms |
-| large         |     687.78ms |           512.09ms |      790.25ms |            467.42ms |
-| x-large-pages |        1.87s |           859.75ms |         2.53s |            896.07ms |
+| small         |      27.43ms |            12.98ms |       27.19ms |             11.20ms |
+| medium        |     158.85ms |           116.02ms |      180.70ms |            129.71ms |
+| large         |     655.47ms |           602.99ms |      580.75ms |            456.98ms |
+| x-large-pages |        1.75s |           765.17ms |         1.84s |            821.43ms |
+
+## Persistent Cache Benchmark
+
+Run:
+
+```bash
+pnpm run bench:extractor:persistent
+```
+
+The persistent benchmark uses the `x-large-pages` scenario and compares:
+
+- `cold`: no cache.
+- `memory-warm`: in-process memory cache.
+- `persistent-warm`: a new process-style cache instance reading
+  `.iconcat/cache/extractor-v1.json`.
+- `persistent-same-content`: one file is rewritten with identical content.
+- `persistent-leaf-change`: one leaf module changes its icon string without
+  changing imports.
+
+Example local result from this repository on June 27, 2026:
+
+| Bundler  |                    Mode | Duration | Bundle Hits | Bundle Misses | File Hash Hits | File Hash Misses | Module Hits | Modules |
+| -------- | ----------------------: | -------: | ----------: | ------------: | -------------: | ---------------: | ----------: | ------: |
+| esbuild  |                    cold |    2.45s |           - |             - |              - |                - |           - |    6240 |
+| esbuild  |             memory-warm | 952.26ms |           - |             - |              - |                - |           - |    6240 |
+| esbuild  |         persistent-warm | 677.99ms |           1 |             0 |           6240 |                0 |        6240 |    6240 |
+| esbuild  | persistent-same-content | 716.52ms |           1 |             0 |           6239 |                1 |        6240 |    6240 |
+| esbuild  |  persistent-leaf-change | 658.94ms |           1 |             0 |           6239 |                1 |        6239 |    6240 |
+| rolldown |                    cold |    2.55s |           - |             - |              - |                - |           - |    6240 |
+| rolldown |             memory-warm | 974.91ms |           - |             - |              - |                - |           - |    6240 |
+| rolldown |         persistent-warm | 624.22ms |           1 |             0 |           6240 |                0 |        6240 |    6240 |
+| rolldown | persistent-same-content | 641.44ms |           1 |             0 |           6239 |                1 |        6240 |    6240 |
+| rolldown |  persistent-leaf-change | 647.24ms |           1 |             0 |           6239 |                1 |        6239 |    6240 |
 
 ## Memory Benchmark
 
@@ -98,14 +145,16 @@ The memory script uses the `x-large-pages` scenario and runs Node with
 
 Example local result from this repository on June 27, 2026:
 
-| Bundler  |        Mode | Heap Delta |   RSS Delta | Cache Payload | Modules |
-| -------- | ----------: | ---------: | ----------: | ------------: | ------: |
-| esbuild  |        cold |   5.12 MiB |  102.68 MiB |      0.00 MiB |    6240 |
-| esbuild  | cache-prime |  10.92 MiB |   -0.53 MiB |      5.45 MiB |    6240 |
-| esbuild  |  warm-cache |  -0.05 MiB |   -0.31 MiB |      5.45 MiB |    6240 |
-| rolldown |        cold |   7.56 MiB |  906.05 MiB |      0.00 MiB |    6240 |
-| rolldown | cache-prime |  15.16 MiB | -190.38 MiB |      5.45 MiB |    6240 |
-| rolldown |  warm-cache |   0.19 MiB |    0.63 MiB |      5.45 MiB |    6240 |
+| Bundler  |            Mode | Heap Delta |   RSS Delta | Cache Payload | Modules |
+| -------- | --------------: | ---------: | ----------: | ------------: | ------: |
+| esbuild  |            cold |   5.16 MiB |  115.88 MiB |      0.00 MiB |    6240 |
+| esbuild  |     cache-prime |  15.23 MiB |   13.61 MiB |      5.45 MiB |    6240 |
+| esbuild  |      warm-cache |   0.21 MiB |    1.25 MiB |      5.45 MiB |    6240 |
+| esbuild  | persistent-warm |   0.38 MiB |    0.36 MiB |      5.45 MiB |    6240 |
+| rolldown |            cold |   7.54 MiB |  918.27 MiB |      0.00 MiB |    6240 |
+| rolldown |     cache-prime |  15.35 MiB |   73.19 MiB |      5.45 MiB |    6240 |
+| rolldown |      warm-cache |   0.19 MiB | -197.07 MiB |      5.45 MiB |    6240 |
+| rolldown | persistent-warm |   0.18 MiB |    0.10 MiB |      5.45 MiB |    6240 |
 
 ## Notes
 

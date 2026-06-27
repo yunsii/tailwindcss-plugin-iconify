@@ -46,6 +46,7 @@
   "scripts": {
     "bench": "vitest bench --run --config vitest.config.ts",
     "bench:memory": "node --expose-gc --import tsx bench/memory.ts",
+    "bench:persistent": "node --import tsx bench/persistent-cache.ts",
     "build": "tsdown",
     "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsgo --noEmit --rootDir ../.."

@@ -69,6 +69,12 @@ async function bundleWithEsbuild(
       fileName: outputFile,
       entryFile: output.entryPoint,
       imports: output.imports.map((item) => item.path),
+      moduleDeps: Object.fromEntries(
+        Object.entries(output.inputs).map(([input]) => [
+          input,
+          metafile.inputs[input]?.imports.map((item) => item.path) || [],
+        ]),
+      ),
       modules: Object.keys(output.inputs),
     })),
   })

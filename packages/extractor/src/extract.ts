@@ -75,7 +75,7 @@ export async function extractIconCatalog(
     mergeCatalogIcons(...entryUsages.map((entry) => entry.icons)),
   )
 
-  return {
+  const result = {
     catalog: defineIconcatCatalog({
       version: 1,
       icons,
@@ -98,6 +98,10 @@ export async function extractIconCatalog(
     },
     diagnostics,
   }
+
+  await config.cache?.flush?.()
+
+  return result
 }
 
 async function extractModuleIcons(
