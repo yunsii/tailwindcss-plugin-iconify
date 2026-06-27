@@ -1,13 +1,14 @@
 # Commit Message Standard
 
 This repository uses Conventional Commits plus the existing `commit-msg` hook.
-Write the raw subject without an emoji; `@jannajs/lint emojify` adds the emoji
+The subject may be written with the correct emoji prefix or as a plain
+Conventional Commit header. `@jannajs/lint emojify` adds or corrects the emoji
 after commitlint passes.
 
 ## Shape
 
 ```text
-<type>(<scope>): <subject>
+[emoji] <type>(<scope>): <subject>
 
 <why and what changed. Keep this compact, but include the real hard parts.>
 
@@ -18,8 +19,10 @@ failure signals.>
 
 ## Rules
 
-- Use Conventional Commit `type(scope): subject`.
-- Keep emoji generation in the hook; do not type the emoji manually.
+- Use Conventional Commit `type(scope): subject`, optionally prefixed by the
+  matching emoji.
+- Keep emoji handling in the hook; it adds missing emoji and corrects mismatched
+  emoji.
 - Put AI Coding quality or efficiency gains in the body when the change
   materially improves future agent work.
 - Write the hard parts explicitly: architecture boundaries, API migration,

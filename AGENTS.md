@@ -46,8 +46,9 @@ These are already covered by `.gitignore`.
 
 ## Commit Messages
 
-- Keep the `commit-msg` hook emoji behavior. Write the raw subject as a
-  Conventional Commit header; the hook adds the emoji prefix.
+- Keep the `commit-msg` hook emoji behavior. The subject may be written as a
+  plain Conventional Commit header or with the correct emoji prefix; the hook
+  adds or corrects the emoji when needed.
 - Use compact commit bodies that explain the actual engineering process:
   context, hard parts, and the validation loop that improved AI Coding
   efficiency or quality.

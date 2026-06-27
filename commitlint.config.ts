@@ -6,6 +6,14 @@ const config: UserConfig = {
   extends: ['@commitlint/config-conventional'],
   // [Question] how to extend and override config-conventional settings:
   // https://github.com/conventional-changelog/commitlint/issues/2232
+  parserPreset: {
+    parserOpts: {
+      // Support both "✨ feat(scope): subject" and "feat(scope): subject".
+      // Keep this aligned with @jannajs/lint emojify.
+      headerPattern: /^(?:([^\w\s]{1,2})\s+)?(\w+)(?:\((.*)\))?: (.*)$/,
+      headerCorrespondence: ['emoji', 'type', 'scope', 'subject'],
+    },
+  },
   rules: {
     'body-max-length': [0],
     'body-max-line-length': [0],
