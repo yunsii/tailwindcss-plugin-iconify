@@ -1,0 +1,31 @@
+{
+  "name": "@iconcat/example-react-router-vite",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "extract": "iconcat extract",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@iconcat/example-fixtures": "workspace:*",
+    "@iconcat/presets": "workspace:*",
+    "@iconcat/tailwind": "workspace:*",
+    "@vitejs/plugin-react": "^4.3.1",
+    "iconcat": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "vite": "^5.4.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.11",
+    "typescript": "^5.6.2"
+  }
+}

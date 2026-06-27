@@ -1,0 +1,47 @@
+{
+  "name": "@iconcat/extractor",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Entry-driven icon catalog extractor for Iconcat.",
+  "author": "Yuns <yuns.xie@qq.com>",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.mjs",
+      "require": "./dist/vite.cjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && vite build --config vite.lib.config.ts",
+    "test": "vitest run --config vite.lib.config.ts",
+    "typecheck": "tsc --noEmit",
+    "typecheck:preview": "tsgo --noEmit"
+  },
+  "dependencies": {
+    "@iconcat/core": "workspace:*",
+    "esbuild": "^0.24.0",
+    "fast-glob": "^3.3.2",
+    "pathe": "^1.1.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.5",
+    "vite-plugin-dts": "^4.2.1",
+    "vitest": "^2.1.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}

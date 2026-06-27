@@ -1,29 +1,10 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "jsx": "react",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "paths": {
-      "@/*": ["./src/*"],
-      "tailwindcss-plugin-iconify": ["./src"]
-    },
-    "resolveJsonModule": true,
-    "types": ["vite/client", "node"],
-    "allowJs": false,
-    "strict": true,
-    "declaration": true,
-    "declarationMap": true,
-    "noEmit": true,
-    "outDir": "./dist",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "skipLibCheck": true
-  },
-  "references": [{ "path": "./tsconfig.node.json" }],
-  "include": ["src"]
+  "references": [
+    { "path": "./packages/core/tsconfig.json" },
+    { "path": "./packages/extractor/tsconfig.json" },
+    { "path": "./packages/presets/tsconfig.json" },
+    { "path": "./packages/cli/tsconfig.json" },
+    { "path": "./packages/tailwind/tsconfig.json" }
+  ],
+  "files": []
 }

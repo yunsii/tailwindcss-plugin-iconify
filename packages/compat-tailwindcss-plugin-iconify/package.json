@@ -1,0 +1,60 @@
+{
+  "name": "tailwindcss-plugin-iconify",
+  "type": "module",
+  "version": "2.1.0",
+  "description": "Compatibility package for @iconcat/tailwind.",
+  "author": "Yuns <yuns.xie@qq.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/yunsii/tailwindcss-plugin-iconify#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yunsii/tailwindcss-plugin-iconify",
+    "directory": "packages/compat-tailwindcss-plugin-iconify"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.mjs",
+      "require": "./dist/plugin.cjs"
+    },
+    "./local-icon-sets": {
+      "types": "./dist/local-icon-sets.d.ts",
+      "import": "./dist/local-icon-sets.mjs",
+      "require": "./dist/local-icon-sets.cjs"
+    },
+    "./figma-icon-sets": {
+      "types": "./dist/figma-icon-sets.d.ts",
+      "import": "./dist/figma-icon-sets.mjs",
+      "require": "./dist/figma-icon-sets.cjs"
+    },
+    "./figma-icon-sets/node": {
+      "types": "./dist/figma-icon-sets-node.d.ts",
+      "import": "./dist/figma-icon-sets-node.mjs",
+      "require": "./dist/figma-icon-sets-node.cjs"
+    }
+  },
+  "main": "./dist/plugin.mjs",
+  "module": "./dist/plugin.mjs",
+  "types": "./dist/plugin.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && vite build --config vite.lib.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "tailwindcss": ">=3"
+  },
+  "dependencies": {
+    "@iconcat/tailwind": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^5.4.5",
+    "vite-plugin-dts": "^4.2.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}

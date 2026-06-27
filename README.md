@@ -6,11 +6,21 @@ Use any SVG icon powered by Iconify for Tailwind CSS, easy to use local icons an
 
 ## Features
 
-- `preprocessSets` - support autocomplete for [individual icon sets](https://iconify.design/docs/icons/json.html)
+- `icons({ static })` - support static icon class export for [individual icon sets](https://iconify.design/docs/icons/json.html)
 - [`local-icon-sets`](./src/extensions/local-icon-sets.ts) extension - easy to load local assets
   - Support import SVG icons directory by default
   - Support import [IconifyJSON](https://iconify.design/docs/types/iconify-json.html) path
 - [`figma-icon-sets`](./src/extensions/figma-icon-sets/index.ts) extension - easy to load Figma icons
+
+## Iconcat architecture
+
+See [Iconcat Catalog Extraction Flow](./docs/iconcat-flow.md) for the
+entry-driven catalog extraction pipeline and the independent hashed icon CSS
+artifact flow.
+
+See [Iconcat Tailwind API Migration](./docs/iconcat-tailwind-api-migration.md)
+for the new `icons`, `dynamicIcons`, `staticIcons`, and `catalogIcons` API
+names.
 
 ## About Figma icons
 

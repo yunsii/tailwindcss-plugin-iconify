@@ -1,0 +1,122 @@
+{
+  "name": "@iconcat/tailwind",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Tailwind adapter for Iconcat, powered by Iconify.",
+  "author": "Yuns <yuns.xie@qq.com>",
+  "license": "MIT",
+  "funding": [
+    "https://opencollective.com/yuns",
+    "https://afdian.net/@yunslove"
+  ],
+  "homepage": "https://github.com/yunsii/tailwindcss-plugin-iconify#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yunsii/tailwindcss-plugin-iconify",
+    "directory": "packages/tailwind"
+  },
+  "bugs": "https://github.com/yunsii/tailwindcss-plugin-iconify/issues",
+  "keywords": [
+    "tailwindcss",
+    "tailwindcss-plugin",
+    "iconify",
+    "iconcat"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.mjs",
+      "require": "./dist/plugin.cjs"
+    },
+    "./catalog-css": {
+      "types": "./dist/catalog-css.d.ts",
+      "import": "./dist/catalog-css.mjs",
+      "require": "./dist/catalog-css.cjs"
+    },
+    "./*": "./*",
+    "./local-icon-sets": {
+      "types": "./dist/extensions/local-icon-sets.d.ts",
+      "import": "./dist/extensions/local-icon-sets.mjs",
+      "require": "./dist/extensions/local-icon-sets.cjs"
+    },
+    "./figma-icon-sets": {
+      "types": "./dist/extensions/figma-icon-sets/index.d.ts",
+      "import": "./dist/extensions/figma-icon-sets/index.mjs",
+      "require": "./dist/extensions/figma-icon-sets/index.cjs"
+    },
+    "./figma-icon-sets/node": {
+      "types": "./dist/extensions/figma-icon-sets/node.d.ts",
+      "import": "./dist/extensions/figma-icon-sets/node.mjs",
+      "require": "./dist/extensions/figma-icon-sets/node.cjs"
+    }
+  },
+  "main": "./dist/plugin.mjs",
+  "module": "./dist/plugin.mjs",
+  "types": "./dist/plugin.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --config vite.docs.config.ts",
+    "build:docs": "tsc && vite build --config vite.docs.config.ts",
+    "bd": "pnpm run build:docs",
+    "ssg": "rimraf dist-docs && vite-pages ssr --configFile vite.docs.config.ts",
+    "ssg:preview": "npm run ssg && serve dist-docs",
+    "build": "tsc && vite build --config vite.lib.config.ts",
+    "preview": "vite preview --config vite.docs.config.ts",
+    "test": "vitest run --config vite.lib.config.ts",
+    "test:ui": "vitest --config vite.lib.config.ts --ui",
+    "coverage": "vitest run --config vite.lib.config.ts --coverage",
+    "typecheck": "tsc --noEmit",
+    "typecheck:preview": "tsgo --noEmit"
+  },
+  "peerDependencies": {
+    "tailwindcss": ">=3"
+  },
+  "dependencies": {
+    "@iconcat/core": "workspace:*",
+    "@iconify/tools": "^4.1.2",
+    "@iconify/types": "^2.0.0",
+    "@iconify/utils": "^2.3.0",
+    "consola": "^3.2.3",
+    "cross-fetch": "^4.0.0",
+    "fs-extra": "^11.2.0",
+    "pathe": "^1.1.2"
+  },
+  "devDependencies": {
+    "@iconify-json/line-md": "^1.2.1",
+    "@iconify-json/mdi": "^1.2.0",
+    "@iconify-json/mdi-light": "^1.2.0",
+    "@iconify-json/svg-spinners": "^1.2.0",
+    "@mdx-js/react": "^3.0.1",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/fs-extra": "^11.0.4",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-test-renderer": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^2.1.1",
+    "@vitest/ui": "^2.1.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "react-test-renderer": "^18.3.1",
+    "rimraf": "^5.0.10",
+    "serve": "^14.2.3",
+    "tailwindcss": "^3.4.11",
+    "tslib": "^2.7.0",
+    "unplugin-auto-import": "^0.18.3",
+    "vite": "^5.4.5",
+    "vite-pages-theme-doc": "^5.0.0",
+    "vite-plugin-dts": "^4.2.1",
+    "vite-plugin-react-pages": "^5.0.0",
+    "vite-tsconfig-paths": "^5.0.1",
+    "vitest": "^2.1.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}

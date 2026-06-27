@@ -1,0 +1,17 @@
+{
+  "name": "@iconcat/example-fixtures",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./dashboard": "./src/dashboard.tsx",
+    "./dashboard-panel": "./src/dashboard-panel.tsx",
+    "./home": "./src/home.tsx",
+    "./settings": "./src/settings.tsx",
+    "./navigation": "./src/navigation.ts"
+  },
+  "dependencies": {
+    "react": "^18.3.1"
+  }
+}

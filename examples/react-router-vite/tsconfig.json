@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "iconcat": ["../../packages/cli/src/index.ts"],
+      "@iconcat/core": ["../../packages/core/src"],
+      "@iconcat/extractor": ["../../packages/extractor/src"],
+      "@iconcat/extractor/vite": ["../../packages/extractor/src/vite.ts"],
+      "@iconcat/tailwind/catalog-css": ["../../packages/tailwind/src/catalog-css.ts"],
+      "@iconcat/presets": ["../../packages/presets/src"],
+      "@iconcat/example-fixtures": ["../../packages/example-fixtures/src"],
+      "@iconcat/example-fixtures/*": ["../../packages/example-fixtures/src/*"]
+    },
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src", "iconcat.config.ts", "vite.config.ts"]
+}

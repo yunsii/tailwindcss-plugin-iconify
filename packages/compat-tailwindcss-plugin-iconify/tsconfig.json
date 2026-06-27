@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "@/*": ["../tailwind/src/*"],
+      "@iconcat/core": ["../core/src"],
+      "@iconcat/tailwind": ["../tailwind/src/plugin.ts"],
+      "@iconcat/tailwind/local-icon-sets": ["../tailwind/src/extensions/local-icon-sets.ts"],
+      "@iconcat/tailwind/figma-icon-sets": ["../tailwind/src/extensions/figma-icon-sets/index.ts"],
+      "@iconcat/tailwind/figma-icon-sets/node": ["../tailwind/src/extensions/figma-icon-sets/node.ts"]
+    },
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "allowJs": false,
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": true,
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

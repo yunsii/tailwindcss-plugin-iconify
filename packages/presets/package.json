@@ -1,0 +1,36 @@
+{
+  "name": "@iconcat/presets",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Framework entry presets for Iconcat.",
+  "author": "Yuns <yuns.xie@qq.com>",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && vite build --config vite.lib.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@iconcat/extractor": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^5.4.5",
+    "vite-plugin-dts": "^4.2.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}

@@ -1,85 +1,20 @@
 {
-  "name": "tailwindcss-plugin-iconify",
+  "name": "iconcat-monorepo",
   "type": "module",
-  "version": "2.1.0",
+  "private": true,
   "packageManager": "pnpm@10.13.1",
-  "description": "Use any SVG icon powered by Iconify for Tailwind CSS, easy to use local icons and figma icons in particular.",
-  "author": "Yuns <yuns.xie@qq.com>",
-  "license": "MIT",
-  "funding": [
-    "https://opencollective.com/yuns",
-    "https://afdian.net/@yunslove"
-  ],
-  "homepage": "https://github.com/yunsii/tailwindcss-plugin-iconify#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yunsii/tailwindcss-plugin-iconify"
-  },
-  "bugs": "https://github.com/yunsii/tailwindcss-plugin-iconify/issues",
-  "keywords": [
-    "tailwindcss",
-    "tailwindcss-plugin",
-    "iconify"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/plugin.d.ts",
-      "import": "./dist/plugin.mjs",
-      "require": "./dist/plugin.cjs"
-    },
-    "./*": "./*",
-    "./local-icon-sets": {
-      "types": "./dist/extensions/local-icon-sets.d.ts",
-      "import": "./dist/extensions/local-icon-sets.mjs",
-      "require": "./dist/extensions/local-icon-sets.cjs"
-    },
-    "./figma-icon-sets": {
-      "types": "./dist/extensions/figma-icon-sets/index.d.ts",
-      "import": "./dist/extensions/figma-icon-sets/index.mjs",
-      "require": "./dist/extensions/figma-icon-sets/index.cjs"
-    },
-    "./figma-icon-sets/node": {
-      "types": "./dist/extensions/figma-icon-sets/node.d.ts",
-      "import": "./dist/extensions/figma-icon-sets/node.mjs",
-      "require": "./dist/extensions/figma-icon-sets/node.cjs"
-    }
-  },
-  "main": "./dist/plugin.mjs",
-  "module": "./dist/plugin.mjs",
-  "types": "./dist/plugin.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "dev": "vite --config vite.docs.config.ts",
-    "build:docs": "tsc && vite build --config vite.docs.config.ts",
-    "bd": "pnpm run build:docs",
-    "ssg": "rimraf dist-docs && vite-pages ssr --configFile vite.docs.config.ts",
-    "ssg:preview": "npm run ssg && serve dist-docs",
-    "build": "tsc && vite build --config vite.lib.config.ts",
-    "preview": "vite preview --config vite.docs.config.ts",
-    "prepare": "husky",
+    "build": "pnpm -r --if-present run build",
+    "build:docs": "pnpm --filter @iconcat/tailwind run build:docs",
+    "dev": "pnpm --filter @iconcat/tailwind run dev",
+    "dev:iconcat": "node scripts/dev/start.mjs",
     "lint": "eslint --flag unstable_ts_config .",
     "lint:fix": "eslint --flag unstable_ts_config --fix .",
-    "test": "vitest --config vite.lib.config.ts",
-    "test:ui": "vitest --config vite.lib.config.ts --ui",
-    "coverage": "vitest run --config vite.lib.config.ts --coverage",
-    "typecheck": "tsc --noEmit",
-    "typecheck:preview": "tsgo --noEmit",
+    "test": "pnpm -r --if-present run test",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "typecheck:preview": "pnpm -r --if-present run typecheck:preview",
     "changeset": "changeset",
     "changeset:publish": "changeset publish"
-  },
-  "peerDependencies": {
-    "tailwindcss": ">=3"
-  },
-  "dependencies": {
-    "@iconify/tools": "^4.1.2",
-    "@iconify/types": "^2.0.0",
-    "@iconify/utils": "^2.3.0",
-    "consola": "^3.2.3",
-    "cross-fetch": "^4.0.0",
-    "fs-extra": "^11.2.0",
-    "pathe": "^1.1.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.6.0",
@@ -88,53 +23,19 @@
     "@commitlint/config-conventional": "^19.5.0",
     "@commitlint/types": "^19.5.0",
     "@eslint-react/eslint-plugin": "^1.14.1",
-    "@iconify-json/line-md": "^1.2.1",
-    "@iconify-json/mdi": "^1.2.0",
-    "@iconify-json/mdi-light": "^1.2.0",
-    "@iconify-json/svg-spinners": "^1.2.0",
     "@jannajs/lint": "3.0.0-next.20",
-    "@mdx-js/react": "^3.0.1",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.5.5",
-    "@types/react": "^18.3.5",
-    "@types/react-dom": "^18.3.0",
-    "@types/react-test-renderer": "^18.3.0",
     "@typescript/native-preview": "7.0.0-dev.20250726.1",
     "@typescript/native-preview-linux-x64": "7.0.0-dev.20250726.1",
-    "@vitejs/plugin-react": "^4.3.1",
-    "@vitest/coverage-v8": "^2.1.1",
-    "@vitest/ui": "^2.1.1",
-    "autoprefixer": "^10.4.20",
     "eslint": "^9.10.0",
     "eslint-plugin-format": "^0.1.2",
     "eslint-plugin-react-hooks": "5.1.0-rc-fb9a90fa48-20240614",
     "eslint-plugin-react-refresh": "^0.4.12",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
-    "postcss": "^8.4.47",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2",
-    "react-test-renderer": "^18.3.1",
-    "rimraf": "^5.0.10",
-    "serve": "^14.2.3",
-    "tailwindcss": "^3.4.11",
-    "tslib": "^2.7.0",
-    "typescript": "^5.6.2",
-    "unplugin-auto-import": "^0.18.3",
-    "vite": "^5.4.5",
-    "vite-pages-theme-doc": "^5.0.0",
-    "vite-plugin-dts": "^4.2.1",
-    "vite-plugin-react-pages": "^5.0.0",
-    "vite-tsconfig-paths": "^5.0.1",
-    "vitest": "^2.1.1"
+    "typescript": "^5.6.2"
   },
   "lint-staged": {
     "*": "eslint --flag unstable_ts_config --fix"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
   }
 }

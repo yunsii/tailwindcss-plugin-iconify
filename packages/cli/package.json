@@ -1,0 +1,37 @@
+{
+  "name": "iconcat",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "CLI for Iconcat entry-driven icon catalog extraction.",
+  "author": "Yuns <yuns.xie@qq.com>",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "bin": {
+    "iconcat": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && vite build --config vite.lib.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@iconcat/extractor": "workspace:*",
+    "jiti": "^2.6.1",
+    "pathe": "^1.1.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.5",
+    "vite-plugin-dts": "^4.2.1"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}

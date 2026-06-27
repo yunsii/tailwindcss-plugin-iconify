@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "target": "ESNext",
+    "jsx": "preserve",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "iconcat": [
+        "../../packages/cli/src/index.ts"
+      ],
+      "@iconcat/core": [
+        "../../packages/core/src"
+      ],
+      "@iconcat/extractor": [
+        "../../packages/extractor/src"
+      ],
+      "@iconcat/tailwind/catalog-css": [
+        "../../packages/tailwind/src/catalog-css.ts"
+      ],
+      "@iconcat/presets": [
+        "../../packages/presets/src"
+      ],
+      "@iconcat/example-fixtures": [
+        "../../packages/example-fixtures/src"
+      ],
+      "@iconcat/example-fixtures/*": [
+        "../../packages/example-fixtures/src/*"
+      ]
+    },
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
