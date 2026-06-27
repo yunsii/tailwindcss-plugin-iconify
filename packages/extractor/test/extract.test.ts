@@ -1,8 +1,17 @@
+import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+
 import { resolve } from 'pathe'
 import { describe, expect, it } from 'vitest'
 
-import { createEsbuildBundler, extractIconCatalog } from '../src'
+import {
+  createEsbuildBundler,
+  createMemoryIconcatExtractionCache,
+  extractIconCatalog,
+} from '../src'
 import { createRolldownBundler } from '../src/rolldown'
+
+import type { IconcatBundler } from '../src'
 
 const bundlers = [
   createEsbuildBundler(),
@@ -134,5 +143,122 @@ describe('entry graph extraction', () => {
       'node_modules/icon-dep/index.js',
       'src/entry.ts',
     ])
+  })
+
+  it('reuses cached module extraction when files are unchanged', async () => {
+    const cache = createMemoryIconcatExtractionCache()
+    const cwd = resolve(tmpdir(), `iconcat-cache-test-${process.pid}`)
+
+    await rm(cwd, { force: true, recursive: true })
+    await mkdir(resolve(cwd, 'src'), { recursive: true })
+    await writeFile(
+      resolve(cwd, 'src/entry.ts'),
+      'import { shared } from \'./shared\'\nexport const icons = [\'mdi-light:home\', shared]\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/shared.ts'),
+      'export const shared = \'line-md:loading-loop\'\n',
+    )
+
+    const first = await extractIconCatalog({
+      cwd,
+      entries: ['src/entry.ts'],
+      cache,
+    })
+    expect(first.catalog.icons).toEqual({
+      'line-md': ['loading-loop'],
+      'mdi-light': ['home'],
+    })
+    expect(cache.size()).toBe(2)
+
+    await writeFile(
+      resolve(cwd, 'src/shared.ts'),
+      'export const shared = \'line-md:loading-loop\'\n',
+    )
+
+    const second = await extractIconCatalog({
+      cwd,
+      entries: ['src/entry.ts'],
+      cache,
+    })
+
+    expect(second.catalog.icons).toEqual(first.catalog.icons)
+    expect(cache.size()).toBe(2)
+
+    await writeFile(
+      resolve(cwd, 'src/shared.ts'),
+      'export const shared = \'line-md:confirm-circle\'\n',
+    )
+
+    const third = await extractIconCatalog({
+      cwd,
+      entries: ['src/entry.ts'],
+      cache,
+    })
+
+    expect(third.catalog.icons).toEqual({
+      'line-md': ['confirm-circle'],
+      'mdi-light': ['home'],
+    })
+    expect(cache.size()).toBe(3)
+  })
+
+  it('reuses cached bundle graph when dependency content is unchanged', async () => {
+    const cache = createMemoryIconcatExtractionCache()
+    const cwd = resolve(tmpdir(), `iconcat-bundle-cache-test-${process.pid}`)
+    const esbuild = createEsbuildBundler()
+    let bundleCalls = 0
+    const bundler: IconcatBundler = {
+      name: 'tracked-esbuild',
+      async bundle(options) {
+        bundleCalls += 1
+        return esbuild.bundle(options)
+      },
+    }
+
+    await rm(cwd, { force: true, recursive: true })
+    await mkdir(resolve(cwd, 'src'), { recursive: true })
+    await writeFile(
+      resolve(cwd, 'src/entry.ts'),
+      'import { shared } from \'./shared\'\nexport const icons = [\'mdi-light:home\', shared]\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/shared.ts'),
+      'export const shared = \'line-md:loading-loop\'\n',
+    )
+
+    const first = await extractIconCatalog({
+      cwd,
+      entries: ['src/entry.ts'],
+      bundler,
+      cache,
+    })
+    const second = await extractIconCatalog({
+      cwd,
+      entries: ['src/entry.ts'],
+      bundler,
+      cache,
+    })
+
+    expect(second.catalog.icons).toEqual(first.catalog.icons)
+    expect(bundleCalls).toBe(1)
+
+    await writeFile(
+      resolve(cwd, 'src/shared.ts'),
+      'export const shared = \'line-md:confirm-circle\'\n',
+    )
+
+    const third = await extractIconCatalog({
+      cwd,
+      entries: ['src/entry.ts'],
+      bundler,
+      cache,
+    })
+
+    expect(third.catalog.icons).toEqual({
+      'line-md': ['confirm-circle'],
+      'mdi-light': ['home'],
+    })
+    expect(bundleCalls).toBe(2)
   })
 })

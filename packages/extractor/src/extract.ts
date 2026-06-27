@@ -11,13 +11,17 @@ import { dirname, resolve } from 'pathe'
 
 import type { IconcatDiagnostic } from '@iconcat/core'
 
+import { getContentHash } from './cache'
 import { createEsbuildBundler } from './esbuild'
 import { extractSourceIcons } from './source'
 
 import type {
   EntryIconUsage,
   ExtractIconCatalogResult,
+  IconcatBundleCacheInput,
   IconcatConfig,
+  IconcatModule,
+  IconcatModuleCacheInput,
   IconcatPreset,
   ModuleIconUsage,
   WriteIconCatalogResult,
@@ -30,19 +34,30 @@ export async function extractIconCatalog(
   const presets = config.presets || []
   const entries = await resolveEntries(cwd, config.entries || [], presets)
   const bundler = config.bundler || createEsbuildBundler()
-  const bundle = await bundler.bundle({ cwd, entries, exclude: [] })
+  const bundleInput: IconcatBundleCacheInput = {
+    cwd,
+    entries,
+    exclude: [],
+    bundler: bundler.cacheKey || bundler.name,
+  }
+  let bundle = await config.cache?.getBundle?.(bundleInput)
+
+  if (!bundle) {
+    bundle = await bundler.bundle({ cwd, entries, exclude: [] })
+    await config.cache?.setBundle?.(bundleInput, bundle)
+  }
 
   const moduleUsages = new Map<string, ModuleIconUsage>()
   const diagnostics: IconcatDiagnostic[] = []
 
-  bundle.modules.forEach((mod) => {
-    const result = extractSourceIcons(mod.code, config.extractors, mod.file)
+  await Promise.all(bundle.modules.map(async (mod) => {
+    const result = await extractModuleIcons(mod, config)
     moduleUsages.set(mod.file, {
       file: mod.file,
       icons: result.icons,
     })
     diagnostics.push(...result.diagnostics)
-  })
+  }))
 
   const entryUsages: EntryIconUsage[] = bundle.entries.map((entry) => {
     const icons = mergeCatalogIcons(
@@ -82,6 +97,35 @@ export async function extractIconCatalog(
       modules: bundle.modules.map((mod) => mod.file).sort(),
     },
     diagnostics,
+  }
+}
+
+async function extractModuleIcons(
+  mod: IconcatModule,
+  config: IconcatConfig,
+) {
+  const cacheInput = getModuleCacheInput(mod, config.extractors)
+  const cached = await config.cache?.getModule?.(cacheInput)
+
+  if (cached) {
+    return cached
+  }
+
+  const result = extractSourceIcons(mod.code, config.extractors, mod.file)
+
+  await config.cache?.setModule?.(cacheInput, result)
+
+  return result
+}
+
+function getModuleCacheInput(
+  mod: IconcatModule,
+  extractors: IconcatConfig['extractors'],
+): IconcatModuleCacheInput {
+  return {
+    file: mod.file,
+    hash: getContentHash(mod.code),
+    extractors,
   }
 }
 

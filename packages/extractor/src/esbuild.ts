@@ -1,7 +1,7 @@
-import { readFile } from 'node:fs/promises'
-
 import { build } from 'esbuild'
-import { relative, resolve } from 'pathe'
+import { resolve } from 'pathe'
+
+import { buildIconcatBundleFromGraph } from './graph'
 
 import type {
   IconcatBundleOptions,
@@ -20,6 +20,7 @@ export function createEsbuildBundler(
 ): IconcatBundler {
   return {
     name: 'esbuild',
+    cacheKey: getEsbuildBundlerCacheKey(options),
     async bundle(bundleOptions) {
       return bundleWithEsbuild(bundleOptions, options)
     },
@@ -60,43 +61,17 @@ async function bundleWithEsbuild(
   })
 
   const metafile = result.metafile!
-  const modules = new Map<string, string>()
-  const entryModules = new Map<string, Set<string>>()
   const outputs = metafile.outputs
 
-  Object.entries(outputs).forEach(([outputFile, output]) => {
-    if (!output.entryPoint) {
-      return
-    }
-
-    const entry = normalizeFile(output.entryPoint, bundleOptions.cwd)
-    const bucket = entryModules.get(entry) || new Set<string>()
-    entryModules.set(entry, bucket)
-
-    collectOutputInputs(outputFile, outputs).forEach((input) => {
-      const file = normalizeFile(input, bundleOptions.cwd)
-      bucket.add(file)
-      modules.set(file, '')
-    })
+  return buildIconcatBundleFromGraph({
+    cwd: bundleOptions.cwd,
+    chunks: Object.entries(outputs).map(([outputFile, output]) => ({
+      fileName: outputFile,
+      entryFile: output.entryPoint,
+      imports: output.imports.map((item) => item.path),
+      modules: Object.keys(output.inputs),
+    })),
   })
-
-  await Promise.all(
-    Array.from(modules.keys()).map(async (file) => {
-      modules.set(file, await readFile(resolve(bundleOptions.cwd, file), 'utf8'))
-    }),
-  )
-
-  return {
-    entries: Array.from(entryModules.entries()).map(([file, moduleFiles]) => ({
-      name: file,
-      file,
-      modules: Array.from(moduleFiles).sort(),
-    })),
-    modules: Array.from(modules.entries()).map(([file, code]) => ({
-      file,
-      code,
-    })),
-  }
 }
 
 function externalizeDependenciesPlugin(options: EsbuildIconcatBundlerOptions) {
@@ -120,29 +95,6 @@ function externalizeDependenciesPlugin(options: EsbuildIconcatBundlerOptions) {
       })
     },
   }
-}
-
-function collectOutputInputs(
-  outputFile: string,
-  outputs: NonNullable<Awaited<ReturnType<typeof build>>['metafile']>['outputs'],
-  seen = new Set<string>(),
-): string[] {
-  if (seen.has(outputFile)) {
-    return []
-  }
-  seen.add(outputFile)
-
-  const output = outputs[outputFile]
-  if (!output) {
-    return []
-  }
-
-  return [
-    ...Object.keys(output.inputs),
-    ...output.imports.flatMap((item) =>
-      collectOutputInputs(item.path, outputs, seen),
-    ),
-  ]
 }
 
 function buildExternalPatterns(
@@ -171,8 +123,11 @@ function buildExternalPatterns(
   ]
 }
 
-function normalizeFile(file: string, cwd: string) {
-  return file.startsWith('/')
-    ? relative(cwd, file)
-    : file
+function getEsbuildBundlerCacheKey(options: EsbuildIconcatBundlerOptions) {
+  return JSON.stringify({
+    name: 'esbuild',
+    includeDeps: options.includeDeps || [],
+    excludeDeps: options.excludeDeps ?? true,
+    excludeExtensions: options.excludeExtensions || [],
+  })
 }

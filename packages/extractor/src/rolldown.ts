@@ -1,9 +1,9 @@
-import { readFile } from 'node:fs/promises'
-
-import { relative, resolve } from 'pathe'
+import { resolve } from 'pathe'
 import { rolldown } from 'rolldown'
 
 import type { OutputChunk } from 'rolldown'
+
+import { buildIconcatBundleFromGraph } from './graph'
 
 import type {
   IconcatBundleOptions,
@@ -22,6 +22,7 @@ export function createRolldownBundler(
 ): IconcatBundler {
   return {
     name: 'rolldown',
+    cacheKey: getRolldownBundlerCacheKey(options),
     async bundle(bundleOptions) {
       return bundleWithRolldown(bundleOptions, options)
     },
@@ -55,71 +56,20 @@ async function bundleWithRolldown(
     const chunks = result.output.filter((output): output is OutputChunk =>
       output.type === 'chunk',
     )
-    const chunkByFileName = new Map(
-      chunks.map((chunk) => [chunk.fileName, chunk]),
-    )
-    const modules = new Map<string, string>()
-    const entryModules = new Map<string, Set<string>>()
 
-    chunks.forEach((chunk) => {
-      if (!chunk.isEntry || !chunk.facadeModuleId) {
-        return
-      }
-
-      const entry = normalizeFile(chunk.facadeModuleId, bundleOptions.cwd)
-      const bucket = entryModules.get(entry) || new Set<string>()
-      entryModules.set(entry, bucket)
-
-      collectChunkModuleIds(chunk, chunkByFileName).forEach((id) => {
-        if (!shouldCollectModule(id)) {
-          return
-        }
-
-        const file = normalizeFile(id, bundleOptions.cwd)
-        bucket.add(file)
-        modules.set(file, '')
-      })
+    return buildIconcatBundleFromGraph({
+      cwd: bundleOptions.cwd,
+      chunks: chunks.map((chunk) => ({
+        fileName: chunk.fileName,
+        entryFile: chunk.isEntry ? chunk.facadeModuleId : undefined,
+        imports: chunk.imports,
+        dynamicImports: chunk.dynamicImports,
+        modules: chunk.moduleIds,
+      })),
     })
-
-    await Promise.all(
-      Array.from(modules.keys()).map(async (file) => {
-        modules.set(file, await readFile(resolve(bundleOptions.cwd, file), 'utf8'))
-      }),
-    )
-
-    return {
-      entries: Array.from(entryModules.entries()).map(([file, moduleFiles]) => ({
-        name: file,
-        file,
-        modules: Array.from(moduleFiles).sort(),
-      })),
-      modules: Array.from(modules.entries()).map(([file, code]) => ({
-        file,
-        code,
-      })),
-    }
   } finally {
     await bundle.close()
   }
-}
-
-function collectChunkModuleIds(
-  chunk: OutputChunk,
-  chunkByFileName: Map<string, OutputChunk>,
-  seen = new Set<string>(),
-): string[] {
-  if (seen.has(chunk.fileName)) {
-    return []
-  }
-  seen.add(chunk.fileName)
-
-  return [
-    ...chunk.moduleIds,
-    ...[...chunk.imports, ...chunk.dynamicImports].flatMap((fileName) => {
-      const imported = chunkByFileName.get(fileName)
-      return imported ? collectChunkModuleIds(imported, chunkByFileName, seen) : []
-    }),
-  ]
 }
 
 function createExternal(
@@ -183,18 +133,11 @@ function isBareImport(id: string) {
   return /^[^./]|^\.[^./]|^\.\.[^/]/.test(id)
 }
 
-function shouldCollectModule(id: string) {
-  return !id.includes('\0') && isFileModuleId(id)
-}
-
-function isFileModuleId(id: string) {
-  return id.startsWith('/')
-    || id.startsWith('.')
-    || /^[A-Z]:[\\/]/i.test(id)
-}
-
-function normalizeFile(file: string, cwd: string) {
-  return file.startsWith('/')
-    ? relative(cwd, file)
-    : file
+function getRolldownBundlerCacheKey(options: RolldownIconcatBundlerOptions) {
+  return JSON.stringify({
+    name: 'rolldown',
+    includeDeps: options.includeDeps || [],
+    excludeDeps: options.excludeDeps ?? true,
+    excludeExtensions: options.excludeExtensions || [],
+  })
 }

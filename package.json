@@ -8,6 +8,7 @@
     "build:packages": "turbo run build --filter='./packages/*'",
     "build:docs": "turbo run build:docs --filter=@iconcat/tailwind",
     "bench:extractor": "pnpm --filter @iconcat/extractor run bench",
+    "bench:extractor:memory": "pnpm --filter @iconcat/extractor run bench:memory",
     "dev": "pnpm --filter @iconcat/tailwind run dev",
     "dev:iconcat": "node scripts/dev/start.mjs",
     "lint": "eslint .",
