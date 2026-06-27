@@ -81,8 +81,11 @@ export function createIconcatCSSArtifact(
       await atomicWriteFile(
         manifestFile,
         `${JSON.stringify({
+          version: 1,
           file: basename(outputFile),
           href,
+          hash,
+          icons: countCatalogIcons(result.catalog),
         }, null, 2)}\n`,
       )
       if (options.clean) {
@@ -136,4 +139,9 @@ async function atomicWriteFile(file: string, content: string) {
 
 function joinUrl(base: string, file: string) {
   return `${base.replace(/\/$/, '')}/${file}`
+}
+
+function countCatalogIcons(catalog: IconcatCatalog) {
+  return Object.values(normalizeIconcatCatalog(catalog).icons)
+    .reduce((total, names) => total + names.length, 0)
 }

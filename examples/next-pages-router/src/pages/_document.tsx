@@ -1,5 +1,4 @@
-import process from 'node:process'
-
+import { createIconcatDocumentHead } from '@iconcat/next'
 import Document, {
   Head,
   Html,
@@ -7,33 +6,7 @@ import Document, {
   NextScript,
 } from 'next/document'
 
-import { getIconcatCSSHref } from '../iconcat-manifest'
-
-class IconcatHead extends Head {
-  getCssLinks(files: Parameters<Head['getCssLinks']>[0]) {
-    const cssLinks = super.getCssLinks(files)
-    const iconcatCSSHref = getIconcatCSSHref()
-
-    if (process.env.NODE_ENV !== 'production' || !iconcatCSSHref) {
-      return cssLinks
-    }
-
-    return [
-      ...(cssLinks || []),
-      <link
-        as='style'
-        href={iconcatCSSHref}
-        key='iconcat-preload'
-        rel='preload'
-      />,
-      <link
-        href={iconcatCSSHref}
-        key='iconcat-stylesheet'
-        rel='stylesheet'
-      />,
-    ]
-  }
-}
+const IconcatHead = createIconcatDocumentHead(Head)
 
 export default class AppDocument extends Document {
   render() {

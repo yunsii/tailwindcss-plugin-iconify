@@ -1,9 +1,10 @@
-import { loadIconifyJsonPath } from '@/helpers/icon-set'
 import { mergeIconSets } from '@iconify/tools'
 import fse from 'fs-extra'
 import pathe from 'pathe'
 
 import type { IconSet } from '@iconify/tools'
+
+import { loadIconifyJsonPath } from '@/helpers/icon-set'
 
 export function getTargetIconsJsonPath(iconSet: IconSet, outputDir: string) {
   const composedOutputDir = pathe.normalize(

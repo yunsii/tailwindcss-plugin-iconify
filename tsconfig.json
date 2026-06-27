@@ -1,8 +1,11 @@
 {
   "references": [
     { "path": "./packages/core/tsconfig.json" },
+    { "path": "./packages/adapter-utils/tsconfig.json" },
     { "path": "./packages/extractor/tsconfig.json" },
     { "path": "./packages/presets/tsconfig.json" },
+    { "path": "./packages/next/tsconfig.json" },
+    { "path": "./packages/vite/tsconfig.json" },
     { "path": "./packages/cli/tsconfig.json" },
     { "path": "./packages/tailwind/tsconfig.json" }
   ],

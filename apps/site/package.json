@@ -6,7 +6,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@iconcat/example-fixtures": "workspace:*",
@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@types/react": "^18.3.5",
-    "@types/react-dom": "^18.3.0",
-    "typescript": "^5.6.2"
+    "@types/react-dom": "^18.3.0"
   }
 }

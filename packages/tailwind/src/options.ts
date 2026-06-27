@@ -38,6 +38,6 @@ export interface IconsOptions extends DynamicIconsOptions {
 
 export interface CatalogIconsOptions extends DynamicIconsOptions {}
 
-export type IconCatalogInput =
-  | IconcatCatalog
-  | IconcatCatalogIcons
+export type IconCatalogInput
+  = | IconcatCatalog
+    | IconcatCatalogIcons

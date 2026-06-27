@@ -22,6 +22,9 @@ See [Iconcat Tailwind API Migration](./docs/iconcat-tailwind-api-migration.md)
 for the new `icons`, `dynamicIcons`, `staticIcons`, and `catalogIcons` API
 names.
 
+See [Iconcat Package Build](./docs/package-build.md) for the Rolldown package
+build pipeline and validation commands.
+
 ## About Figma icons
 
 [TailwindCSS do not support async plugin for now](https://github.com/tailwindlabs/tailwindcss/discussions/7277), so `figma-icon-sets` extension you can not use directly.

@@ -35,15 +35,15 @@ export function normalizeIconcatCatalog(
     icons: normalizeCatalogIcons(catalog.icons),
     entries: catalog.entries
       ? Object.fromEntries(
-        Object.entries(catalog.entries).map(([entryName, entry]) => [
-          entryName,
-          {
-            ...entry,
-            icons: normalizeCatalogIcons(entry.icons),
-            modules: entry.modules ? [...new Set(entry.modules)].sort() : undefined,
-          },
-        ]),
-      )
+          Object.entries(catalog.entries).map(([entryName, entry]) => [
+            entryName,
+            {
+              ...entry,
+              icons: normalizeCatalogIcons(entry.icons),
+              modules: entry.modules ? [...new Set(entry.modules)].sort() : undefined,
+            },
+          ]),
+        )
       : undefined,
   }
 }

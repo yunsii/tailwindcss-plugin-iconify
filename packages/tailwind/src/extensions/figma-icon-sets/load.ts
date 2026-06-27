@@ -1,6 +1,9 @@
 import { logger } from './helpers/logger'
-import { type ImportFigmaIconSetOptions, importFigmaIconSets } from './import'
-import { writeIconifyJSONs, type WriteIconifyJSONsOptions } from './write'
+import { importFigmaIconSets } from './import'
+import { writeIconifyJSONs } from './write'
+
+import type { ImportFigmaIconSetOptions } from './import'
+import type { WriteIconifyJSONsOptions } from './write'
 
 export interface LoadFigmaIconSetOptions {
   import: ImportFigmaIconSetOptions

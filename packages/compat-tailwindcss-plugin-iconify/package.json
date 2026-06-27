@@ -13,35 +13,55 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/plugin.d.ts",
-      "import": "./dist/plugin.mjs",
-      "require": "./dist/plugin.cjs"
+      "import": {
+        "types": "./dist/plugin.d.mts",
+        "default": "./dist/plugin.mjs"
+      },
+      "require": {
+        "types": "./dist/plugin.d.cts",
+        "default": "./dist/plugin.cjs"
+      }
     },
     "./local-icon-sets": {
-      "types": "./dist/local-icon-sets.d.ts",
-      "import": "./dist/local-icon-sets.mjs",
-      "require": "./dist/local-icon-sets.cjs"
+      "import": {
+        "types": "./dist/local-icon-sets.d.mts",
+        "default": "./dist/local-icon-sets.mjs"
+      },
+      "require": {
+        "types": "./dist/local-icon-sets.d.cts",
+        "default": "./dist/local-icon-sets.cjs"
+      }
     },
     "./figma-icon-sets": {
-      "types": "./dist/figma-icon-sets.d.ts",
-      "import": "./dist/figma-icon-sets.mjs",
-      "require": "./dist/figma-icon-sets.cjs"
+      "import": {
+        "types": "./dist/figma-icon-sets.d.mts",
+        "default": "./dist/figma-icon-sets.mjs"
+      },
+      "require": {
+        "types": "./dist/figma-icon-sets.d.cts",
+        "default": "./dist/figma-icon-sets.cjs"
+      }
     },
     "./figma-icon-sets/node": {
-      "types": "./dist/figma-icon-sets-node.d.ts",
-      "import": "./dist/figma-icon-sets-node.mjs",
-      "require": "./dist/figma-icon-sets-node.cjs"
+      "import": {
+        "types": "./dist/figma-icon-sets-node.d.mts",
+        "default": "./dist/figma-icon-sets-node.mjs"
+      },
+      "require": {
+        "types": "./dist/figma-icon-sets-node.d.cts",
+        "default": "./dist/figma-icon-sets-node.cjs"
+      }
     }
   },
   "main": "./dist/plugin.mjs",
   "module": "./dist/plugin.mjs",
-  "types": "./dist/plugin.d.ts",
+  "types": "./dist/plugin.d.mts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc && vite build --config vite.lib.config.ts",
-    "typecheck": "tsc --noEmit"
+    "build": "tsdown",
+    "typecheck": "tsgo --noEmit --rootDir ../.."
   },
   "peerDependencies": {
     "tailwindcss": ">=3"
@@ -50,8 +70,7 @@
     "@iconcat/tailwind": "workspace:*"
   },
   "devDependencies": {
-    "vite": "^5.4.5",
-    "vite-plugin-dts": "^4.2.1"
+    "vite": "^5.4.5"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

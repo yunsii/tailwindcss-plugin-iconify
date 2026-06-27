@@ -27,10 +27,10 @@
         "../../packages/presets/src"
       ],
       "@iconcat/example-fixtures": [
-        "../../packages/example-fixtures/src"
+        "../../fixtures/example-fixtures/src"
       ],
       "@iconcat/example-fixtures/*": [
-        "../../packages/example-fixtures/src/*"
+        "../../fixtures/example-fixtures/src/*"
       ]
     },
     "resolveJsonModule": true,

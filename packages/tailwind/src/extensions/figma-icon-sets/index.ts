@@ -1,6 +1,8 @@
 import type { IconifyJSON } from '@iconify/types'
 
-import { type ImportFigmaIconSetOptions, importFigmaIconSets } from './import'
+import { importFigmaIconSets } from './import'
+
+import type { ImportFigmaIconSetOptions } from './import'
 
 /**
  * tailwind do not support async plugin for now

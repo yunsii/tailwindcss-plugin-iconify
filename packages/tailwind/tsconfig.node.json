@@ -8,7 +8,8 @@
   },
   "include": [
     "vite.base.config.ts",
-    "vite.lib.config.ts",
+    "vitest.config.ts",
+    "tsdown.config.ts",
     "vite.docs.config.ts",
     "vite.config.ts",
     "package.json"

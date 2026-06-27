@@ -12,8 +12,8 @@
       "@iconcat/extractor/vite": ["../../packages/extractor/src/vite.ts"],
       "@iconcat/tailwind/catalog-css": ["../../packages/tailwind/src/catalog-css.ts"],
       "@iconcat/presets": ["../../packages/presets/src"],
-      "@iconcat/example-fixtures": ["../../packages/example-fixtures/src"],
-      "@iconcat/example-fixtures/*": ["../../packages/example-fixtures/src/*"]
+      "@iconcat/example-fixtures": ["../../fixtures/example-fixtures/src"],
+      "@iconcat/example-fixtures/*": ["../../fixtures/example-fixtures/src/*"]
     },
     "strict": true,
     "noEmit": true,

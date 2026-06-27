@@ -39,9 +39,9 @@ export function writeIconSet(options: WriteIconSetOptions): WriteIconSetResult {
 
   const unchanged
     = !!prevIconSet
-    && !addedIconNames.length
-    && !updatedIconNames.length
-    && (mode === 'incremental-update' || !removedIconNames.length)
+      && !addedIconNames.length
+      && !updatedIconNames.length
+      && (mode === 'incremental-update' || !removedIconNames.length)
 
   if (unchanged) {
     return { ...result, status: 'unchanged' }

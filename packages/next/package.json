@@ -1,0 +1,47 @@
+{
+  "name": "@iconcat/next",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Next.js adapter for Iconcat catalog CSS.",
+  "author": "Yuns <yuns.xie@qq.com>",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsgo --noEmit --rootDir ../.."
+  },
+  "peerDependencies": {
+    "next": ">=13",
+    "react": ">=18"
+  },
+  "dependencies": {
+    "@iconcat/adapter-utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.5",
+    "next": "^15.3.4",
+    "react": "^18.3.1",
+    "vite": "^5.4.5"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  }
+}

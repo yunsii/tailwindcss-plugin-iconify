@@ -8,8 +8,8 @@
     "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["./*"],
-      "@iconcat/example-fixtures": ["../../packages/example-fixtures/src"],
-      "@iconcat/example-fixtures/*": ["../../packages/example-fixtures/src/*"]
+      "@iconcat/example-fixtures": ["../../fixtures/example-fixtures/src"],
+      "@iconcat/example-fixtures/*": ["../../fixtures/example-fixtures/src/*"]
     },
     "resolveJsonModule": true,
     "allowJs": false,

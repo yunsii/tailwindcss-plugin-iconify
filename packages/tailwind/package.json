@@ -24,51 +24,75 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/plugin.d.ts",
-      "import": "./dist/plugin.mjs",
-      "require": "./dist/plugin.cjs"
+      "import": {
+        "types": "./dist/plugin.d.mts",
+        "default": "./dist/plugin.mjs"
+      },
+      "require": {
+        "types": "./dist/plugin.d.cts",
+        "default": "./dist/plugin.cjs"
+      }
     },
     "./catalog-css": {
-      "types": "./dist/catalog-css.d.ts",
-      "import": "./dist/catalog-css.mjs",
-      "require": "./dist/catalog-css.cjs"
+      "import": {
+        "types": "./dist/catalog-css.d.mts",
+        "default": "./dist/catalog-css.mjs"
+      },
+      "require": {
+        "types": "./dist/catalog-css.d.cts",
+        "default": "./dist/catalog-css.cjs"
+      }
     },
     "./*": "./*",
     "./local-icon-sets": {
-      "types": "./dist/extensions/local-icon-sets.d.ts",
-      "import": "./dist/extensions/local-icon-sets.mjs",
-      "require": "./dist/extensions/local-icon-sets.cjs"
+      "import": {
+        "types": "./dist/extensions/local-icon-sets.d.mts",
+        "default": "./dist/extensions/local-icon-sets.mjs"
+      },
+      "require": {
+        "types": "./dist/extensions/local-icon-sets.d.cts",
+        "default": "./dist/extensions/local-icon-sets.cjs"
+      }
     },
     "./figma-icon-sets": {
-      "types": "./dist/extensions/figma-icon-sets/index.d.ts",
-      "import": "./dist/extensions/figma-icon-sets/index.mjs",
-      "require": "./dist/extensions/figma-icon-sets/index.cjs"
+      "import": {
+        "types": "./dist/extensions/figma-icon-sets/index.d.mts",
+        "default": "./dist/extensions/figma-icon-sets/index.mjs"
+      },
+      "require": {
+        "types": "./dist/extensions/figma-icon-sets/index.d.cts",
+        "default": "./dist/extensions/figma-icon-sets/index.cjs"
+      }
     },
     "./figma-icon-sets/node": {
-      "types": "./dist/extensions/figma-icon-sets/node.d.ts",
-      "import": "./dist/extensions/figma-icon-sets/node.mjs",
-      "require": "./dist/extensions/figma-icon-sets/node.cjs"
+      "import": {
+        "types": "./dist/extensions/figma-icon-sets/node.d.mts",
+        "default": "./dist/extensions/figma-icon-sets/node.mjs"
+      },
+      "require": {
+        "types": "./dist/extensions/figma-icon-sets/node.d.cts",
+        "default": "./dist/extensions/figma-icon-sets/node.cjs"
+      }
     }
   },
   "main": "./dist/plugin.mjs",
   "module": "./dist/plugin.mjs",
-  "types": "./dist/plugin.d.ts",
+  "types": "./dist/plugin.d.mts",
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "vite --config vite.docs.config.ts",
-    "build:docs": "tsc && vite build --config vite.docs.config.ts",
+    "build:docs": "tsgo --noEmit && vite build --config vite.docs.config.ts",
     "bd": "pnpm run build:docs",
     "ssg": "rimraf dist-docs && vite-pages ssr --configFile vite.docs.config.ts",
     "ssg:preview": "npm run ssg && serve dist-docs",
-    "build": "tsc && vite build --config vite.lib.config.ts",
+    "build": "tsdown",
     "preview": "vite preview --config vite.docs.config.ts",
-    "test": "vitest run --config vite.lib.config.ts",
-    "test:ui": "vitest --config vite.lib.config.ts --ui",
-    "coverage": "vitest run --config vite.lib.config.ts --coverage",
-    "typecheck": "tsc --noEmit",
-    "typecheck:preview": "tsgo --noEmit"
+    "test": "vitest run --config vitest.config.ts",
+    "test:ui": "vitest --config vitest.config.ts --ui",
+    "coverage": "vitest run --config vitest.config.ts --coverage",
+    "typecheck": "tsgo --noEmit --rootDir ../.."
   },
   "peerDependencies": {
     "tailwindcss": ">=3"
@@ -89,7 +113,6 @@
     "@iconify-json/mdi-light": "^1.2.0",
     "@iconify-json/svg-spinners": "^1.2.0",
     "@mdx-js/react": "^3.0.1",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@types/fs-extra": "^11.0.4",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
@@ -110,7 +133,6 @@
     "unplugin-auto-import": "^0.18.3",
     "vite": "^5.4.5",
     "vite-pages-theme-doc": "^5.0.0",
-    "vite-plugin-dts": "^4.2.1",
     "vite-plugin-react-pages": "^5.0.0",
     "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^2.1.1"

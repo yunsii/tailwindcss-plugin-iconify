@@ -35,8 +35,11 @@ describe('framework presets', () => {
       presets: [reactRouter()],
     })
 
+    // The fixture imports the shared demo package. Keep this expectation wide
+    // enough to prove entry-driven extraction follows the reachable dependency graph.
     expect(result.catalog.icons).toEqual({
       'line-md': ['loading-loop'],
+      'mdi-light': ['cog', 'home', 'view-dashboard'],
     })
   })
 })

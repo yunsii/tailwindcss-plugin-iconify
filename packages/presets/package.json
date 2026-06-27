@@ -7,27 +7,31 @@
   "license": "MIT",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.mts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc && vite build --config vite.lib.config.ts",
-    "typecheck": "tsc --noEmit"
+    "build": "tsdown",
+    "typecheck": "tsgo --noEmit --rootDir ../.."
   },
   "dependencies": {
     "@iconcat/extractor": "workspace:*"
   },
   "devDependencies": {
-    "vite": "^5.4.5",
-    "vite-plugin-dts": "^4.2.1"
+    "vite": "^5.4.5"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

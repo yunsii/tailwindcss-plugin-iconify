@@ -62,14 +62,14 @@ function createIconsPlugin(
     )),
     ...(Array.isArray(staticIcons)
       ? staticIcons.reduce(
-        (acc, item) => {
-          return {
-            ...acc,
-            [item]: '*',
-          }
-        },
-        {},
-      )
+          (acc, item) => {
+            return {
+              ...acc,
+              [item]: '*',
+            }
+          },
+          {},
+        )
       : staticIcons),
   }
 

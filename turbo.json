@@ -1,0 +1,26 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        ".next/**",
+        ".iconcat/**",
+        "dist/**",
+        "dist-docs/**"
+      ]
+    },
+    "build:docs": {
+      "dependsOn": ["^build"],
+      "outputs": ["packages/tailwind/dist-docs/**"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    }
+  }
+}

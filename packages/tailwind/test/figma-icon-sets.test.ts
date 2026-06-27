@@ -2,11 +2,6 @@ import consola from 'consola'
 import pathe from 'pathe'
 import { expect, it } from 'vitest'
 
-import {
-  importFigmaIconSets,
-  writeIconifyJSONs,
-} from '../src/extensions/figma-icon-sets/node'
-
 const itWithFigmaToken
   = process.env.RUN_FIGMA_TESTS === '1' && process.env.VITE_FIGMA_TOKEN
     ? it
@@ -15,6 +10,10 @@ const itWithFigmaToken
 itWithFigmaToken(
   'basic',
   async () => {
+    const {
+      importFigmaIconSets,
+      writeIconifyJSONs,
+    } = await import('../src/extensions/figma-icon-sets/node')
     const iconSets = await importFigmaIconSets({
       files: [
         {

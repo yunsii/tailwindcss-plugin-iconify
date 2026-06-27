@@ -4,38 +4,48 @@
   "private": true,
   "packageManager": "pnpm@10.13.1",
   "scripts": {
-    "build": "pnpm -r --if-present run build",
-    "build:docs": "pnpm --filter @iconcat/tailwind run build:docs",
+    "build": "turbo run build",
+    "build:packages": "turbo run build --filter='./packages/*'",
+    "build:docs": "turbo run build:docs --filter=@iconcat/tailwind",
     "dev": "pnpm --filter @iconcat/tailwind run dev",
     "dev:iconcat": "node scripts/dev/start.mjs",
-    "lint": "eslint --flag unstable_ts_config .",
-    "lint:fix": "eslint --flag unstable_ts_config --fix .",
-    "test": "pnpm -r --if-present run test",
-    "typecheck": "pnpm -r --if-present run typecheck",
-    "typecheck:preview": "pnpm -r --if-present run typecheck:preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "turbo run test --filter=@iconcat/core --filter=@iconcat/extractor --filter=@iconcat/tailwind",
+    "typecheck": "turbo run typecheck",
     "changeset": "changeset",
     "changeset:publish": "changeset publish"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.6.0",
+    "@antfu/eslint-config": "^5.4.1",
     "@changesets/cli": "^2.27.8",
-    "@commitlint/cli": "^19.5.0",
-    "@commitlint/config-conventional": "^19.5.0",
-    "@commitlint/types": "^19.5.0",
-    "@eslint-react/eslint-plugin": "^1.14.1",
-    "@jannajs/lint": "3.0.0-next.20",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/types": "^19.8.1",
+    "@eslint-react/eslint-plugin": "^1.53.1",
+    "@jannajs/lint": "3.1.4",
     "@types/node": "^22.5.5",
-    "@typescript/native-preview": "7.0.0-dev.20250726.1",
-    "@typescript/native-preview-linux-x64": "7.0.0-dev.20250726.1",
-    "eslint": "^9.10.0",
-    "eslint-plugin-format": "^0.1.2",
-    "eslint-plugin-react-hooks": "5.1.0-rc-fb9a90fa48-20240614",
-    "eslint-plugin-react-refresh": "^0.4.12",
-    "husky": "^9.1.6",
+    "@typescript/native-preview": "7.0.0-dev.20260626.1",
+    "@typescript/native-preview-linux-x64": "7.0.0-dev.20260626.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-format": "^1.5.0",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
-    "typescript": "^5.6.2"
+    "tsdown": "^0.22.3",
+    "turbo": "^2.10.0",
+    "typescript": "6.0.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "eslint-plugin-es-x": "^9.7.0",
+      "eslint-plugin-n": "^18.2.1",
+      "eslint-plugin-regexp": "^3.1.0",
+      "typescript": "6.0.3"
+    }
   },
   "lint-staged": {
-    "*": "eslint --flag unstable_ts_config --fix"
+    "*": "eslint --fix"
   }
 }
