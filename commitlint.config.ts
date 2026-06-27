@@ -7,6 +7,14 @@ const config: UserConfig = {
   // [Question] how to extend and override config-conventional settings:
   // https://github.com/conventional-changelog/commitlint/issues/2232
   rules: {
+    'body-max-length': [0],
+    'body-max-line-length': [0],
+    'footer-max-length': [0],
+    'footer-max-line-length': [0],
+    'header-max-length': [0],
+    'scope-max-length': [0],
+    'subject-max-length': [0],
+    'type-max-length': [0],
     'type-enum': [
       2,
       'always',
