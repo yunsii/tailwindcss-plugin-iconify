@@ -4,6 +4,7 @@ import { basename, dirname, extname, resolve } from 'node:path'
 import process from 'node:process'
 
 import {
+  mergeCatalogIcons,
   normalizeCatalogIcons,
   normalizeIconcatCatalog,
 } from '@iconcat/core'
@@ -18,6 +19,7 @@ import { ensureLoadIconSet } from './loader'
 import type { IconCatalogInput, StaticIconsOptions } from './options'
 
 export interface IconcatCSSArtifactOptions extends StaticIconsOptions {
+  artifactMode?: 'catalog' | 'global'
   output?: string
   manifest?: string
   publicPath?: string
@@ -63,6 +65,11 @@ export function createIconcatCSSArtifact(
   return {
     name: 'tailwind-iconcat-css',
     async write(result: IconcatCSSArtifactInput) {
+      if (options.artifactMode === 'global') {
+        await writeGlobalCSSArtifact(result, options)
+        return
+      }
+
       const css = generateIconcatCSS(result.catalog, options)
       const cwd = result.cwd || process.cwd()
       const hash = createHash('sha256')
@@ -95,6 +102,82 @@ export function createIconcatCSSArtifact(
   }
 }
 
+async function writeGlobalCSSArtifact(
+  result: IconcatCSSArtifactInput,
+  options: IconcatCSSArtifactOptions,
+) {
+  const output = options.output || '.iconcat/iconcat.[hash].css'
+  const manifest = options.manifest || '.iconcat/manifest.json'
+  const publicPath = options.publicPath || '/assets'
+  const cwd = result.cwd || process.cwd()
+  const manifestFile = resolve(cwd, manifest)
+  const outputDirectory = dirname(resolve(cwd, output))
+  const catalog = normalizeIconcatCatalog(result.catalog)
+  const priorityIcons = mergeCatalogInputs(
+    ...Object.values(catalog.entries || {})
+      .filter((entry) => entry.priority)
+      .map((entry) => entry.icons),
+  )
+  const normalIcons = subtractCatalogIcons(catalog.icons, priorityIcons)
+  const files: Record<string, {
+    file: string
+    hash: string
+    href: string
+    icons: number
+  }> = {}
+  const writtenFiles: string[] = []
+
+  for (const layer of [
+    { name: 'priority', icons: priorityIcons },
+    { name: 'normal', icons: normalIcons },
+  ] as const) {
+    const css = generateIconcatCSS({
+      version: 1,
+      icons: layer.icons,
+    }, options)
+    const icons = countIcons(layer.icons)
+
+    if (!css) {
+      continue
+    }
+
+    const hash = createHash('sha256')
+      .update(css)
+      .digest('hex')
+      .slice(0, 10)
+    const outputFile = resolve(cwd, formatHashedOutput(output, hash))
+    const file = basename(outputFile)
+
+    await atomicWriteFile(outputFile, `${css}\n`)
+    files[layer.name] = {
+      file,
+      hash,
+      href: joinUrl(publicPath, file),
+      icons,
+    }
+    writtenFiles.push(outputFile)
+  }
+
+  await mkdir(dirname(manifestFile), { recursive: true })
+  await atomicWriteFile(
+    manifestFile,
+    `${JSON.stringify({
+      version: 1,
+      mode: 'global',
+      files,
+      icons: countCatalogIcons(catalog),
+    }, null, 2)}\n`,
+  )
+
+  if (options.clean) {
+    await removeStaleHashedCSS(
+      outputDirectory,
+      basename(output),
+      ...writtenFiles,
+    )
+  }
+}
+
 function normalizeCatalogInput(catalog: IconCatalogInput) {
   return isIconcatCatalog(catalog)
     ? normalizeIconcatCatalog(catalog).icons
@@ -110,7 +193,7 @@ function isIconcatCatalog(
 async function removeStaleHashedCSS(
   directory: string,
   pattern: string,
-  keepFile: string,
+  ...keepFiles: string[]
 ) {
   if (!pattern.includes('[hash]')) {
     return
@@ -125,7 +208,7 @@ async function removeStaleHashedCSS(
       .filter((file) =>
         file.startsWith(prefix)
         && file.endsWith(suffix || ext)
-        && resolve(directory, file) !== keepFile)
+        && !keepFiles.includes(resolve(directory, file)))
       .map((file) => rm(resolve(directory, file), { force: true })),
   )
 }
@@ -144,4 +227,41 @@ function joinUrl(base: string, file: string) {
 function countCatalogIcons(catalog: IconcatCatalog) {
   return Object.values(normalizeIconcatCatalog(catalog).icons)
     .reduce((total, names) => total + names.length, 0)
+}
+
+function countIcons(icons: IconCatalogInput) {
+  return Object.values(normalizeCatalogInput(icons))
+    .reduce((total, names) => total + names.length, 0)
+}
+
+function mergeCatalogInputs(...catalogs: IconCatalogInput[]) {
+  return mergeCatalogIcons(...catalogs.map((catalog) => normalizeCatalogInput(catalog)))
+}
+
+function subtractCatalogIcons(
+  icons: IconCatalogInput,
+  excluded: IconCatalogInput,
+) {
+  const normalized = normalizeCatalogInput(icons)
+  const excludedIcons = normalizeCatalogInput(excluded)
+  const output: Record<string, string[]> = {}
+
+  for (const [prefix, names] of Object.entries(normalized)) {
+    const excludedNames = new Set(excludedIcons[prefix] || [])
+    const remainingNames = names.filter((name) => !excludedNames.has(name))
+
+    if (remainingNames.length > 0) {
+      output[prefix] = remainingNames
+    }
+  }
+
+  return output
+}
+
+function formatHashedOutput(output: string, hash: string) {
+  if (output.includes('[hash]')) {
+    return output.replace('[hash]', hash)
+  }
+
+  throw new Error('Iconcat global CSS artifact output must include [hash].')
 }

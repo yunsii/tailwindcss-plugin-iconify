@@ -5,6 +5,7 @@ export default defineIconcatPackageConfig({
   entries: [
     'src/index.ts',
     'src/cli.ts',
+    'src/runtime.ts',
   ],
   formats: ['esm'],
 })

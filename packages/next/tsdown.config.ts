@@ -6,7 +6,7 @@ const dirname = packageDir(import.meta.url)
 
 export default defineIconcatPackageConfig({
   dirname,
-  entries: ['src/index.tsx'],
+  entries: ['src/index.tsx', 'src/app-router.tsx', 'src/pages-router.tsx'],
   alias: {
     '@iconcat/adapter-utils': path.resolve(dirname, '../adapter-utils/src/index.ts'),
   },

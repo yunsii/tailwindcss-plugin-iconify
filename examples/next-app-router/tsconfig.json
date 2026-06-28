@@ -14,14 +14,26 @@
       "iconcat": [
         "../../packages/cli/src/index.ts"
       ],
+      "iconcat/runtime": [
+        "../../packages/cli/src/runtime.ts"
+      ],
       "@iconcat/core": [
         "../../packages/core/src"
+      ],
+      "@iconcat/adapter-utils": [
+        "../../packages/adapter-utils/src"
       ],
       "@iconcat/extractor": [
         "../../packages/extractor/src"
       ],
       "@iconcat/tailwind/catalog-css": [
         "../../packages/tailwind/src/catalog-css.ts"
+      ],
+      "@iconcat/next": [
+        "../../packages/next/src/index.tsx"
+      ],
+      "@iconcat/next/app-router": [
+        "../../packages/next/src/app-router.tsx"
       ],
       "@iconcat/presets": [
         "../../packages/presets/src"

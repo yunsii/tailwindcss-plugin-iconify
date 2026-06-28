@@ -2,8 +2,11 @@ import process from 'node:process'
 
 import {
   getIconcatCSSHref,
+  getIconcatCSSHrefsFromManifest,
+  getIconcatPriorityCSSHrefsFromManifest,
   installIconcatCSS,
   joinPublicPath,
+  readIconcatManifestSync,
 } from '@iconcat/adapter-utils'
 
 import type {
@@ -15,10 +18,6 @@ import type { Head } from 'next/document'
 export interface NextIconcatPublicPathOptions {
   assetPrefix?: string
   nextStaticCSSPath?: string
-}
-
-export interface NextIconcatStylesheetOptions extends ReadIconcatManifestOptions {
-  precedence?: string
 }
 
 export type NextDocumentHead = typeof Head
@@ -38,22 +37,6 @@ export function getNextIconcatCSSHref(
   return getIconcatCSSHref(options)
 }
 
-export function getAppRouterIconcatStylesheetProps(
-  options: NextIconcatStylesheetOptions = {},
-) {
-  const href = getNextIconcatCSSHref(options)
-
-  if (process.env.NODE_ENV !== 'production' || !href) {
-    return undefined
-  }
-
-  return {
-    href,
-    precedence: options.precedence || 'next',
-    rel: 'stylesheet',
-  } as const
-}
-
 export function createIconcatDocumentHead(
   BaseHead: NextDocumentHead,
 ): NextDocumentHead {
@@ -62,26 +45,41 @@ export function createIconcatDocumentHead(
   class IconcatDocumentHead extends BaseHead {
     getCssLinks(files: Files) {
       const cssLinks = super.getCssLinks(files)
-      const href = getNextIconcatCSSHref()
 
-      if (process.env.NODE_ENV !== 'production' || !href) {
+      if (process.env.NODE_ENV !== 'production') {
         return cssLinks
       }
 
-      return [
-        ...(cssLinks || []),
-        <link
-          as='style'
-          href={href}
-          key='iconcat-preload'
-          rel='preload'
-        />,
-        <link
-          href={href}
-          key='iconcat-stylesheet'
-          rel='stylesheet'
-        />,
-      ]
+      try {
+        const manifest = readIconcatManifestSync()
+        const hrefs = getIconcatCSSHrefsFromManifest(manifest)
+        const preloadHrefs = getIconcatPriorityCSSHrefsFromManifest(manifest)
+
+        if (hrefs.length === 0) {
+          return cssLinks
+        }
+
+        return [
+          ...(cssLinks || []),
+          ...preloadHrefs.map((href) => (
+            <link
+              as='style'
+              href={href}
+              key={`iconcat-preload:${href}`}
+              rel='preload'
+            />
+          )),
+          ...hrefs.map((href) => (
+            <link
+              href={href}
+              key={`iconcat-stylesheet:${href}`}
+              rel='stylesheet'
+            />
+          )),
+        ]
+      } catch {
+        return cssLinks
+      }
     }
   }
 
@@ -99,6 +97,8 @@ export function installNextIconcatCSS(
 
 export type {
   IconcatCSSManifest,
+  IconcatCSSManifestEntry,
+  IconcatCSSManifestFile,
   InstallIconcatCSSOptions,
   ReadIconcatManifestOptions,
 } from '@iconcat/adapter-utils'

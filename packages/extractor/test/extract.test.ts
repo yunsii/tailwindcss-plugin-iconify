@@ -49,6 +49,48 @@ describe('entry graph extraction', () => {
     ])
   })
 
+  it('keeps priority metadata for object entries', async () => {
+    const result = await extractIconCatalog({
+      cwd: resolve(__dirname, 'fixtures/basic'),
+      entries: [
+        { file: 'src/main.tsx', priority: true },
+        'src/admin.tsx',
+      ],
+    })
+
+    expect(result.catalog.entries?.['src/main.tsx']?.priority).toBe(true)
+    expect(result.catalog.entries?.['src/admin.tsx']?.priority).toBeUndefined()
+    expect(result.graph.entries.find((entry) => entry.file === 'src/main.tsx')?.priority).toBe(true)
+  })
+
+  it('extracts page-level allowlist icons declared with defineIconcatIcons', async () => {
+    const cwd = resolve(tmpdir(), `iconcat-allowlist-test-${process.pid}`)
+
+    await rm(cwd, { force: true, recursive: true })
+    await mkdir(resolve(cwd, 'src'), { recursive: true })
+    await writeFile(
+      resolve(cwd, 'src/page.tsx'),
+      [
+        'import { defineIconcatIcons } from "iconcat"',
+        'const widgetIcons = defineIconcatIcons([',
+        '  "custom-dashboard:sales",',
+        '  "mdi-light:chart-line",',
+        '])',
+        'export const icons = widgetIcons',
+      ].join('\n'),
+    )
+
+    const result = await extractIconCatalog({
+      cwd,
+      entries: ['src/page.tsx'],
+    })
+
+    expect(result.catalog.entries?.['src/page.tsx']?.icons).toEqual({
+      'custom-dashboard': ['sales'],
+      'mdi-light': ['chart-line'],
+    })
+  })
+
   it('ignores common non-icon protocol-like string literals', async () => {
     const result = await extractIconCatalog({
       cwd: resolve(__dirname, 'fixtures/protocols'),

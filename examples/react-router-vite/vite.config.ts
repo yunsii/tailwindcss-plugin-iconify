@@ -22,6 +22,7 @@ export default defineConfig({
       }),
       artifacts: [
         createIconcatCSSArtifact({
+          artifactMode: 'global',
           output: '.iconcat/iconcat.[hash].css',
           manifest: '.iconcat/manifest.json',
           publicPath: iconcatPublicPath,

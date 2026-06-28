@@ -4,11 +4,29 @@ import { basename, dirname, resolve } from 'node:path'
 import process from 'node:process'
 
 export interface IconcatCSSManifest {
-  file: string
-  href: string
+  file?: string
+  href?: string
   version?: number
   hash?: string
   icons?: number
+  mode?: 'entry' | 'global'
+  files?: Record<string, IconcatCSSManifestFile>
+  entries?: Record<string, IconcatCSSManifestEntry>
+}
+
+export interface IconcatCSSManifestFile {
+  file: string
+  hash?: string
+  href: string
+  icons?: number
+}
+
+export interface IconcatCSSManifestEntry {
+  file?: string
+  hash?: string
+  href?: string
+  icons?: number
+  priority?: boolean
 }
 
 export interface ReadIconcatManifestOptions {
@@ -44,7 +62,35 @@ export function readIconcatManifestSync(
 
 export function getIconcatCSSHref(options: ReadIconcatManifestOptions = {}) {
   try {
-    return readIconcatManifestSync(options).href
+    const manifest = readIconcatManifestSync(options)
+    return getIconcatCSSHrefsFromManifest(manifest)[0]
+  } catch {
+    return undefined
+  }
+}
+
+export function getIconcatCSSHrefs(options: ReadIconcatManifestOptions = {}) {
+  try {
+    return getIconcatCSSHrefsFromManifest(readIconcatManifestSync(options))
+  } catch {
+    return []
+  }
+}
+
+export function getIconcatPriorityCSSHrefs(options: ReadIconcatManifestOptions = {}) {
+  try {
+    return getIconcatPriorityCSSHrefsFromManifest(readIconcatManifestSync(options))
+  } catch {
+    return []
+  }
+}
+
+export function getIconcatEntryCSSHref(
+  entry: string,
+  options: ReadIconcatManifestOptions = {},
+) {
+  try {
+    return readIconcatManifestSync(options).entries?.[entry]?.href
   } catch {
     return undefined
   }
@@ -56,16 +102,27 @@ export async function installIconcatCSS(
   const cwd = options.cwd || process.cwd()
   const manifest = await readIconcatManifest(options)
   const sourceDir = options.sourceDir || dirname(resolveManifestFile(options))
-  const source = resolve(cwd, sourceDir, manifest.file)
-  const target = resolve(cwd, options.targetDir, basename(manifest.file))
+  const files = getIconcatManifestFiles(manifest)
+  const installed = await Promise.all(files.map(async (file) => {
+    const source = resolve(cwd, sourceDir, file)
+    const target = resolve(cwd, options.targetDir, basename(file))
 
-  await mkdir(dirname(target), { recursive: true })
-  await atomicWriteFile(target, await readFile(source, 'utf8'))
+    await mkdir(dirname(target), { recursive: true })
+    await atomicWriteFile(target, await readFile(source, 'utf8'))
+
+    return {
+      source,
+      target,
+    }
+  }))
+
+  const [first] = installed
 
   return {
     manifest,
-    source,
-    target,
+    source: first?.source,
+    target: first?.target,
+    files: installed,
   }
 }
 
@@ -79,4 +136,71 @@ async function atomicWriteFile(file: string, content: string) {
   const tempFile = `${file}.${process.pid}.${Date.now()}.tmp`
   await writeFile(tempFile, content)
   await rename(tempFile, file)
+}
+
+function isEntryManifest(manifest: IconcatCSSManifest) {
+  return manifest.mode === 'entry' && !!manifest.entries
+}
+
+export function getIconcatPriorityCSSHrefsFromManifest(manifest: IconcatCSSManifest) {
+  if (manifest.mode === 'global') {
+    return manifest.files?.priority?.href ? [manifest.files.priority.href] : []
+  }
+
+  if (!isEntryManifest(manifest)) {
+    return manifest.href ? [manifest.href] : []
+  }
+
+  return [
+    ...new Set(
+      Object.entries(manifest.entries || {})
+        .filter(([, entry]) => entry.priority)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([, entry]) => entry.href)
+        .filter(isDefined),
+    ),
+  ]
+}
+
+export function getIconcatCSSHrefsFromManifest(manifest: IconcatCSSManifest) {
+  if (manifest.href) {
+    return [manifest.href]
+  }
+
+  if (manifest.files) {
+    return getOrderedManifestFiles(manifest)
+      .map((file) => file.href)
+  }
+
+  return []
+}
+
+export function getIconcatManifestFiles(manifest: IconcatCSSManifest) {
+  if (manifest.files) {
+    return getOrderedManifestFiles(manifest)
+      .map((file) => file.file)
+  }
+
+  return manifest.file ? [manifest.file] : []
+}
+
+function getOrderedManifestFiles(manifest: IconcatCSSManifest) {
+  if (!manifest.files) {
+    return []
+  }
+
+  if (manifest.mode === 'global') {
+    return [
+      manifest.files.priority,
+      manifest.files.normal,
+    ].filter(isDefined)
+  }
+
+  return Object.entries(manifest.files)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([, file]) => file)
+}
+
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined
 }

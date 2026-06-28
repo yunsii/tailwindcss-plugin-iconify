@@ -1,6 +1,10 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 
+import {
+  getIconcatCSSHrefsFromManifest,
+  getIconcatPriorityCSSHrefs,
+} from '@iconcat/adapter-utils'
 import { resolve } from 'pathe'
 import { afterEach, describe, expect, it } from 'vitest'
 
@@ -16,6 +20,51 @@ afterEach(async () => {
 })
 
 describe('iconcat vite plugin', () => {
+  it('orders global layer manifest hrefs and exposes priority hrefs', async () => {
+    const cwd = await createFixture()
+    await mkdir(resolve(cwd, '.iconcat'), { recursive: true })
+    await writeFile(
+      resolve(cwd, '.iconcat/manifest.json'),
+      `${JSON.stringify({
+        version: 1,
+        mode: 'global',
+        files: {
+          normal: {
+            file: 'iconcat.b.css',
+            href: '/assets/iconcat.b.css',
+          },
+          priority: {
+            file: 'iconcat.a.css',
+            href: '/assets/iconcat.a.css',
+          },
+        },
+      })}\n`,
+    )
+
+    const manifest = {
+      version: 1,
+      mode: 'global',
+      files: {
+        normal: {
+          file: 'iconcat.b.css',
+          href: '/assets/iconcat.b.css',
+        },
+        priority: {
+          file: 'iconcat.a.css',
+          href: '/assets/iconcat.a.css',
+        },
+      },
+    } as const
+
+    expect(getIconcatCSSHrefsFromManifest(manifest)).toEqual([
+      '/assets/iconcat.a.css',
+      '/assets/iconcat.b.css',
+    ])
+    expect(getIconcatPriorityCSSHrefs({ cwd })).toEqual([
+      '/assets/iconcat.a.css',
+    ])
+  })
+
   it('starts extraction in buildStart and waits before emitting CSS', async () => {
     const cwd = await createFixture()
     const release = deferred<void>()
@@ -97,6 +146,89 @@ describe('iconcat vite plugin', () => {
         },
       ])
   })
+
+  it('emits and links every CSS file from global layer artifacts', async () => {
+    const cwd = await createFixture()
+    const artifact: IconcatArtifact = {
+      name: 'global-css',
+      async write(result) {
+        await writeFile(resolve(result.cwd, '.iconcat/iconcat.a.css'), '.icon-a{}\n')
+        await writeFile(resolve(result.cwd, '.iconcat/iconcat.b.css'), '.icon-b{}\n')
+        await writeFile(
+          resolve(result.cwd, '.iconcat/manifest.json'),
+          `${JSON.stringify({
+            version: 1,
+            mode: 'global',
+            files: {
+              priority: {
+                file: 'iconcat.a.css',
+                href: '/assets/iconcat.a.css',
+                icons: 1,
+              },
+              normal: {
+                file: 'iconcat.b.css',
+                href: '/assets/iconcat.b.css',
+                icons: 1,
+              },
+            },
+            icons: 2,
+          })}\n`,
+        )
+      },
+    }
+
+    const [plugin] = iconcat({
+      cwd,
+      entries: ['src/main.ts'],
+      output: '.iconcat/catalog.json',
+      artifacts: [artifact],
+      manifest: '.iconcat/manifest.json',
+      sourceDir: '.iconcat',
+    })
+    const emitted: Array<{ fileName?: string, source?: string, type: string }> = []
+
+    await runBuildStart(plugin)
+    await runGenerateBundle(plugin, emitted)
+
+    expect(emitted).toEqual([
+      {
+        type: 'asset',
+        fileName: 'assets/iconcat.a.css',
+        source: '.icon-a{}\n',
+      },
+      {
+        type: 'asset',
+        fileName: 'assets/iconcat.b.css',
+        source: '.icon-b{}\n',
+      },
+    ])
+
+    await expect(runTransformIndexHtml(plugin))
+      .resolves
+      .toEqual([
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: '/assets/iconcat.a.css',
+          },
+          injectTo: 'head',
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'stylesheet',
+            href: '/assets/iconcat.b.css',
+          },
+          injectTo: 'head',
+        },
+        {
+          tag: 'script',
+          children: 'window.__ICONCAT_CSS_HREF__="/assets/iconcat.a.css"',
+          injectTo: 'head',
+        },
+      ])
+  })
 })
 
 function getHook<T extends (...args: never[]) => unknown>(
@@ -124,6 +256,28 @@ async function createFixture() {
   await writeFile(resolve(cwd, 'src/main.ts'), 'export const icon = "mdi-light:home"\n')
   await writeFile(resolve(cwd, 'package.json'), '{"type":"module","private":true}\n')
   return cwd
+}
+
+function runBuildStart(plugin: ReturnType<typeof iconcat>[number]) {
+  const buildStart = getHook(plugin.buildStart)
+  return buildStart.call({} as never, {} as never)
+}
+
+function runGenerateBundle(
+  plugin: ReturnType<typeof iconcat>[number],
+  emitted: Array<{ fileName?: string, source?: string, type: string }>,
+) {
+  const generateBundle = getHook(plugin.generateBundle)
+  return generateBundle.call({
+    emitFile(asset: { fileName?: string, source?: string, type: string }) {
+      emitted.push(asset)
+    },
+  } as never, {} as never, {} as never, false as never)
+}
+
+function runTransformIndexHtml(plugin: ReturnType<typeof iconcat>[number]) {
+  const transformIndexHtml = getHook(plugin.transformIndexHtml)
+  return transformIndexHtml.call({} as never, '<html></html>' as never, {} as never)
 }
 
 function deferred<T>() {

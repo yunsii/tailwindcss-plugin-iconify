@@ -1,6 +1,7 @@
 export {
   createEsbuildBundler,
   defineIconcatConfig,
+  defineIconcatIcons,
   extractIconCatalog,
   extractSourceIcons,
   writeIconCatalog,
@@ -14,6 +15,7 @@ export type {
   IconcatBundler,
   IconcatBundleResult,
   IconcatConfig,
+  IconcatConfigEntry,
   IconcatEntry,
   IconcatExtractorOptions,
   IconcatGraph,

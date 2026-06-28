@@ -20,6 +20,7 @@ import type {
   ExtractIconCatalogResult,
   IconcatBundleCacheInput,
   IconcatConfig,
+  IconcatConfigEntry,
   IconcatModule,
   IconcatModuleCacheInput,
   IconcatPreset,
@@ -32,7 +33,8 @@ export async function extractIconCatalog(
 ): Promise<ExtractIconCatalogResult> {
   const cwd = resolve(config.cwd || process.cwd())
   const presets = config.presets || []
-  const entries = await resolveEntries(cwd, config.entries || [], presets)
+  const resolvedEntries = await resolveEntries(cwd, config.entries || [], presets)
+  const entries = resolvedEntries.entries
   const bundler = config.bundler || createEsbuildBundler()
   const bundleInput: IconcatBundleCacheInput = {
     cwd,
@@ -60,6 +62,7 @@ export async function extractIconCatalog(
   }))
 
   const entryUsages: EntryIconUsage[] = bundle.entries.map((entry) => {
+    const priority = resolvedEntries.priorityByFile.get(entry.file) || undefined
     const icons = mergeCatalogIcons(
       ...entry.modules.map((moduleFile) => moduleUsages.get(moduleFile)?.icons),
     )
@@ -68,6 +71,7 @@ export async function extractIconCatalog(
       file: entry.file,
       icons,
       modules: entry.modules,
+      priority,
     }
   })
 
@@ -85,6 +89,7 @@ export async function extractIconCatalog(
           {
             icons: entry.icons,
             modules: entry.modules,
+            priority: entry.priority,
           },
         ]),
       ),
@@ -93,7 +98,10 @@ export async function extractIconCatalog(
     entries: entryUsages,
     modules: Array.from(moduleUsages.values()),
     graph: {
-      entries: bundle.entries,
+      entries: bundle.entries.map((entry) => ({
+        ...entry,
+        priority: resolvedEntries.priorityByFile.get(entry.file) || undefined,
+      })),
       modules: bundle.modules.map((mod) => mod.file).sort(),
     },
     diagnostics,
@@ -159,28 +167,48 @@ export async function writeIconCatalog(
 
 async function resolveEntries(
   cwd: string,
-  explicitEntries: string[],
+  explicitEntries: Array<string | IconcatConfigEntry>,
   presets: IconcatPreset[],
 ) {
-  const patterns = [
-    ...explicitEntries,
-    ...presets.flatMap((preset) => preset.entries),
+  const specs = [
+    ...explicitEntries.map((entry) =>
+      typeof entry === 'string'
+        ? { file: entry, priority: false }
+        : entry),
+    ...presets.flatMap((preset) =>
+      preset.entries.map((entry) => ({ file: entry, priority: false }))),
   ]
+  const patterns = specs.map((entry) => entry.file)
 
   if (!patterns.length) {
     throw new Error('Iconcat requires at least one entry or preset.')
   }
 
-  const entries = await fg(patterns, {
-    cwd,
-    absolute: false,
-    onlyFiles: true,
-    ignore: presets.flatMap((preset) => preset.exclude || []),
-  })
+  const priorityByFile = new Map<string, boolean>()
+  const matches = await Promise.all(
+    specs.map(async (entry) => {
+      const files = await fg(entry.file, {
+        cwd,
+        absolute: false,
+        onlyFiles: true,
+        ignore: presets.flatMap((preset) => preset.exclude || []),
+      })
+
+      files.forEach((file) => {
+        priorityByFile.set(file, priorityByFile.get(file) || !!entry.priority)
+      })
+
+      return files
+    }),
+  )
+  const entries = [...new Set(matches.flat())].sort()
 
   if (!entries.length) {
     throw new Error(`Iconcat could not resolve entries from: ${patterns.join(', ')}`)
   }
 
-  return entries.sort()
+  return {
+    entries,
+    priorityByFile,
+  }
 }

@@ -10,6 +10,7 @@ export type IconcatCatalogIcons = Record<string, string[]>
 export interface IconcatEntryCatalog {
   icons: IconcatCatalogIcons
   modules?: string[]
+  priority?: boolean
 }
 
 export type IconcatDiagnosticSeverity = 'warning' | 'error'
@@ -41,6 +42,7 @@ export function normalizeIconcatCatalog(
               ...entry,
               icons: normalizeCatalogIcons(entry.icons),
               modules: entry.modules ? [...new Set(entry.modules)].sort() : undefined,
+              priority: entry.priority || undefined,
             },
           ]),
         )

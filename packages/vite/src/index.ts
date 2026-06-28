@@ -2,12 +2,17 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { joinPublicPath, readIconcatManifestSync } from '@iconcat/adapter-utils'
+import {
+  getIconcatCSSHrefsFromManifest,
+  getIconcatManifestFiles,
+  joinPublicPath,
+  readIconcatManifestSync,
+} from '@iconcat/adapter-utils'
 import { writeIconCatalog } from '@iconcat/extractor'
 
 import type { ReadIconcatManifestOptions } from '@iconcat/adapter-utils'
 import type { IconcatConfig } from '@iconcat/extractor'
-import type { Plugin } from 'vite'
+import type { IndexHtmlTransformResult, Plugin } from 'vite'
 
 export interface IconcatViteOptions extends IconcatConfig {
   manifest?: string
@@ -59,22 +64,26 @@ function createIconcatCSSPlugin(
       if (!manifest) {
         return []
       }
+      const hrefs = getIconcatCSSHrefsFromManifest(manifest)
+      const [href] = hrefs
+      const tags: IndexHtmlTransformResult = hrefs.map((href) => ({
+        tag: 'link',
+        attrs: {
+          rel: 'stylesheet',
+          href,
+        },
+        injectTo: 'head',
+      } as const))
 
-      return [
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'stylesheet',
-            href: manifest.href,
-          },
-          injectTo: 'head',
-        },
-        {
+      if (href) {
+        tags.push({
           tag: 'script',
-          children: `window.${exposeHrefGlobal}=${JSON.stringify(manifest.href)}`,
+          children: `window.${exposeHrefGlobal}=${JSON.stringify(href)}`,
           injectTo: 'head',
-        },
-      ]
+        } as const)
+      }
+
+      return tags
     },
     async generateBundle() {
       const manifest = await readManifestAfterExtraction(extraction, manifestOptions)
@@ -82,12 +91,15 @@ function createIconcatCSSPlugin(
         return
       }
 
-      const sourceFile = resolve(cwd, sourceDir, manifest.file)
-      this.emitFile({
-        type: 'asset',
-        fileName: `${assetDir.replace(/\/$/, '')}/${manifest.file}`,
-        source: readFileSync(sourceFile, 'utf8'),
-      })
+      for (const file of getIconcatManifestFiles(manifest)) {
+        const sourceFile = resolve(cwd, sourceDir, file)
+
+        this.emitFile({
+          type: 'asset',
+          fileName: `${assetDir.replace(/\/$/, '')}/${file}`,
+          source: readFileSync(sourceFile, 'utf8'),
+        })
+      }
     },
   }
 }

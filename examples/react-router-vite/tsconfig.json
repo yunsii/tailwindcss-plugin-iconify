@@ -7,6 +7,9 @@
     "moduleResolution": "Bundler",
     "paths": {
       "iconcat": ["../../packages/cli/src/index.ts"],
+      "iconcat/runtime": ["../../packages/cli/src/runtime.ts"],
+      "@iconcat/vite": ["../../packages/vite/src"],
+      "@iconcat/adapter-utils": ["../../packages/adapter-utils/src"],
       "@iconcat/core": ["../../packages/core/src"],
       "@iconcat/extractor": ["../../packages/extractor/src"],
       "@iconcat/extractor/vite": ["../../packages/extractor/src/vite.ts"],

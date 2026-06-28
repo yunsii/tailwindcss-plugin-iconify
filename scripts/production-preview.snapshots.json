@@ -1,0 +1,219 @@
+{
+  "next-app-router": {
+    "routes": {
+      "/": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "stylesheet",
+            "precedence": "next"
+          },
+          {
+            "href": "/_next/static/css/iconcat.f3fac45070.css",
+            "rel": "stylesheet",
+            "precedence": "next"
+          }
+        ],
+        "hasConfigurableIconsCopy": false
+      },
+      "/dashboard": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "stylesheet",
+            "precedence": "next"
+          },
+          {
+            "href": "/_next/static/css/iconcat.f3fac45070.css",
+            "rel": "stylesheet",
+            "precedence": "next"
+          }
+        ],
+        "hasConfigurableIconsCopy": true
+      },
+      "/settings": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "stylesheet",
+            "precedence": "next"
+          },
+          {
+            "href": "/_next/static/css/iconcat.f3fac45070.css",
+            "rel": "stylesheet",
+            "precedence": "next"
+          }
+        ],
+        "hasConfigurableIconsCopy": false
+      }
+    },
+    "manifest": {
+      "mode": "global",
+      "files": {
+        "priority": {
+          "file": "iconcat.5b60030fc4.css",
+          "href": "/_next/static/css/iconcat.5b60030fc4.css",
+          "icons": 1
+        },
+        "normal": {
+          "file": "iconcat.f3fac45070.css",
+          "href": "/_next/static/css/iconcat.f3fac45070.css",
+          "icons": 5
+        }
+      },
+      "entries": {},
+      "icons": 6
+    },
+    "cssSelectors": {
+      "iconcat.5b60030fc4.css": [
+        "mdi-light--home"
+      ],
+      "iconcat.f3fac45070.css": [
+        "line-md--loading-loop",
+        "mdi-light--calendar",
+        "mdi-light--chart-line",
+        "mdi-light--cog",
+        "mdi-light--view-dashboard"
+      ]
+    }
+  },
+  "next-pages-router": {
+    "routes": {
+      "/": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "preload",
+            "as": "style"
+          },
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "stylesheet"
+          },
+          {
+            "href": "/_next/static/css/iconcat.f3fac45070.css",
+            "rel": "stylesheet"
+          }
+        ],
+        "hasConfigurableIconsCopy": false
+      },
+      "/dashboard": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "preload",
+            "as": "style"
+          },
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "stylesheet"
+          },
+          {
+            "href": "/_next/static/css/iconcat.f3fac45070.css",
+            "rel": "stylesheet"
+          }
+        ],
+        "hasConfigurableIconsCopy": true
+      },
+      "/settings": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "preload",
+            "as": "style"
+          },
+          {
+            "href": "/_next/static/css/iconcat.5b60030fc4.css",
+            "rel": "stylesheet"
+          },
+          {
+            "href": "/_next/static/css/iconcat.f3fac45070.css",
+            "rel": "stylesheet"
+          }
+        ],
+        "hasConfigurableIconsCopy": false
+      }
+    },
+    "manifest": {
+      "mode": "global",
+      "files": {
+        "priority": {
+          "file": "iconcat.5b60030fc4.css",
+          "href": "/_next/static/css/iconcat.5b60030fc4.css",
+          "icons": 1
+        },
+        "normal": {
+          "file": "iconcat.f3fac45070.css",
+          "href": "/_next/static/css/iconcat.f3fac45070.css",
+          "icons": 5
+        }
+      },
+      "entries": {},
+      "icons": 6
+    },
+    "cssSelectors": {
+      "iconcat.5b60030fc4.css": [
+        "mdi-light--home"
+      ],
+      "iconcat.f3fac45070.css": [
+        "line-md--loading-loop",
+        "mdi-light--calendar",
+        "mdi-light--chart-line",
+        "mdi-light--cog",
+        "mdi-light--view-dashboard"
+      ]
+    }
+  },
+  "react-router-vite": {
+    "routes": {
+      "/": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/assets/iconcat.55fe333205.css",
+            "rel": "stylesheet"
+          }
+        ],
+        "hasConfigurableIconsCopy": false
+      },
+      "/dashboard": {
+        "status": 200,
+        "iconcatLinks": [
+          {
+            "href": "/assets/iconcat.55fe333205.css",
+            "rel": "stylesheet"
+          }
+        ],
+        "hasConfigurableIconsCopy": false
+      }
+    },
+    "manifest": {
+      "mode": "global",
+      "files": {
+        "normal": {
+          "file": "iconcat.55fe333205.css",
+          "href": "/assets/iconcat.55fe333205.css",
+          "icons": 6
+        }
+      },
+      "entries": {},
+      "icons": 6
+    },
+    "cssSelectors": {
+      "iconcat.55fe333205.css": [
+        "line-md--loading-loop",
+        "mdi-light--calendar",
+        "mdi-light--chart-line",
+        "mdi-light--cog",
+        "mdi-light--home",
+        "mdi-light--view-dashboard"
+      ]
+    }
+  }
+}

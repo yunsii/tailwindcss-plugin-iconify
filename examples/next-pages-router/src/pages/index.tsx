@@ -1,11 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import { HomePanel } from '@iconcat/example-fixtures/home'
 
-import { getIconcatStaticProps } from '../page-props'
+import { createIconcatStaticProps } from '../page-props'
 
 import type { IconcatPageProps } from '../page-props'
 
-export const getStaticProps = getIconcatStaticProps
+export const getStaticProps = createIconcatStaticProps()
 
 export default function Page({ iconcatCSSHref }: IconcatPageProps) {
   return (
@@ -15,7 +15,7 @@ export default function Page({ iconcatCSSHref }: IconcatPageProps) {
         routerType: 'Pages Router',
         cssHref: iconcatCSSHref || undefined,
         cssTarget: '.next/static/css/iconcat.[hash].css',
-        cssLoading: 'manual preload hint plus stylesheet link',
+        cssLoading: 'global priority + normal CSS in _document',
       }}
     />
   )

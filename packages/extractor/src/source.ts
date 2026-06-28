@@ -23,6 +23,7 @@ export function extractSourceIcons(
   const iconMaps = [
     extractClassIcons(code, options),
     extractStringLiteralIcons(code),
+    extractDefinedIconcatIcons(code),
   ]
   const diagnostics: IconcatDiagnostic[] = []
 
@@ -67,6 +68,20 @@ function extractStringLiteralIcons(code: string): IconcatCatalogIcons {
     const parsed = parseIconName(match[1]) || parseDynamicIconValue(match[1])
     if (parsed && !isKnownNonIconPrefix(parsed.prefix)) {
       found.push(`${parsed.prefix}:${parsed.name}`)
+    }
+  }
+
+  return iconNameMapToCatalogIconsFrom(found)
+}
+
+function extractDefinedIconcatIcons(code: string): IconcatCatalogIcons {
+  const matches = code.matchAll(/\bdefineIconcatIcons\s*\(\s*\[([\s\S]*?)\]\s*\)/g)
+  const found: string[] = []
+
+  for (const match of matches) {
+    const values = match[1].matchAll(/["'`]([^"'`\s]+)["'`]/g)
+    for (const value of values) {
+      found.push(value[1])
     }
   }
 

@@ -1,14 +1,19 @@
-import { getAppRouterIconcatStylesheetProps } from '@iconcat/next'
+import { IconcatAppRouterStylesheets } from '@iconcat/next/app-router'
+import { defineIconcatIcons } from 'iconcat/runtime'
 
 import './globals.css'
 
+const iconcatShellIcons = defineIconcatIcons([
+  'mdi-light:home',
+])
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const iconcatStylesheetProps = getAppRouterIconcatStylesheetProps()
+  void iconcatShellIcons
 
   return (
     <html lang='en'>
       <head>
-        {iconcatStylesheetProps ? <link {...iconcatStylesheetProps} /> : null}
+        <IconcatAppRouterStylesheets />
       </head>
       <body>{children}</body>
     </html>

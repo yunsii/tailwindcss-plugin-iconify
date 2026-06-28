@@ -1,4 +1,4 @@
-import { createIconcatDocumentHead } from '@iconcat/next'
+import { createIconcatDocumentHead } from '@iconcat/next/pages-router'
 import Document, {
   Head,
   Html,

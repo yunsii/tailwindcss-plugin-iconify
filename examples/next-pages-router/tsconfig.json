@@ -14,6 +14,18 @@
       "iconcat": [
         "../../packages/cli/src/index.ts"
       ],
+      "iconcat/runtime": [
+        "../../packages/cli/src/runtime.ts"
+      ],
+      "@iconcat/next": [
+        "../../packages/next/src"
+      ],
+      "@iconcat/next/pages-router": [
+        "../../packages/next/src/pages-router.tsx"
+      ],
+      "@iconcat/adapter-utils": [
+        "../../packages/adapter-utils/src"
+      ],
       "@iconcat/core": [
         "../../packages/core/src"
       ],

@@ -1,13 +1,15 @@
-import type { GetStaticProps } from 'next'
+import { getNextIconcatCSSHref } from '@iconcat/next'
 
-import { getIconcatCSSHref } from './iconcat-manifest'
+import type { GetStaticProps } from 'next'
 
 export interface IconcatPageProps {
   iconcatCSSHref: string | null
 }
 
-export const getIconcatStaticProps: GetStaticProps<IconcatPageProps> = () => ({
-  props: {
-    iconcatCSSHref: getIconcatCSSHref() || null,
-  },
-})
+export function createIconcatStaticProps(): GetStaticProps<IconcatPageProps> {
+  return () => ({
+    props: {
+      iconcatCSSHref: getNextIconcatCSSHref() || null,
+    },
+  })
+}

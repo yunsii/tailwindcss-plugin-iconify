@@ -16,6 +16,9 @@
     "lint:fix": "eslint --fix .",
     "test": "turbo run test --filter=@iconcat/core --filter=@iconcat/extractor --filter=@iconcat/tailwind --filter=@iconcat/vite",
     "typecheck": "turbo run typecheck",
+    "test:production-previews": "vitest run --config vitest.production-previews.config.ts",
+    "verify:production-previews": "vitest run --config vitest.production-previews.config.ts",
+    "verify:production-previews:update": "node scripts/verify-production-previews.mjs --update",
     "changeset": "changeset",
     "changeset:publish": "changeset publish"
   },

@@ -2,7 +2,7 @@ import type { IconcatDiagnostic } from '@iconcat/core'
 
 export interface IconcatConfig {
   cwd?: string
-  entries?: string[]
+  entries?: Array<string | IconcatConfigEntry>
   output?: string
   presets?: IconcatPreset[]
   extractors?: IconcatExtractorOptions
@@ -20,6 +20,11 @@ export interface IconcatPreset {
   name: string
   entries: string[]
   exclude?: string[]
+}
+
+export interface IconcatConfigEntry {
+  file: string
+  priority?: boolean
 }
 
 export interface IconcatExtractorOptions {
@@ -49,6 +54,7 @@ export interface IconcatEntry {
   name: string
   file: string
   modules: string[]
+  priority?: boolean
 }
 
 export interface IconcatModule {
@@ -111,6 +117,7 @@ export interface EntryIconUsage {
   file: string
   icons: import('@iconcat/core').IconcatCatalogIcons
   modules: string[]
+  priority?: boolean
 }
 
 export interface ModuleIconUsage {

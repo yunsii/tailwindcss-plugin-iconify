@@ -18,6 +18,7 @@ export type {
   IconcatBundler,
   IconcatBundleResult,
   IconcatConfig,
+  IconcatConfigEntry,
   IconcatEntry,
   IconcatExtractionCache,
   IconcatExtractorOptions,
@@ -48,4 +49,5 @@ export type {
   PersistentIconcatExtractionCacheOptions,
   PersistentIconcatExtractionCacheStats,
 } from './persistent-cache'
+export { defineIconcatIcons } from './runtime'
 export { extractSourceIcons } from './source'

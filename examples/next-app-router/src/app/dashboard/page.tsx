@@ -1,6 +1,12 @@
 import { DashboardPanel } from '@iconcat/example-fixtures/dashboard-panel'
+import { defineIconcatIcons } from 'iconcat/runtime'
 
 import { getIconcatCSSHref } from '../../iconcat-manifest'
+
+const dashboardConfigurableIcons = defineIconcatIcons([
+  'mdi-light:chart-line',
+  'mdi-light:calendar',
+])
 
 export default function DashboardPage() {
   return (
@@ -10,7 +16,8 @@ export default function DashboardPage() {
         routerType: 'App Router',
         cssHref: getIconcatCSSHref(),
         cssTarget: '.next/static/css/iconcat.[hash].css',
-        cssLoading: 'stylesheet link with App Router precedence',
+        cssLoading: 'global priority + normal CSS in root layout',
+        catalogMode: `${dashboardConfigurableIcons.length} configurable icons`,
       }}
     />
   )
