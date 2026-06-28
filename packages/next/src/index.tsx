@@ -84,7 +84,7 @@ export function createIconcatDocumentHead(
     }
   }
 
-  return IconcatDocumentHead as unknown as NextDocumentHead
+  return IconcatDocumentHead
 }
 
 export function installNextIconcatCSS(

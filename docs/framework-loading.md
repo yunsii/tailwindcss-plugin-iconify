@@ -1,3 +1,8 @@
+---
+title: Framework Loading
+description: How Iconcat CSS is generated, installed, and loaded by Next.js and Vite adapters.
+---
+
 # Iconcat CSS Loading And Framework Integration
 
 This document summarizes how Iconcat CSS is generated, installed, and loaded by

@@ -38,7 +38,7 @@
     "typecheck": "tsgo --noEmit"
   },
   "devDependencies": {
-    "vite": "^5.4.5"
+    "vite": "^8.1.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

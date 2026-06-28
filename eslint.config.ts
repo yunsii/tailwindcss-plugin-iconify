@@ -5,6 +5,7 @@ export default janna({
     '**/.iconcat/**',
     '**/.next/**',
     '**/dist/**',
+    '**/next-env.d.ts',
     '**/public/iconcat/**',
     '**/public/iconcat.css',
     '**/*.timestamp-*.mjs',

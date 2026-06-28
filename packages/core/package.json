@@ -32,7 +32,7 @@
     "@iconify/utils": "^2.3.0"
   },
   "devDependencies": {
-    "vite": "^5.4.5",
+    "vite": "^8.1.0",
     "vitest": "^2.1.1"
   },
   "publishConfig": {

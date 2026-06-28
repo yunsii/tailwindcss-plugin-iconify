@@ -1,3 +1,7 @@
+import { RootProvider } from 'fumadocs-ui/provider/next'
+
+import 'fumadocs-ui/style.css'
+import 'fumadocs-ui/css/emerald.css'
 import './styles.css'
 
 export const metadata = {
@@ -7,8 +11,10 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en'>
-      <body>{children}</body>
+    <html lang='en' suppressHydrationWarning>
+      <body>
+        <RootProvider search={{ options: { api: '/api/search' } }}>{children}</RootProvider>
+      </body>
     </html>
   )
 }

@@ -6,13 +6,12 @@
       "outputs": [
         ".next/**",
         ".iconcat/**",
-        "dist/**",
-        "dist-docs/**"
+        "dist/**"
       ]
     },
     "build:docs": {
       "dependsOn": ["^build"],
-      "outputs": ["packages/tailwind/dist-docs/**"]
+      "outputs": [".next/**"]
     },
     "test": {
       "dependsOn": ["^build"],

@@ -1,3 +1,8 @@
+---
+title: Commit Message Standard
+description: Repository commit message shape for Conventional Commits and AI Coding validation notes.
+---
+
 # Commit Message Standard
 
 This repository uses Conventional Commits plus the existing `commit-msg` hook.

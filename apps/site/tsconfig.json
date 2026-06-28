@@ -2,14 +2,24 @@
   "compilerOptions": {
     "incremental": true,
     "target": "ESNext",
-    "jsx": "preserve",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "react-jsx",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
-      "@/*": ["./*"],
-      "@iconcat/example-fixtures": ["../../fixtures/example-fixtures/src"],
-      "@iconcat/example-fixtures/*": ["../../fixtures/example-fixtures/src/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@iconcat/example-fixtures": [
+        "../../fixtures/example-fixtures/src"
+      ],
+      "@iconcat/example-fixtures/*": [
+        "../../fixtures/example-fixtures/src/*"
+      ]
     },
     "resolveJsonModule": true,
     "allowJs": false,
@@ -18,8 +28,21 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "plugins": [{ "name": "next" }]
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".source/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

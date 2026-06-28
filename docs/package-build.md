@@ -1,3 +1,8 @@
+---
+title: Package Build
+description: tsdown package build contract and repository typecheck conventions.
+---
+
 # Iconcat Package Build
 
 Iconcat library packages use `tsdown` for package output. `tsdown` wraps

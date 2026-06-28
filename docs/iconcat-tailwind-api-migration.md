@@ -1,3 +1,8 @@
+---
+title: Tailwind API Migration
+description: Migration notes for the Iconcat Tailwind API rename from add*IconSelectors.
+---
+
 # Iconcat Tailwind API Migration
 
 Iconcat no longer exports the old `add*IconSelectors` API names. Those names

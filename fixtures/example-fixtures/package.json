@@ -12,6 +12,9 @@
     "./navigation": "./src/navigation.ts"
   },
   "dependencies": {
-    "react": "^18.3.1"
+    "react": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17"
   }
 }

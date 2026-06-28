@@ -13,7 +13,7 @@ node_modules
 .turbo
 dist
 dist-ssr
-dist-docs
+.source
 tsconfig.tsbuildinfo
 *.local
 

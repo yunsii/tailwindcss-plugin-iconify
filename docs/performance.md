@@ -1,3 +1,8 @@
+---
+title: Performance
+description: Extractor benchmark results, graph cache strategy, persistent cache, and memory notes.
+---
+
 # Performance
 
 Iconcat extracts icon catalogs from framework entry points by asking a bundler

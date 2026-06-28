@@ -1,8 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install",
-  "buildCommand": "npm run ssg",
-  "outputDirectory": "dist-docs",
+  "buildCommand": "pnpm run build:docs",
   "env": {
     "ENABLE_EXPERIMENTAL_COREPACK": "1"
   }

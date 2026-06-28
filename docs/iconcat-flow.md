@@ -1,3 +1,8 @@
+---
+title: Catalog Extraction Flow
+description: Iconcat entry-driven dependency graph traversal, catalog extraction, and hashed CSS handoff.
+---
+
 # Iconcat Catalog Extraction Flow
 
 Iconcat follows the same high-level idea as Lingui catalog extraction: start
