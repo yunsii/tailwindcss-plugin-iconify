@@ -10,6 +10,9 @@ import {
   getIconcatPriorityCSSHrefs,
   getNextAppRouterPageManifestEntries,
   getNextAppRouterRouteEntriesFromCandidates,
+  hasIconcatPageEntryInManifest,
+  resolveIconcatPageEntryFromManifest,
+  resolveNextAppRouterPageRoute,
 } from '@iconcat/adapter-utils'
 import { resolve } from 'pathe'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -96,12 +99,24 @@ describe('iconcat vite plugin', () => {
           },
         ],
       },
+      pageRoutes: {
+        '/dashboard': 'src/routes/dashboard.tsx',
+      },
     } satisfies IconcatCSSManifest
 
     expect(getIconcatCSSHrefsFromManifest(manifest)).toEqual([
       '/assets/iconcat.global.css',
     ])
-    expect(getIconcatPageCSSFilesFromManifest(manifest, 'src/routes/dashboard.tsx')).toEqual([
+    // @ts-expect-error Page CSS helpers only accept route paths.
+    expect(() => getIconcatPageCSSFilesFromManifest(manifest, 'src/routes/dashboard.tsx'))
+      .toThrow('only accept route paths')
+    // @ts-expect-error Page CSS helpers only accept route paths.
+    expect(resolveIconcatPageEntryFromManifest(manifest, 'src/routes/dashboard.tsx')).toBeUndefined()
+    expect(resolveIconcatPageEntryFromManifest(manifest, '/dashboard')).toBe('src/routes/dashboard.tsx')
+    // @ts-expect-error Page CSS helpers only accept route paths.
+    expect(hasIconcatPageEntryInManifest(manifest, 'src/routes/dashboard.tsx')).toBe(false)
+    expect(hasIconcatPageEntryInManifest(manifest, '/dashboard')).toBe(true)
+    expect(getIconcatPageCSSFilesFromManifest(manifest, '/dashboard')).toEqual([
       expect.objectContaining({
         href: '/assets/iconcat.dashboard-priority.css',
         priority: true,
@@ -110,10 +125,13 @@ describe('iconcat vite plugin', () => {
         href: '/assets/iconcat.dashboard.css',
       }),
     ])
-    expect(getIconcatPageCSSHrefsFromManifest(manifest, 'src/routes/dashboard.tsx')).toEqual([
+    expect(getIconcatPageCSSHrefsFromManifest(manifest, '/dashboard')).toEqual([
       '/assets/iconcat.dashboard-priority.css',
       '/assets/iconcat.dashboard.css',
     ])
+    // @ts-expect-error Page CSS helpers only accept route paths.
+    expect(() => getIconcatPageCSSHrefsFromManifest(manifest, 'src/routes/dashboard.tsx'))
+      .toThrow('only accept route paths')
   })
 
   it('resolves Next App Router page CSS files from route manifests', () => {
@@ -148,22 +166,42 @@ describe('iconcat vite plugin', () => {
           'src/app/dashboard/settings/page.tsx',
         ],
       },
+      pageRoutes: {
+        '/dashboard/settings': 'src/app/dashboard/settings/page.tsx',
+      },
     } satisfies IconcatCSSManifest
 
     expect(getNextAppRouterPageManifestEntries(
       manifest,
-      'src/app/dashboard/settings/page.tsx',
+      '/dashboard/settings',
     )).toEqual([
       'src/app/dashboard/settings/template.tsx',
       'src/app/dashboard/settings/page.tsx',
     ])
     expect(getIconcatNextAppRouterPageCSSHrefsFromManifest(
       manifest,
-      'src/app/dashboard/settings/page.tsx',
+      '/dashboard/settings',
     )).toEqual([
       '/assets/iconcat.settings-template.css',
       '/assets/iconcat.settings-page.css',
     ])
+  })
+
+  it('throws when a requested page route is missing from the manifest', () => {
+    const manifest = {
+      version: 1,
+      mode: 'page',
+      global: [],
+      pages: {
+        'src/routes/dashboard.tsx': [],
+      },
+      pageRoutes: {
+        '/dashboard': 'src/routes/dashboard.tsx',
+      },
+    } satisfies IconcatCSSManifest
+
+    expect(() => getIconcatPageCSSFilesFromManifest(manifest, '/missing'))
+      .toThrow('Page CSS entry "/missing" was not found')
   })
 
   it('resolves Next App Router route entries from actual candidate files', () => {
@@ -219,7 +257,18 @@ describe('iconcat vite plugin', () => {
     ])
   })
 
-  it('falls back to conventional Next App Router ancestor entries without route manifests', () => {
+  it('normalizes App Router route groups, slots, and interception markers to public routes', () => {
+    expect(resolveNextAppRouterPageRoute('src/app/(admin)/dashboard/page.tsx')).toBe('/dashboard')
+    expect(resolveNextAppRouterPageRoute('src/app/dashboard/@analytics/page.tsx')).toBe('/dashboard')
+    expect(resolveNextAppRouterPageRoute('src/app/dashboard/@modal/(.)reports/page.tsx'))
+      .toBe('/dashboard/reports')
+    expect(resolveNextAppRouterPageRoute('src/app/dashboard/@modal/(..)reports/page.tsx'))
+      .toBe('/dashboard/reports')
+    expect(resolveNextAppRouterPageRoute('src/app/dashboard/@modal/(...)reports/page.tsx'))
+      .toBe('/dashboard/reports')
+  })
+
+  it('requires page route aliases before resolving Next App Router page CSS', () => {
     const manifest = {
       version: 1,
       mode: 'page',
@@ -247,14 +296,16 @@ describe('iconcat vite plugin', () => {
       },
     } satisfies IconcatCSSManifest
 
-    expect(getIconcatNextAppRouterPageCSSHrefsFromManifest(
+    expect(() => getNextAppRouterPageManifestEntries(
       manifest,
+      // @ts-expect-error App Router page helpers only accept route paths.
       'src/app/dashboard/settings/page.tsx',
-    )).toEqual([
-      '/assets/iconcat.settings-template.css',
-      '/assets/iconcat.dashboard-layout.css',
-      '/assets/iconcat.settings-page.css',
-    ])
+    )).toThrow('only accept route paths')
+    expect(() => getIconcatNextAppRouterPageCSSHrefsFromManifest(
+      manifest,
+      // @ts-expect-error App Router page helpers only accept route paths.
+      'src/app/dashboard/settings/page.tsx',
+    )).toThrow('only accept route paths')
   })
 
   it('deduplicates files from page manifests when emitting assets', () => {

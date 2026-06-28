@@ -158,6 +158,7 @@ describe('testing catalog plugin options', () => {
       global: TestGlobalManifestFile[]
       mode?: string
       pages: Record<string, TestGlobalManifestFile[]>
+      pageRoutes?: Record<string, string>
       routes?: Record<string, string[]>
     }
     const [globalFile] = manifest.global
@@ -174,6 +175,10 @@ describe('testing catalog plugin options', () => {
         'src/app/layout.tsx',
         'src/app/settings/page.tsx',
       ],
+    })
+    expect(manifest.pageRoutes).toEqual({
+      '/': 'src/app/page.tsx',
+      '/settings': 'src/app/settings/page.tsx',
     })
     expect(globalFile).toEqual(expect.objectContaining({
       icons: 1,
@@ -261,6 +266,48 @@ describe('testing catalog plugin options', () => {
     expect(settingsCSS).toContain('.icon-\\[mdi-light--calendar\\]')
   })
 
+  it('keeps the main App Router page route alias when parallel slot pages share the same URL', async () => {
+    const cwd = resolve(tmpdir(), `iconcat-page-parallel-slot-route-css-${process.pid}`)
+    await rm(cwd, { recursive: true, force: true })
+
+    await createIconcatCSSArtifact({
+      artifactMode: 'page',
+      output: '.iconcat/iconcat.[hash].css',
+      manifest: '.iconcat/manifest.json',
+      publicPath: '/assets',
+    }).write({
+      cwd,
+      catalog: {
+        version: 1,
+        icons: {
+          'mdi-light': ['chart-line', 'calendar'],
+        },
+        entries: {
+          'src/app/dashboard/page.tsx': {
+            icons: {
+              'mdi-light': ['chart-line'],
+            },
+          },
+          'src/app/dashboard/@analytics/page.tsx': {
+            icons: {
+              'mdi-light': ['calendar'],
+            },
+          },
+        },
+      },
+    })
+
+    const manifest = JSON.parse(
+      await readFile(resolve(cwd, '.iconcat/manifest.json'), 'utf8'),
+    ) as {
+      pageRoutes?: Record<string, string>
+    }
+
+    expect(manifest.pageRoutes).toEqual({
+      '/dashboard': 'src/app/dashboard/page.tsx',
+    })
+  })
+
   it('auto-promotes common Next App Router layout entries with compound pageExtensions', async () => {
     const cwd = resolve(tmpdir(), `iconcat-page-common-layout-page-extension-css-${process.pid}`)
     await rm(cwd, { recursive: true, force: true })
@@ -302,6 +349,7 @@ describe('testing catalog plugin options', () => {
     ) as {
       global: TestGlobalManifestFile[]
       pages: Record<string, TestGlobalManifestFile[]>
+      pageRoutes?: Record<string, string>
       routes?: Record<string, string[]>
     }
     const [globalFile] = manifest.global
@@ -317,6 +365,10 @@ describe('testing catalog plugin options', () => {
         'src/app/layout.page.tsx',
         'src/app/settings/page.page.tsx',
       ],
+    })
+    expect(manifest.pageRoutes).toEqual({
+      '/': 'src/app/page.page.tsx',
+      '/settings': 'src/app/settings/page.page.tsx',
     })
     expect(globalFile).toEqual(expect.objectContaining({
       icons: 1,
@@ -376,6 +428,7 @@ describe('testing catalog plugin options', () => {
     ) as {
       global: TestGlobalManifestFile[]
       pages: Record<string, TestGlobalManifestFile[]>
+      pageRoutes?: Record<string, string>
     }
     const [globalFile] = manifest.global
     const [homeFile] = manifest.pages['src/pages/index.tsx']
@@ -385,6 +438,10 @@ describe('testing catalog plugin options', () => {
       icons: 1,
       priority: true,
     }))
+    expect(manifest.pageRoutes).toEqual({
+      '/': 'src/pages/index.tsx',
+      '/settings': 'src/pages/settings/index.tsx',
+    })
     expect(manifest.pages['src/pages/_app.tsx']).toBeUndefined()
 
     const globalCSS = await readFile(resolve(cwd, '.iconcat', globalFile.file), 'utf8')

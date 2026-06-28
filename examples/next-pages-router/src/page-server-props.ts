@@ -2,13 +2,14 @@ import process from 'node:process'
 
 import { getIconcatPageCSSFiles, getNextIconcatCSSHref } from '@iconcat/next'
 
+import type { IconcatPageRoute } from '@iconcat/next'
 import type { GetServerSideProps } from 'next'
 
 import { createIconcatPageProps, iconcatManifest } from './page-static-props'
 
 import type { IconcatPageProps } from './page-props'
 
-export function createIconcatServerSideProps(page?: string): GetServerSideProps<IconcatPageProps> {
+export function createIconcatServerSideProps(page?: IconcatPageRoute): GetServerSideProps<IconcatPageProps> {
   return async () => {
     const isDevelopment = process.env.NODE_ENV !== 'production'
     const iconcatCSSHref = isDevelopment

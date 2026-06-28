@@ -2,7 +2,7 @@ import { access, readdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import type { IconcatCSSManifest, IconcatCSSManifestFile } from './index'
+import type { IconcatCSSManifest, IconcatCSSManifestFile, IconcatPageRoute } from './index'
 
 export const NEXT_APP_ROUTER_EXTENSIONS = ['js', 'jsx', 'ts', 'tsx'] as const
 export const NEXT_APP_ROUTER_SEGMENT_FILES = [
@@ -60,21 +60,23 @@ export async function resolveNextAppRouterAncestorEntries(
 
 export function getNextAppRouterPageCSSFilesFromManifest(
   manifest: IconcatCSSManifest,
-  page: string,
+  page: IconcatPageRoute,
 ) {
   if (manifest.mode !== 'page') {
     return []
   }
 
+  const pageEntry = resolveManifestPageEntryOrThrow(manifest, page)
+
   return orderNextAppRouterManifestFiles(
-    getNextAppRouterPageManifestEntries(manifest, page)
+    getNextAppRouterPageManifestEntriesForEntry(manifest, pageEntry)
       .flatMap((entry) => manifest.pages?.[entry] || []),
   )
 }
 
 export function getNextAppRouterPageCSSHrefsFromManifest(
   manifest: IconcatCSSManifest,
-  page: string,
+  page: IconcatPageRoute,
 ) {
   return getNextAppRouterPageCSSFilesFromManifest(manifest, page)
     .map((file) => file.href)
@@ -82,9 +84,18 @@ export function getNextAppRouterPageCSSHrefsFromManifest(
 
 export function getNextAppRouterPageManifestEntries(
   manifest: IconcatCSSManifest,
-  page: string,
+  page: IconcatPageRoute,
 ) {
-  return manifest.routes?.[page] || getConventionalNextAppRouterPageEntries(page)
+  const pageEntry = resolveManifestPageEntryOrThrow(manifest, page)
+
+  return getNextAppRouterPageManifestEntriesForEntry(manifest, pageEntry)
+}
+
+function getNextAppRouterPageManifestEntriesForEntry(
+  manifest: IconcatCSSManifest,
+  pageEntry: string,
+) {
+  return manifest.routes?.[pageEntry] || getConventionalNextAppRouterPageEntries(pageEntry)
 }
 
 export function getNextAppRouterRouteEntriesFromCandidates(
@@ -131,6 +142,66 @@ export function getConventionalNextAppRouterPageEntries(page: string) {
 
 export function isNextAppRouterPageEntry(file: string) {
   return isNextAppPageFile(file)
+}
+
+export function resolveNextAppRouterPageRoute(entry: string) {
+  const appRoot = getNextAppRoot(entry)
+
+  if (!appRoot || !isNextAppPageFile(entry)) {
+    return undefined
+  }
+
+  const segments = entry.split('/').slice(appRoot.length, -1)
+  const routeSegments = segments
+    .filter((segment) => !isNextAppRouteGroup(segment))
+    .filter((segment) => !segment.startsWith('@'))
+    .map(stripNextAppInterceptingRouteMarker)
+
+  return `/${routeSegments.join('/')}`.replace(/\/+$/, '') || '/'
+}
+
+export function isNextAppRouterParallelSlotEntry(entry: string) {
+  return entry.split('/').some((segment) => segment.startsWith('@'))
+}
+
+function resolveManifestPageEntry(
+  manifest: IconcatCSSManifest,
+  page: IconcatPageRoute,
+) {
+  return manifest.pageRoutes?.[normalizeRoutePath(page)]
+}
+
+function resolveManifestPageEntryOrThrow(
+  manifest: IconcatCSSManifest,
+  page: IconcatPageRoute,
+) {
+  const pageEntry = resolveManifestPageEntry(manifest, page)
+
+  if (!pageEntry) {
+    const knownRoutes = Object.keys(manifest.pageRoutes || {}).sort()
+
+    throw new Error(
+      `[iconcat] App Router page CSS entry "${page}" was not found in the generated manifest. `
+      + `Iconcat App Router page helpers only accept route paths generated in manifest.pageRoutes. `
+      + `Known routes: ${knownRoutes.length ? knownRoutes.join(', ') : '(none)'}.`,
+    )
+  }
+
+  return pageEntry
+}
+
+function normalizeRoutePath(page: IconcatPageRoute) {
+  const normalized = page.replace(/\/+$/, '')
+
+  return normalized || '/'
+}
+
+function isNextAppRouteGroup(segment: string) {
+  return segment.startsWith('(') && segment.endsWith(')')
+}
+
+function stripNextAppInterceptingRouteMarker(segment: string) {
+  return segment.replace(/^\(\.{1,3}\)/, '')
 }
 
 function getNextAppAncestorDirectories(page: string, appRoot: string[]) {

@@ -49,6 +49,11 @@ describe('example page-mode extraction', () => {
     expect(Object.keys(manifest.pages)).toContain(examples.nextAppRouter.page)
     expect(Object.keys(manifest.pages)).toContain(examples.nextAppRouter.nestedLayout)
     expect(Object.keys(manifest.pages)).toContain(examples.nextAppRouter.nestedPage)
+    expect(manifest.pageRoutes).toEqual(expect.objectContaining({
+      '/': 'src/app/page.tsx',
+      '/dashboard': examples.nextAppRouter.page,
+      '/dashboard/reports': examples.nextAppRouter.nestedPage,
+    }))
     expect(manifest.routes[examples.nextAppRouter.nestedPage]).toEqual([
       'src/app/layout.tsx',
       examples.nextAppRouter.nestedLayout,
@@ -87,6 +92,11 @@ describe('example page-mode extraction', () => {
     ])
     expect(Object.keys(manifest.pages)).toContain(examples.nextPagesRouter.page)
     expect(Object.keys(manifest.pages)).toContain(examples.nextPagesRouter.serverPage)
+    expect(manifest.pageRoutes).toEqual(expect.objectContaining({
+      '/': 'src/pages/index.tsx',
+      '/dashboard': examples.nextPagesRouter.page,
+      '/settings': examples.nextPagesRouter.serverPage,
+    }))
     expect(globalCSS).toContain('.icon-\\[mdi-light--home\\]')
     expect(pageCSS).not.toContain('.icon-\\[mdi-light--home\\]')
     expect(pageCSS).toContain('.icon-\\[mdi-light--chart-line\\]')

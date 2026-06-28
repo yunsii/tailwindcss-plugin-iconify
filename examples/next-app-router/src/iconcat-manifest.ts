@@ -3,6 +3,7 @@ import process from 'node:process'
 import { getIconcatNextAppRouterPageCSSFilesFromManifest, getNextIconcatCSSHref, readIconcatManifestSync } from '@iconcat/next'
 
 import type { DemoCSSFile } from '@iconcat/example-fixtures/dashboard'
+import type { IconcatPageRoute } from '@iconcat/next'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 export const iconcatManifest = process.env.ICONCAT_MANIFEST || '.iconcat/manifest.json'
@@ -25,7 +26,7 @@ export function getIconcatCSSHref() {
   return getNextIconcatCSSHref({ manifest: iconcatManifest })
 }
 
-export function getIconcatPageCSSHref(page: string) {
+export function getIconcatPageCSSHref(page: IconcatPageRoute) {
   if (isDevelopment) {
     return undefined
   }
@@ -33,7 +34,7 @@ export function getIconcatPageCSSHref(page: string) {
   return getIconcatAppRouterPageCSSFiles(page)[0]?.href
 }
 
-export function getIconcatCSSFiles(page: string): DemoCSSFile[] {
+export function getIconcatCSSFiles(page: IconcatPageRoute): DemoCSSFile[] {
   if (isDevelopment) {
     return [
       {
@@ -81,13 +82,9 @@ export function getIconcatPreviewLabel() {
   return isDevelopment ? 'development preview' : 'production preview'
 }
 
-function getIconcatAppRouterPageCSSFiles(page: string) {
-  try {
-    return getIconcatNextAppRouterPageCSSFilesFromManifest(
-      readIconcatManifestSync({ manifest: iconcatManifest }),
-      page,
-    )
-  } catch {
-    return []
-  }
+function getIconcatAppRouterPageCSSFiles(page: IconcatPageRoute) {
+  return getIconcatNextAppRouterPageCSSFilesFromManifest(
+    readIconcatManifestSync({ manifest: iconcatManifest }),
+    page,
+  )
 }

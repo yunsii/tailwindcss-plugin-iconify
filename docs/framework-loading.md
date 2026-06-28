@@ -303,12 +303,13 @@ parallel slot pages cannot be derived exactly from a single leaf page path
 outside Next's private LoaderTree. Declare those slot pages as page entries as
 well, or replace the resolver with the official API if Next exposes one later.
 
-Route components render page CSS with the leaf page entry:
+Route components render page CSS with the route path. The artifact manifest
+stores a `pageRoutes` map from route path to source entry, so application code
+does not need to know `src/app/.../page.tsx` paths:
 
 ```tsx
 import { IconcatAppRouterPageStylesheets } from '@iconcat/next/app-router'
 
-const pageEntry = 'src/app/dashboard/reports/page.tsx'
 const iconcatManifest = process.env.ICONCAT_MANIFEST || '.iconcat/manifest.json'
 
 export default function Page() {
@@ -316,7 +317,7 @@ export default function Page() {
     <>
       <IconcatAppRouterPageStylesheets
         manifest={iconcatManifest}
-        page={pageEntry}
+        page='/dashboard/reports'
       />
       {/* page content */}
     </>
@@ -324,16 +325,26 @@ export default function Page() {
 }
 ```
 
-This is the formal integration surface. The example app also contains an
-`iconcat-manifest.ts` file, but that file is only a demo observability helper
-for showing loaded hrefs and icon source labels on screen. A real App Router app
+This is the formal integration surface. Page loading helpers accept route paths,
+not source entry paths, and expose that contract as the `IconcatPageRoute`
+template type (`/${string}`). If a requested route path is missing from the
+generated manifest, Iconcat throws during server rendering or build instead of
+silently omitting CSS; that usually means the manifest is stale or the declared
+route does not match the actual extracted page set. The example app also
+contains an
+`iconcat-manifest.ts` file, but that file is only a demo observability helper for
+showing loaded hrefs and icon source labels on screen. A real App Router app
 does not need that helper; it can pass the manifest path directly as shown
 above.
 
-The generated manifest records the resolved entry chain for each page:
+The generated manifest records both the public route aliases and the resolved
+entry chain for each App Router page:
 
 ```json
 {
+  "pageRoutes": {
+    "/dashboard/reports": "src/app/dashboard/reports/page.tsx"
+  },
   "routes": {
     "src/app/dashboard/reports/page.tsx": [
       "src/app/layout.tsx",
@@ -348,9 +359,14 @@ The generated manifest records the resolved entry chain for each page:
 }
 ```
 
-The helper reads App Router route entries from `manifest.routes`. If an older
-manifest does not contain that mapping, it falls back to conventional
-file-system ancestor inference:
+`manifest.pages` and `manifest.routes` intentionally keep source entries as
+internal artifact keys. Application code should not pass those keys to page
+loading helpers; use `pageRoutes` route paths instead.
+
+The helper first resolves `/dashboard/reports` through `manifest.pageRoutes`,
+then reads the App Router entry chain from `manifest.routes`. If an older
+manifest does not contain that route-chain mapping, it falls back to
+conventional file-system ancestor inference:
 
 ```text
 src/app/layout.tsx
@@ -384,8 +400,8 @@ That allows icons declared in nested layouts, templates, loading states, error
 boundaries, access fallback files, and direct slot defaults to load with the
 leaf route without manually rendering helpers in every ancestor. In other
 words, nested App Router segment support is built into
-`IconcatAppRouterPageStylesheets`; the page only needs to provide its own leaf
-entry path.
+`IconcatAppRouterPageStylesheets`; the page only needs to provide its route
+path.
 
 ## Next.js Pages Router
 
@@ -471,7 +487,7 @@ import { getIconcatPageCSSFiles } from '@iconcat/next'
 export function getStaticProps() {
   return {
     props: {
-      iconcatPageCSSFiles: getIconcatPageCSSFiles('src/pages/dashboard/index.tsx', {
+      iconcatPageCSSFiles: getIconcatPageCSSFiles('/dashboard', {
         manifest: process.env.ICONCAT_MANIFEST || '.iconcat/manifest.json',
       }),
     },
@@ -487,13 +503,18 @@ import { getIconcatPageCSSFiles } from '@iconcat/next'
 export function getServerSideProps() {
   return {
     props: {
-      iconcatPageCSSFiles: getIconcatPageCSSFiles('src/pages/settings/index.tsx', {
+      iconcatPageCSSFiles: getIconcatPageCSSFiles('/settings', {
         manifest: process.env.ICONCAT_MANIFEST || '.iconcat/manifest.json',
       }),
     },
   }
 }
 ```
+
+Pages Router uses the same `pageRoutes` lookup. For example, `/dashboard`
+resolves to `src/pages/dashboard/index.tsx` and `/settings` resolves to
+`src/pages/settings/index.tsx`. Page loading helpers accept only those route
+paths; missing route keys throw the same fail-fast error as App Router.
 
 Render example:
 

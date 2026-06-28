@@ -1,8 +1,12 @@
 /* eslint-disable node/prefer-global/process */
-import { getIconcatCSSHrefs, getIconcatNextAppRouterPageCSSFilesFromManifest, readIconcatManifestSync } from '@iconcat/adapter-utils'
+import {
+  getIconcatCSSHrefs,
+  getIconcatNextAppRouterPageCSSFilesFromManifest,
+  readIconcatManifestSync,
+} from '@iconcat/adapter-utils'
 import { createElement } from 'react'
 
-import type { IconcatCSSManifestFile, ReadIconcatManifestOptions } from '@iconcat/adapter-utils'
+import type { IconcatCSSManifestFile, IconcatPageRoute, ReadIconcatManifestOptions } from '@iconcat/adapter-utils'
 
 export interface IconcatAppRouterStylesheetsProps extends ReadIconcatManifestOptions {
   precedence?: string
@@ -34,7 +38,7 @@ export function IconcatAppRouterStylesheets(
 }
 
 export interface IconcatAppRouterPageStylesheetsProps extends IconcatAppRouterStylesheetsProps {
-  page: string
+  page: IconcatPageRoute
 }
 
 export function IconcatAppRouterPageStylesheets(
@@ -63,12 +67,9 @@ export function IconcatAppRouterPageStylesheets(
 }
 
 function readIconcatPageCSSFiles(
-  page: string,
+  page: IconcatPageRoute,
   options: ReadIconcatManifestOptions,
 ): IconcatCSSManifestFile[] {
-  try {
-    return getIconcatNextAppRouterPageCSSFilesFromManifest(readIconcatManifestSync(options), page)
-  } catch {
-    return []
-  }
+  const manifest = readIconcatManifestSync(options)
+  return getIconcatNextAppRouterPageCSSFilesFromManifest(manifest, page)
 }

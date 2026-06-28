@@ -8,9 +8,9 @@ import { renderRouteLink } from '../../route-link'
 
 import type { IconcatPageProps } from '../../page-props'
 
-const pageEntry = 'src/pages/settings/index.tsx'
+const pageRoute = '/settings'
 
-export const getServerSideProps = createIconcatServerSideProps(pageEntry)
+export const getServerSideProps = createIconcatServerSideProps(pageRoute)
 
 const pageIconClasses = [
   'icon-[line-md--loading-loop]',
@@ -46,7 +46,7 @@ export default function SettingsPage({
           observability: [
             '_app.tsx is auto-promoted to global icon CSS, so Home is loaded through _document.',
             'settings/index.tsx emits Settings and shared loading icons into page CSS.',
-            'getServerSideProps resolves the page CSS href for each request before rendering.',
+            'getServerSideProps resolves the route path "/settings" for each request before rendering.',
           ],
           pageIconClasses: devIconClasses.length ? [] : pageIconClasses,
           previewLabel,

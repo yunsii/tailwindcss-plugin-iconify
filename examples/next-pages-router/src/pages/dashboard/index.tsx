@@ -9,9 +9,9 @@ import { renderRouteLink } from '../../route-link'
 
 import type { IconcatPageProps } from '../../page-props'
 
-const pageEntry = 'src/pages/dashboard/index.tsx'
+const pageRoute = '/dashboard'
 
-export const getStaticProps = createIconcatStaticProps(pageEntry)
+export const getStaticProps = createIconcatStaticProps(pageRoute)
 
 const dashboardConfigurableIcons = defineIconcatIcons([
   'mdi-light:chart-line',
@@ -66,7 +66,7 @@ export default function DashboardPage({
           observability: [
             '_app.tsx is auto-promoted to global icon CSS, so Home is loaded through _document.',
             'dashboard/index.tsx emits the dashboard route icon and configurable allowlist icons into page CSS.',
-            'getStaticProps resolves the page CSS href at build time before HTML generation.',
+            'getStaticProps resolves the route path "/dashboard" at build time before HTML generation.',
           ],
           pageIconClasses: devIconClasses.length ? [] : pageIconClasses,
           previewLabel,

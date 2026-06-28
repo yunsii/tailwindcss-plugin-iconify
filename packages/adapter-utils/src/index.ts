@@ -14,6 +14,7 @@ export interface IconcatCSSManifest {
   entries?: Record<string, IconcatCSSManifestEntry>
   global?: IconcatCSSManifestFile[]
   pages?: Record<string, IconcatCSSManifestFile[]>
+  pageRoutes?: Record<string, string>
   routes?: Record<string, string[]>
 }
 
@@ -32,6 +33,8 @@ export interface IconcatCSSManifestEntry {
   icons?: number
   priority?: boolean
 }
+
+export type IconcatPageRoute = `/${string}`
 
 export interface ReadIconcatManifestOptions {
   cwd?: string
@@ -101,25 +104,17 @@ export function getIconcatEntryCSSHref(
 }
 
 export function getIconcatPageCSSHrefs(
-  page: string,
+  page: IconcatPageRoute,
   options: ReadIconcatManifestOptions = {},
 ) {
-  try {
-    return getIconcatPageCSSHrefsFromManifest(readIconcatManifestSync(options), page)
-  } catch {
-    return []
-  }
+  return getIconcatPageCSSHrefsFromManifest(readIconcatManifestSync(options), page)
 }
 
 export function getIconcatPageCSSFiles(
-  page: string,
+  page: IconcatPageRoute,
   options: ReadIconcatManifestOptions = {},
 ) {
-  try {
-    return getIconcatPageCSSFilesFromManifest(readIconcatManifestSync(options), page)
-  } catch {
-    return []
-  }
+  return getIconcatPageCSSFilesFromManifest(readIconcatManifestSync(options), page)
 }
 
 export async function installIconcatCSS(
@@ -213,7 +208,7 @@ export function getIconcatCSSHrefsFromManifest(manifest: IconcatCSSManifest) {
 
 export function getIconcatPageCSSHrefsFromManifest(
   manifest: IconcatCSSManifest,
-  page: string,
+  page: IconcatPageRoute,
 ) {
   return getIconcatPageCSSFilesFromManifest(manifest, page)
     .map((file) => file.href)
@@ -221,13 +216,67 @@ export function getIconcatPageCSSHrefsFromManifest(
 
 export function getIconcatPageCSSFilesFromManifest(
   manifest: IconcatCSSManifest,
-  page: string,
+  page: IconcatPageRoute,
 ) {
   if (manifest.mode === 'page') {
-    return orderManifestFiles(manifest.pages?.[page] || [])
+    const pageEntry = resolveIconcatPageEntryFromManifestOrThrow(manifest, page)
+    return orderManifestFiles(manifest.pages?.[pageEntry] || [])
   }
 
   return []
+}
+
+export function resolveIconcatPageEntryFromManifest(
+  manifest: IconcatCSSManifest,
+  page: IconcatPageRoute,
+) {
+  return manifest.pageRoutes?.[normalizeIconcatRoutePath(page)]
+}
+
+export function resolveIconcatPageEntryFromManifestOrThrow(
+  manifest: IconcatCSSManifest,
+  page: IconcatPageRoute,
+) {
+  const pageEntry = resolveIconcatPageEntryFromManifest(manifest, page)
+
+  if (!pageEntry || !Object.hasOwn(manifest.pages || {}, pageEntry)) {
+    throw createMissingIconcatPageRouteError(manifest, page, pageEntry)
+  }
+
+  return pageEntry
+}
+
+export function hasIconcatPageEntryInManifest(
+  manifest: IconcatCSSManifest,
+  page: IconcatPageRoute,
+) {
+  const pageEntry = resolveIconcatPageEntryFromManifest(manifest, page)
+
+  return !!pageEntry && Object.hasOwn(manifest.pages || {}, pageEntry)
+}
+
+export function createMissingIconcatPageRouteError(
+  manifest: IconcatCSSManifest,
+  page: IconcatPageRoute,
+  pageEntry = resolveIconcatPageEntryFromManifest(manifest, page),
+) {
+  const knownRoutes = Object.keys(manifest.pageRoutes || {}).sort()
+  return new Error(
+    `[iconcat] Page CSS entry "${page}" was not found in the generated manifest. `
+    + `Iconcat page CSS helpers only accept route paths generated in manifest.pageRoutes. `
+    + `Resolved entry: "${pageEntry || '(none)'}". Re-run iconcat extraction or check the route. `
+    + `Known routes: ${knownRoutes.length ? knownRoutes.join(', ') : '(none)'}.`,
+  )
+}
+
+export function normalizeIconcatRoutePath(page: string) {
+  if (!page.startsWith('/')) {
+    return page
+  }
+
+  const normalized = page.replace(/\/+$/, '')
+
+  return normalized || '/'
 }
 
 export function getIconcatManifestFiles(manifest: IconcatCSSManifest) {
@@ -293,6 +342,8 @@ export {
   getNextAppRouterPageManifestEntries,
   getNextAppRouterRouteEntriesFromCandidates,
   isNextAppRouterPageEntry,
+  isNextAppRouterParallelSlotEntry,
   resolveNextAppRouterAncestorEntries,
   resolveNextAppRouterPageEntries,
+  resolveNextAppRouterPageRoute,
 } from './next-app-router'

@@ -2,7 +2,7 @@ import process from 'node:process'
 
 import { getIconcatPageCSSFiles, getNextIconcatCSSHref } from '@iconcat/next'
 
-import type { IconcatCSSManifestFile } from '@iconcat/next'
+import type { IconcatCSSManifestFile, IconcatPageRoute } from '@iconcat/next'
 import type { GetStaticProps } from 'next'
 
 import { demoIconClasses, getIconcatCSSFiles } from './page-props'
@@ -18,7 +18,7 @@ interface CreateIconcatPagePropsOptions {
   isDevelopment: boolean
 }
 
-export function createIconcatStaticProps(page?: string): GetStaticProps<IconcatPageProps> {
+export function createIconcatStaticProps(page?: IconcatPageRoute): GetStaticProps<IconcatPageProps> {
   const isDevelopment = process.env.NODE_ENV !== 'production'
   const iconcatCSSHref = isDevelopment
     ? null

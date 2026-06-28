@@ -8,9 +8,9 @@ import { renderRouteLink } from '../route-link'
 
 import type { IconcatPageProps } from '../page-props'
 
-const pageEntry = 'src/pages/index.tsx'
+const pageRoute = '/'
 
-export const getStaticProps = createIconcatStaticProps(pageEntry)
+export const getStaticProps = createIconcatStaticProps(pageRoute)
 
 const pageIconClasses = [
   'icon-[line-md--loading-loop]',
@@ -45,7 +45,7 @@ export default function Page({
           globalIconClasses: devIconClasses.length ? [] : ['icon-[mdi-light--home]'],
           observability: [
             '_app.tsx is auto-promoted to global icon CSS, so Home is loaded through _document.',
-            'getStaticProps resolves this page CSS href before rendering.',
+            'getStaticProps resolves the route path "/" through manifest.pageRoutes before rendering.',
           ],
           pageIconClasses: devIconClasses.length ? [] : pageIconClasses,
           previewLabel,

@@ -6,6 +6,8 @@ import process from 'node:process'
 import {
   getNextAppRouterRouteEntriesFromCandidates,
   isNextAppRouterPageEntry,
+  isNextAppRouterParallelSlotEntry,
+  resolveNextAppRouterPageRoute,
 } from '@iconcat/adapter-utils/next-app-router'
 import {
   mergeCatalogIcons,
@@ -261,6 +263,7 @@ async function writePageCSSArtifact(
   }
 
   await mkdir(dirname(manifestFile), { recursive: true })
+  const pageRoutes = getPageModePageRoutes(Object.keys(pages))
   await atomicWriteFile(
     manifestFile,
     `${JSON.stringify({
@@ -268,6 +271,7 @@ async function writePageCSSArtifact(
       mode: 'page',
       global,
       pages,
+      ...(Object.keys(pageRoutes).length > 0 ? { pageRoutes } : {}),
       ...(Object.keys(routes).length > 0 ? { routes } : {}),
       icons: countCatalogIcons(catalog),
     }, null, 2)}\n`,
@@ -299,6 +303,86 @@ function getPageModeRoutes(catalog: IconcatCatalog) {
   }
 
   return routes
+}
+
+function getPageModePageRoutes(pageEntries: string[]) {
+  const routeEntries = new Map<string, string[]>()
+
+  for (const entry of pageEntries.sort()) {
+    const route = resolvePageModeRoute(entry)
+
+    if (!route) {
+      continue
+    }
+
+    routeEntries.set(route, [...routeEntries.get(route) || [], entry])
+  }
+
+  return Object.fromEntries(
+    [...routeEntries.entries()]
+      .map(([route, entries]) => [route, resolvePageModeRouteEntry(entries)])
+      .filter((entry): entry is [string, string] => !!entry[1]),
+  )
+}
+
+function resolvePageModeRouteEntry(entries: string[]) {
+  if (entries.length === 1) {
+    return entries[0]
+  }
+
+  const mainEntries = entries.filter((entry) => !isNextAppRouterParallelSlotEntry(entry))
+
+  return mainEntries.length === 1 ? mainEntries[0] : undefined
+}
+
+function resolvePageModeRoute(entry: string) {
+  return resolveNextAppRouterPageRoute(entry) || resolveNextPagesRoute(entry)
+}
+
+function resolveNextPagesRoute(entry: string) {
+  const root = getNextPagesRoot(entry)
+
+  if (!root) {
+    return undefined
+  }
+
+  const relative = entry.split('/').slice(root.length).join('/')
+  const routePath = stripNextPagesPageExtension(relative)
+
+  if (
+    !routePath
+    || routePath.startsWith('api/')
+    || routePath.split('/').some((segment) => segment.startsWith('_'))
+  ) {
+    return undefined
+  }
+
+  const segments = routePath.split('/')
+  const normalizedSegments = segments.at(-1) === 'index'
+    ? segments.slice(0, -1)
+    : segments
+
+  return `/${normalizedSegments.join('/')}`.replace(/\/+$/, '') || '/'
+}
+
+function getNextPagesRoot(entry: string) {
+  const segments = entry.split('/')
+
+  if (segments[0] === 'pages') {
+    return ['pages']
+  }
+
+  if (segments[0] === 'src' && segments[1] === 'pages') {
+    return ['src', 'pages']
+  }
+
+  return undefined
+}
+
+function stripNextPagesPageExtension(file: string) {
+  return file
+    .replace(/\.page\.(?:js|jsx|ts|tsx)$/, '')
+    .replace(/\.(?:js|jsx|ts|tsx)$/, '')
 }
 
 function getCommonNextAppLayoutEntries(routes: Record<string, string[]>) {

@@ -13,7 +13,7 @@ import {
 } from '../../iconcat-manifest'
 import { renderRouteLink } from '../../route-link'
 
-const pageEntry = 'src/app/dashboard/page.tsx'
+const pageRoute = '/dashboard'
 
 const dashboardConfigurableIcons = defineIconcatIcons([
   'mdi-light:chart-line',
@@ -31,13 +31,13 @@ const pageIconClasses = [
 export default function DashboardPage() {
   return (
     <>
-      <IconcatAppRouterPageStylesheets manifest={iconcatManifest} page={pageEntry} />
+      <IconcatAppRouterPageStylesheets manifest={iconcatManifest} page={pageRoute} />
       <DashboardPanel
         meta={{
           appType: 'Next.js App Router',
           routerType: 'App Router',
-          cssHref: [getIconcatCSSHref(), getIconcatPageCSSHref(pageEntry)].filter(Boolean).join(' + '),
-          cssFiles: getIconcatCSSFiles(pageEntry),
+          cssHref: [getIconcatCSSHref(), getIconcatPageCSSHref(pageRoute)].filter(Boolean).join(' + '),
+          cssFiles: getIconcatCSSFiles(pageRoute),
           cssTarget: '.next/static/css/iconcat.[hash].css',
           cssLoading: getIconcatCSSLoading('page manifest: global CSS in layout + page CSS in route'),
           catalogMode: `page icon CSS mode, ${dashboardConfigurableIcons.length} configurable icons`,
@@ -55,6 +55,7 @@ export default function DashboardPage() {
           ],
           ...getIconcatIconSources(pageIconClasses),
           observability: [
+            'The route path "/dashboard" is resolved through manifest.pageRoutes to the generated App Router page entry.',
             'layout.tsx is used by every resolved App Router page, so Home is loaded before route content.',
             'dashboard/page.tsx emits the dashboard route icon and configurable allowlist icons into page CSS.',
             'Global icons are subtracted from page CSS before hashing.',

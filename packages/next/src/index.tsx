@@ -100,6 +100,7 @@ export type {
   IconcatCSSManifest,
   IconcatCSSManifestEntry,
   IconcatCSSManifestFile,
+  IconcatPageRoute,
   InstallIconcatCSSOptions,
   ReadIconcatManifestOptions,
 } from '@iconcat/adapter-utils'

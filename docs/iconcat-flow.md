@@ -255,6 +255,9 @@ The page manifest keeps global files separate from page files:
       }
     ]
   },
+  "pageRoutes": {
+    "/dashboard": "src/app/dashboard/page.tsx"
+  },
   "icons": 3
 }
 ```
@@ -554,12 +557,14 @@ React stylesheet links directly. It does not emit manual preload links because
 React's managed stylesheet path handles ordering and deduplication through
 `precedence`.
 
-For page-mode CSS, App Router callers pass the leaf page entry, such as
-`src/app/dashboard/reports/page.tsx`. The helper expands that entry to the
-route's resolved App Router segment entries before reading the manifest:
-ancestor `layout`, `template`, `error`, `loading`, `not-found`, `forbidden`,
-`unauthorized`, and `default` files, plus direct parallel route slot
-`default.*` fallbacks. This is implemented in
+For page-mode CSS, App Router callers pass the route path, such as
+`/dashboard/reports`. The helper resolves that route through
+`manifest.pageRoutes`, then expands the matched source entry to the route's
+resolved App Router segment entries before reading the manifest: ancestor
+`layout`, `template`, `error`, `loading`, `not-found`, `forbidden`,
+`unauthorized`, and `default` files, plus direct parallel route slot `default.*`
+fallbacks. Page loading helpers accept route paths only; source entry paths stay
+inside the manifest as internal artifact keys. This is implemented in
 `@iconcat/adapter-utils/next-app-router` so extractor, adapters, tests, and
 future integrations reuse the same route-entry model.
 
