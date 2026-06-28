@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { readFile, writeFile } from 'node:fs/promises'
+import net from 'node:net'
 import { basename, resolve } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -9,7 +10,8 @@ const apps = [
   {
     name: 'next-app-router',
     cwd: 'examples/next-app-router',
-    command: ['pnpm', 'exec', 'next', 'start', '-H', '127.0.0.1', '-p', '0'],
+    command: (port) => ['pnpm', 'exec', 'next', 'start', '-H', '127.0.0.1', '-p', String(port)],
+    preferredPort: 4101,
     routes: ['/', '/dashboard', '/settings'],
     manifest: '.iconcat/manifest.json',
     cssDir: '.next/static/css',
@@ -17,7 +19,8 @@ const apps = [
   {
     name: 'next-pages-router',
     cwd: 'examples/next-pages-router',
-    command: ['pnpm', 'exec', 'next', 'start', '-H', '127.0.0.1', '-p', '0'],
+    command: (port) => ['pnpm', 'exec', 'next', 'start', '-H', '127.0.0.1', '-p', String(port)],
+    preferredPort: 4102,
     routes: ['/', '/dashboard', '/settings'],
     manifest: '.iconcat/manifest.json',
     cssDir: '.next/static/css',
@@ -25,7 +28,8 @@ const apps = [
   {
     name: 'react-router-vite',
     cwd: 'examples/react-router-vite',
-    command: ['pnpm', 'exec', 'vite', 'preview', '--host', '127.0.0.1', '--port', '0'],
+    command: (port) => ['pnpm', 'exec', 'vite', 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'],
+    preferredPort: 4173,
     routes: ['/', '/dashboard'],
     manifest: '.iconcat/manifest.json',
     cssDir: 'dist/assets',
@@ -79,7 +83,9 @@ async function runCLI() {
 }
 
 async function startServer(app, root) {
-  const [command, ...args] = app.command
+  const port = await findPort(app.preferredPort)
+  const [command, ...args] = app.command(port)
+  const url = `http://127.0.0.1:${port}`
   const child = spawn(command, args, {
     cwd: resolve(root, app.cwd),
     env: process.env,
@@ -88,7 +94,7 @@ async function startServer(app, root) {
   let output = ''
   let settled = false
 
-  const url = await new Promise((resolvePromise, reject) => {
+  await new Promise((resolvePromise, reject) => {
     const timeout = setTimeout(() => {
       if (settled) {
         return
@@ -99,18 +105,19 @@ async function startServer(app, root) {
 
     const onData = (chunk) => {
       output += chunk.toString()
-      const match = output.match(/http:\/\/127\.0\.0\.1:(\d+)/)
-      if (!match || settled) {
+    }
+
+    child.stdout.on('data', onData)
+    child.stderr.on('data', onData)
+    void waitForHTTP(url).then(() => {
+      if (settled) {
         return
       }
 
       settled = true
       clearTimeout(timeout)
-      resolvePromise(`http://127.0.0.1:${match[1]}`)
-    }
-
-    child.stdout.on('data', onData)
-    child.stderr.on('data', onData)
+      resolvePromise(undefined)
+    }, () => {})
     child.on('error', (error) => {
       if (settled) {
         return
@@ -133,6 +140,45 @@ async function startServer(app, root) {
     url,
     stop: () => stopServer(child),
   }
+}
+
+async function waitForHTTP(url) {
+  const deadline = Date.now() + 15000
+  let lastError
+
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(url)
+      await response.arrayBuffer()
+      return
+    } catch (error) {
+      lastError = error
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 100))
+    }
+  }
+
+  throw lastError
+}
+
+async function findPort(start) {
+  for (let port = start; port < start + 100; port += 1) {
+    if (await isFree(port)) {
+      return port
+    }
+  }
+
+  throw new Error(`No free port found from ${start}`)
+}
+
+function isFree(port) {
+  return new Promise((resolvePromise) => {
+    const server = net.createServer()
+    server.once('error', () => resolvePromise(false))
+    server.once('listening', () => {
+      server.close(() => resolvePromise(true))
+    })
+    server.listen(port, '127.0.0.1')
+  })
 }
 
 async function stopServer(child) {
