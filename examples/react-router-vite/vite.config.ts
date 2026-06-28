@@ -8,26 +8,44 @@ import { createEsbuildBundler } from 'iconcat'
 import { defineConfig } from 'vite'
 
 const base = process.env.VITE_BASE || '/'
+const isPageMode = process.env.ICONCAT_MODE === 'page'
+const iconcatDir = isPageMode ? '.iconcat/page-mode' : '.iconcat'
 const iconcatPublicPath = createViteIconcatPublicPath(base)
+const reactRouterEntries = reactRouter().entries
 
 export default defineConfig({
   base,
   plugins: [
     react(),
     iconcat({
-      presets: [reactRouter()],
-      output: '.iconcat/catalog.json',
+      ...(isPageMode
+        ? {
+            entries: [
+              { file: 'src/App.tsx', scope: 'global' as const },
+              ...reactRouterEntries.filter((entry) => entry !== 'src/App.{js,jsx,ts,tsx}'),
+            ],
+          }
+        : {
+            presets: [reactRouter()],
+          }),
+      output: `${iconcatDir}/catalog.json`,
       bundler: createEsbuildBundler({
         includeDeps: ['@iconcat/example-fixtures'],
       }),
       artifacts: [
         createIconcatCSSArtifact({
-          artifactMode: 'global',
-          output: '.iconcat/iconcat.[hash].css',
-          manifest: '.iconcat/manifest.json',
+          artifactMode: isPageMode ? 'page' : 'global',
+          output: `${iconcatDir}/iconcat.[hash].css`,
+          manifest: `${iconcatDir}/manifest.json`,
           publicPath: iconcatPublicPath,
         }),
       ],
+      ...(isPageMode
+        ? {
+            manifest: `${iconcatDir}/manifest.json`,
+            sourceDir: iconcatDir,
+          }
+        : {}),
     }),
   ],
 })

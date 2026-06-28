@@ -9,9 +9,12 @@ export interface IconcatCSSManifest {
   version?: number
   hash?: string
   icons?: number
-  mode?: 'entry' | 'global'
+  mode?: 'entry' | 'global' | 'page'
   files?: Record<string, IconcatCSSManifestFile>
   entries?: Record<string, IconcatCSSManifestEntry>
+  global?: IconcatCSSManifestFile[]
+  pages?: Record<string, IconcatCSSManifestFile[]>
+  routes?: Record<string, string[]>
 }
 
 export interface IconcatCSSManifestFile {
@@ -19,6 +22,7 @@ export interface IconcatCSSManifestFile {
   hash?: string
   href: string
   icons?: number
+  priority?: boolean
 }
 
 export interface IconcatCSSManifestEntry {
@@ -96,6 +100,28 @@ export function getIconcatEntryCSSHref(
   }
 }
 
+export function getIconcatPageCSSHrefs(
+  page: string,
+  options: ReadIconcatManifestOptions = {},
+) {
+  try {
+    return getIconcatPageCSSHrefsFromManifest(readIconcatManifestSync(options), page)
+  } catch {
+    return []
+  }
+}
+
+export function getIconcatPageCSSFiles(
+  page: string,
+  options: ReadIconcatManifestOptions = {},
+) {
+  try {
+    return getIconcatPageCSSFilesFromManifest(readIconcatManifestSync(options), page)
+  } catch {
+    return []
+  }
+}
+
 export async function installIconcatCSS(
   options: InstallIconcatCSSOptions,
 ) {
@@ -143,6 +169,12 @@ function isEntryManifest(manifest: IconcatCSSManifest) {
 }
 
 export function getIconcatPriorityCSSHrefsFromManifest(manifest: IconcatCSSManifest) {
+  if (manifest.mode === 'page') {
+    return (manifest.global || [])
+      .filter((file) => file.priority)
+      .map((file) => file.href)
+  }
+
   if (manifest.mode === 'global') {
     return manifest.files?.priority?.href ? [manifest.files.priority.href] : []
   }
@@ -167,6 +199,10 @@ export function getIconcatCSSHrefsFromManifest(manifest: IconcatCSSManifest) {
     return [manifest.href]
   }
 
+  if (manifest.mode === 'page') {
+    return (manifest.global || []).map((file) => file.href)
+  }
+
   if (manifest.files) {
     return getOrderedManifestFiles(manifest)
       .map((file) => file.href)
@@ -175,7 +211,37 @@ export function getIconcatCSSHrefsFromManifest(manifest: IconcatCSSManifest) {
   return []
 }
 
+export function getIconcatPageCSSHrefsFromManifest(
+  manifest: IconcatCSSManifest,
+  page: string,
+) {
+  return getIconcatPageCSSFilesFromManifest(manifest, page)
+    .map((file) => file.href)
+}
+
+export function getIconcatPageCSSFilesFromManifest(
+  manifest: IconcatCSSManifest,
+  page: string,
+) {
+  if (manifest.mode === 'page') {
+    return orderManifestFiles(manifest.pages?.[page] || [])
+  }
+
+  return []
+}
+
 export function getIconcatManifestFiles(manifest: IconcatCSSManifest) {
+  if (manifest.mode === 'page') {
+    return [
+      ...new Set([
+        ...(manifest.global || []),
+        ...Object.entries(manifest.pages || {})
+          .sort(([left], [right]) => left.localeCompare(right))
+          .flatMap(([, files]) => files),
+      ].map((file) => file.file)),
+    ]
+  }
+
   if (manifest.files) {
     return getOrderedManifestFiles(manifest)
       .map((file) => file.file)
@@ -201,6 +267,32 @@ function getOrderedManifestFiles(manifest: IconcatCSSManifest) {
     .map(([, file]) => file)
 }
 
+function orderManifestFiles(files: IconcatCSSManifestFile[]) {
+  const seen = new Set<string>()
+  return [
+    ...files.filter((file) => file.priority),
+    ...files.filter((file) => !file.priority),
+  ]
+    .filter((file) => {
+      if (seen.has(file.href)) {
+        return false
+      }
+      seen.add(file.href)
+      return true
+    })
+}
+
 function isDefined<T>(value: T | undefined): value is T {
   return value !== undefined
 }
+
+export {
+  getConventionalNextAppRouterPageEntries,
+  getNextAppRouterPageCSSFilesFromManifest as getIconcatNextAppRouterPageCSSFilesFromManifest,
+  getNextAppRouterPageCSSHrefsFromManifest as getIconcatNextAppRouterPageCSSHrefsFromManifest,
+  getNextAppRouterPageManifestEntries,
+  getNextAppRouterRouteEntriesFromCandidates,
+  isNextAppRouterPageEntry,
+  resolveNextAppRouterAncestorEntries,
+  resolveNextAppRouterPageEntries,
+} from './next-app-router'

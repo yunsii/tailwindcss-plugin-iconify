@@ -12,7 +12,9 @@ import { resolve } from 'pathe'
 
 import type { IconcatConfig } from '@iconcat/extractor'
 
-const command = process.argv[2] || 'extract'
+const args = process.argv.slice(2)
+const command = args[0] && !args[0].startsWith('-') ? args[0] : 'extract'
+const commandArgs = args[0] === command ? args.slice(1) : args
 const logger = {
   error(message: string) {
     process.stderr.write(`${message}\n`)
@@ -52,7 +54,7 @@ async function extract() {
   logger.info('Iconcat v0.1.0')
   logger.info()
   logger.info('Bundling entries...')
-  const config = await loadConfig()
+  const config = await loadConfig(commandArgs)
   const result = await writeIconCatalog({
     ...config,
     bundler: config.bundler || createEsbuildBundler(),
@@ -73,8 +75,9 @@ async function extract() {
   logger.info(`  ${result.output}`)
 }
 
-async function loadConfig(): Promise<IconcatConfig> {
-  const configFile = resolve(process.cwd(), 'iconcat.config.ts')
+async function loadConfig(args: string[]): Promise<IconcatConfig> {
+  const configPath = readOption(args, '--config') || process.env.ICONCAT_CONFIG || 'iconcat.config.ts'
+  const configFile = resolve(process.cwd(), configPath)
   if (!existsSync(configFile)) {
     return {}
   }
@@ -82,4 +85,17 @@ async function loadConfig(): Promise<IconcatConfig> {
   const jiti = createJiti(import.meta.url)
   const mod = await jiti.import<{ default?: IconcatConfig }>(configFile)
   return mod.default || (mod as IconcatConfig)
+}
+
+function readOption(args: string[], name: string) {
+  const equalsPrefix = `${name}=`
+  const equalsArg = args.find((arg) => arg.startsWith(equalsPrefix))
+
+  if (equalsArg) {
+    return equalsArg.slice(equalsPrefix.length)
+  }
+
+  const index = args.indexOf(name)
+
+  return index === -1 ? undefined : args[index + 1]
 }

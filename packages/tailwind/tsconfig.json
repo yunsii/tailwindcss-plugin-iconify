@@ -8,6 +8,8 @@
     "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["./src/*"],
+      "@iconcat/adapter-utils/next-app-router": ["../adapter-utils/src/next-app-router.ts"],
+      "@iconcat/adapter-utils": ["../adapter-utils/src"],
       "@iconcat/core": ["../core/src"],
       "@iconcat/tailwind": ["./src"],
       "tailwindcss-plugin-iconify": ["./src"]

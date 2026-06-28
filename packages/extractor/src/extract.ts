@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 
+import { resolveNextAppRouterAncestorEntries } from '@iconcat/adapter-utils/next-app-router'
 import {
   defineIconcatCatalog,
   mergeCatalogIcons,
@@ -21,6 +22,7 @@ import type {
   IconcatBundleCacheInput,
   IconcatConfig,
   IconcatConfigEntry,
+  IconcatEntryScope,
   IconcatModule,
   IconcatModuleCacheInput,
   IconcatPreset,
@@ -63,6 +65,7 @@ export async function extractIconCatalog(
 
   const entryUsages: EntryIconUsage[] = bundle.entries.map((entry) => {
     const priority = resolvedEntries.priorityByFile.get(entry.file) || undefined
+    const scope = resolvedEntries.scopeByFile.get(entry.file)
     const icons = mergeCatalogIcons(
       ...entry.modules.map((moduleFile) => moduleUsages.get(moduleFile)?.icons),
     )
@@ -72,6 +75,7 @@ export async function extractIconCatalog(
       icons,
       modules: entry.modules,
       priority,
+      scope,
     }
   })
 
@@ -90,6 +94,7 @@ export async function extractIconCatalog(
             icons: entry.icons,
             modules: entry.modules,
             priority: entry.priority,
+            scope: entry.scope,
           },
         ]),
       ),
@@ -101,6 +106,7 @@ export async function extractIconCatalog(
       entries: bundle.entries.map((entry) => ({
         ...entry,
         priority: resolvedEntries.priorityByFile.get(entry.file) || undefined,
+        scope: resolvedEntries.scopeByFile.get(entry.file),
       })),
       modules: bundle.modules.map((mod) => mod.file).sort(),
     },
@@ -173,10 +179,10 @@ async function resolveEntries(
   const specs = [
     ...explicitEntries.map((entry) =>
       typeof entry === 'string'
-        ? { file: entry, priority: false }
+        ? { file: entry, priority: false, scope: 'page' as IconcatEntryScope }
         : entry),
     ...presets.flatMap((preset) =>
-      preset.entries.map((entry) => ({ file: entry, priority: false }))),
+      preset.entries.map((entry) => ({ file: entry, priority: false, scope: 'page' as IconcatEntryScope }))),
   ]
   const patterns = specs.map((entry) => entry.file)
 
@@ -185,6 +191,7 @@ async function resolveEntries(
   }
 
   const priorityByFile = new Map<string, boolean>()
+  const scopeByFile = new Map<string, IconcatEntryScope>()
   const matches = await Promise.all(
     specs.map(async (entry) => {
       const files = await fg(entry.file, {
@@ -196,19 +203,43 @@ async function resolveEntries(
 
       files.forEach((file) => {
         priorityByFile.set(file, priorityByFile.get(file) || !!entry.priority)
+        if (entry.scope === 'global') {
+          scopeByFile.set(file, 'global')
+        } else if (!scopeByFile.has(file)) {
+          scopeByFile.set(file, 'page')
+        }
       })
 
       return files
     }),
   )
   const entries = [...new Set(matches.flat())].sort()
+  const nextPageExtensions = [
+    ...new Set(
+      presets.flatMap((preset) => preset.next?.pageExtensions || []),
+    ),
+  ]
+  const nextAppAncestorEntries = await resolveNextAppRouterAncestorEntries(entries, {
+    cwd,
+    pageExtensions: nextPageExtensions.length ? nextPageExtensions : undefined,
+  })
+  nextAppAncestorEntries.forEach((file) => {
+    if (!priorityByFile.has(file)) {
+      priorityByFile.set(file, false)
+    }
+    if (!scopeByFile.has(file)) {
+      scopeByFile.set(file, 'page')
+    }
+  })
+  const resolvedEntries = [...new Set([...entries, ...nextAppAncestorEntries])].sort()
 
-  if (!entries.length) {
+  if (!resolvedEntries.length) {
     throw new Error(`Iconcat could not resolve entries from: ${patterns.join(', ')}`)
   }
 
   return {
-    entries,
+    entries: resolvedEntries,
     priorityByFile,
+    scopeByFile,
   }
 }

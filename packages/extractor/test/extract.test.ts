@@ -63,6 +63,121 @@ describe('entry graph extraction', () => {
     expect(result.graph.entries.find((entry) => entry.file === 'src/main.tsx')?.priority).toBe(true)
   })
 
+  it('keeps scope metadata for object entries', async () => {
+    const result = await extractIconCatalog({
+      cwd: resolve(__dirname, 'fixtures/basic'),
+      entries: [
+        { file: 'src/main.tsx', scope: 'global' },
+        { file: 'src/admin.tsx', scope: 'page' },
+      ],
+    })
+
+    expect(result.catalog.entries?.['src/main.tsx']?.scope).toBe('global')
+    expect(result.catalog.entries?.['src/admin.tsx']?.scope).toBeUndefined()
+    expect(result.graph.entries.find((entry) => entry.file === 'src/main.tsx')?.scope).toBe('global')
+    expect(result.graph.entries.find((entry) => entry.file === 'src/admin.tsx')?.scope).toBe('page')
+  })
+
+  it('adds Next App Router ancestor segment entries for page entries', async () => {
+    const cwd = resolve(tmpdir(), `iconcat-next-app-router-entries-${process.pid}`)
+
+    await rm(cwd, { force: true, recursive: true })
+    await mkdir(resolve(cwd, 'src/app/dashboard/@analytics'), { recursive: true })
+    await mkdir(resolve(cwd, 'src/app/dashboard/reports'), { recursive: true })
+    await writeFile(
+      resolve(cwd, 'src/app/layout.tsx'),
+      'export default function Layout({ children }) { return children }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/template.tsx'),
+      'export default function Template({ children }) { return children }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/loading.tsx'),
+      'export default function Loading() { return <span className="icon-[mdi-light--loading]" /> }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/error.tsx'),
+      'export default function Error() { return <span className="icon-[mdi-light--alert]" /> }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/@analytics/default.tsx'),
+      'export default function AnalyticsDefault() { return <span className="icon-[mdi-light--chart-box]" /> }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/reports/layout.tsx'),
+      'export default function Layout({ children }) { return children }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/reports/not-found.tsx'),
+      'export default function NotFound() { return <span className="icon-[mdi-light--help]" /> }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/reports/default.tsx'),
+      'export default function Default() { return <span className="icon-[mdi-light--folder]" /> }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/dashboard/reports/page.tsx'),
+      'export default function Page() { return <span className="icon-[mdi-light--chart-line]" /> }\n',
+    )
+
+    const result = await extractIconCatalog({
+      cwd,
+      entries: ['src/app/**/page.tsx'],
+    })
+
+    expect(result.graph.entries.map((entry) => entry.file)).toEqual([
+      'src/app/dashboard/@analytics/default.tsx',
+      'src/app/dashboard/error.tsx',
+      'src/app/dashboard/loading.tsx',
+      'src/app/dashboard/reports/default.tsx',
+      'src/app/dashboard/reports/layout.tsx',
+      'src/app/dashboard/reports/not-found.tsx',
+      'src/app/dashboard/reports/page.tsx',
+      'src/app/dashboard/template.tsx',
+      'src/app/layout.tsx',
+    ])
+    expect(Object.keys(result.catalog.entries || {})).toEqual([
+      'src/app/dashboard/@analytics/default.tsx',
+      'src/app/dashboard/error.tsx',
+      'src/app/dashboard/loading.tsx',
+      'src/app/dashboard/reports/default.tsx',
+      'src/app/dashboard/reports/layout.tsx',
+      'src/app/dashboard/reports/not-found.tsx',
+      'src/app/dashboard/reports/page.tsx',
+      'src/app/dashboard/template.tsx',
+      'src/app/layout.tsx',
+    ])
+  })
+
+  it('adds mixed-extension Next App Router ancestor segment entries', async () => {
+    const cwd = resolve(tmpdir(), `iconcat-next-app-router-mixed-extension-entries-${process.pid}`)
+
+    await rm(cwd, { force: true, recursive: true })
+    await mkdir(resolve(cwd, 'src/app'), { recursive: true })
+    await writeFile(
+      resolve(cwd, 'src/app/layout.tsx'),
+      'export default function Layout({ children }) { return <section className="icon-[mdi-light--home]">{children}</section> }\n',
+    )
+    await writeFile(
+      resolve(cwd, 'src/app/page.jsx'),
+      'export default function Page() { return <span className="icon-[mdi-light--view-dashboard]" /> }\n',
+    )
+
+    const result = await extractIconCatalog({
+      cwd,
+      entries: ['src/app/**/page.jsx'],
+    })
+
+    expect(result.graph.entries.map((entry) => entry.file)).toEqual([
+      'src/app/layout.tsx',
+      'src/app/page.jsx',
+    ])
+    expect(result.catalog.icons).toEqual({
+      'mdi-light': ['home', 'view-dashboard'],
+    })
+  })
+
   it('extracts page-level allowlist icons declared with defineIconcatIcons', async () => {
     const cwd = resolve(tmpdir(), `iconcat-allowlist-test-${process.pid}`)
 

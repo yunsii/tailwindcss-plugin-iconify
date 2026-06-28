@@ -4,6 +4,9 @@ Iconcat follows the same high-level idea as Lingui catalog extraction: start
 from framework entries, traverse the reachable dependency graph, then emit a
 small catalog for the assets that are actually used.
 
+For framework-specific stylesheet loading and adapter integration details, see
+[Iconcat CSS Loading And Framework Integration](./framework-loading.md).
+
 ## Build Pipeline
 
 ```mermaid
@@ -125,19 +128,23 @@ bundle id. This keeps icon CSS cache invalidation independent from application
 JavaScript and Tailwind output. A framework adapter should only read the
 manifest after extraction finishes.
 
-### Global CSS Layers
+### Artifact Modes
 
-Set `artifactMode: 'global'` for framework builds. The artifact writer emits at
-most two independent icon CSS files:
+Iconcat supports two CSS artifact modes:
 
-- `priority`: icons reachable from entries marked `priority: true`;
-- `normal`: every other extracted icon, including icons declared through
-  `defineIconcatIcons()` page whitelists.
+- `global`: every extracted icon is emitted as globally loaded CSS;
+- `page`: entries with `scope: 'global'` are globally loaded, while page entries
+  are emitted as page-addressable CSS files.
 
-Priority icons are subtracted from the normal layer, so the same selector is not
-duplicated across the two files. Both files are globally injected by the
-framework adapter in production. Page-level CSS injection is intentionally left
-for a later routing-aware phase.
+`scope` and `priority` are independent:
+
+- `scope` decides whether an entry contributes to global CSS or page CSS;
+- `priority` only affects page CSS loading priority, such as Pages Router
+  preload.
+
+The default entry scope is `page`. In `global` mode, page scope is intentionally
+collapsed into globally loaded CSS so existing apps keep the simplest loading
+model.
 
 ```ts
 createIconcatCSSArtifact({
@@ -148,10 +155,23 @@ createIconcatCSSArtifact({
 })
 ```
 
+Use `page` mode when the framework adapter can resolve page CSS at SSR/SSG time
+or through a client route runtime:
+
+```ts
+createIconcatCSSArtifact({
+  artifactMode: 'page',
+  output: '.iconcat/iconcat.[hash].css',
+  manifest: '.iconcat/manifest.json',
+  publicPath: '/_next/static/css',
+})
+```
+
 The output path keeps one template for configuration simplicity. Iconcat expands
 the `[hash]` placeholder with the generated CSS content hash only. The file name
-does not encode priority; `manifest.files.priority` and `manifest.files.normal`
-carry that role.
+does not encode scope or priority; the manifest carries that metadata.
+
+#### Global Mode
 
 ```mermaid
 flowchart TD
@@ -192,27 +212,142 @@ The manifest shape is:
 }
 ```
 
-### Priority Entries
+#### Page Mode
+
+In page mode, global entries are merged into global CSS. Page entries subtract
+the global catalog before CSS generation, so shared shell icons are not emitted
+again in page CSS.
+
+```mermaid
+flowchart TD
+  A[Catalog entries] --> B[Split by scope]
+  B --> C[Merge scope global entries]
+  B --> D[Keep scope page entries]
+  C --> E[Write global CSS files]
+  D --> F[Subtract global icons per page]
+  F --> G[Write page CSS files]
+  E --> H[Write page mode manifest]
+  G --> H
+```
+
+The page manifest keeps global files separate from page files:
+
+```json
+{
+  "version": 1,
+  "mode": "page",
+  "global": [
+    {
+      "file": "iconcat.5b60030fc4.css",
+      "hash": "5b60030fc4",
+      "href": "/_next/static/css/iconcat.5b60030fc4.css",
+      "icons": 1,
+      "priority": true
+    }
+  ],
+  "pages": {
+    "src/app/dashboard/page.tsx": [
+      {
+        "file": "iconcat.0da9d37a19.css",
+        "hash": "0da9d37a19",
+        "href": "/_next/static/css/iconcat.0da9d37a19.css",
+        "icons": 2
+      }
+    ]
+  },
+  "icons": 3
+}
+```
+
+### Entry Scope And Priority
 
 Entries can be strings or objects:
 
 ```ts
 export default defineIconcatConfig({
   entries: [
-    { file: 'src/app/layout.tsx', priority: true },
     'src/app/**/page.tsx',
   ],
 })
 ```
 
-`priority: true` means the entry CSS should be treated like shell CSS and linked
-as early as the framework allows. It does not change icon extraction itself.
-The same dependency graph traversal still runs from that entry; only the
-manifest metadata and framework injection priority change.
+For framework page mode, shell entries are promoted to global icon CSS
+automatically when the framework semantics make them page-wide:
 
-For app-level icon needs, prefer declaring a real shell/layout entry as
-priority instead of manually listing global icons in config. The icon whitelist
-should live in the code that owns the feature.
+- Next App Router `layout.*` entries that appear in every resolved page route;
+- Next Pages Router root `_app.*` entries under `pages` or `src/pages`.
+
+`scope: 'global'` means an entry contributes to global icon CSS explicitly in
+page mode. Page-mode global CSS is always emitted as priority CSS.
+`priority: true` is reserved for page-scoped entries that need earlier loading.
+It does not change icon extraction itself. The same dependency graph traversal
+still runs from that entry; only manifest metadata and adapter loading behavior
+change.
+
+Next presets and App Router route resolution support Next-style
+`pageExtensions` whose final extension is `js`, `jsx`, `ts`, or `tsx`.
+For example, pass the same value used by `next.config.js` when route files use
+compound suffixes:
+
+```ts
+import { nextApp, nextPages } from '@iconcat/presets'
+
+nextApp({ pageExtensions: ['page.tsx', 'page.ts'] })
+nextPages({ pageExtensions: ['page.tsx', 'page.ts'] })
+```
+
+This matches files such as `src/app/dashboard/page.page.tsx`,
+`src/app/layout.page.tsx`, and `src/pages/index.page.tsx`. MDX routes are left
+out of the current phase.
+
+If `pageExtensions` is omitted, App Router ancestor discovery probes all default
+JS/TS extensions for segment files. This keeps default mixed-extension Next
+trees correct, for example `page.jsx` with `layout.tsx`. If `pageExtensions` is
+provided, discovery uses that exact list so Iconcat does not extract files that
+the configured Next app would not route.
+
+The automatic shell promotion handles the common root layout and `_app` cases
+without extra config while keeping nested layouts page-scoped when only part of
+the app uses them. The promotion happens in the CSS artifact layer, so the
+catalog still shows the entry metadata that came from extraction. For other
+app-level icon needs, prefer declaring a real shell/layout entry as
+`scope: 'global'` instead of manually listing global icons in config. The icon
+whitelist should live in the code that owns the feature.
+
+The automation boundary is deliberately split:
+
+- extraction keeps real framework entries and follows their dependency graph;
+- route discovery adds App Router ancestor segment entries when a page entry is
+  configured;
+- the CSS artifact layer promotes framework shell entries to global CSS and
+  subtracts those icons from page CSS;
+- framework adapters only consume the final manifest and render stylesheet
+  links.
+
+This means users configure entries, not generated CSS topology. App Router page
+mode can usually start from page entries only, and Pages Router page mode can
+keep `_app` as a normal entry while still getting global shell CSS.
+
+### Observable Style Sources
+
+Iconcat examples use these labels when describing where a rendered icon class
+gets its CSS:
+
+| Label      | Meaning                                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| `GLOBAL`   | Production Iconcat catalog CSS from entries marked `scope: 'global'`.                                               |
+| `PAGE`     | Production Iconcat catalog CSS from the current page entry.                                                         |
+| `MAIN`     | Icon styles emitted into the application's main Tailwind CSS output instead of a separate Iconcat catalog artifact. |
+| `DEV`      | Development-only styles generated by the framework dev server and Tailwind dynamic selectors.                       |
+| `UNMAPPED` | The current demo metadata cannot map the rendered icon class to a known source.                                     |
+
+`GLOBAL` and `PAGE` are catalog artifact scopes. `MAIN` and `DEV` are not
+catalog scopes: they describe styles that come from the normal Tailwind pipeline.
+Development should usually show `DEV` because Iconcat extraction is skipped and
+Tailwind keeps dynamic icon selectors available for fast iteration. A production
+build that intentionally keeps icon selectors in the app's main CSS should show
+`MAIN`, not `GLOBAL`, because no separate Iconcat catalog stylesheet owns those
+icons.
 
 ### Page Whitelist API
 
@@ -234,7 +369,8 @@ or Node-only dependencies. Values must be static string literals so the
 extractor can include them during catalog generation.
 
 Use this for page-level flexible icon sets. App shell icons should normally be
-declared in the shell/layout entry and marked `priority: true`.
+declared in the shell/layout entry. In page mode, global shell CSS is emitted as
+priority CSS automatically.
 
 ### Vite Build Integration
 
@@ -400,10 +536,9 @@ instead of a hand-written preload link.
 
 Iconcat CSS is outside Next's route CSS manifest, so Next cannot discover it
 automatically. The App Router example reads `.iconcat/manifest.json` during the
-server render and emits the global priority and normal stylesheet links with
-`precedence="next"` from the root layout. This makes the generated HTML line up
-with App Router's stylesheet model while keeping the icon CSS independently
-generated:
+server render and emits Iconcat stylesheet links with `precedence="next"` from
+the root layout. This makes the generated HTML line up with App Router's
+stylesheet model while keeping the icon CSS independently generated:
 
 ```tsx
 import { IconcatAppRouterStylesheets } from '@iconcat/next/app-router'
@@ -419,6 +554,26 @@ React stylesheet links directly. It does not emit manual preload links because
 React's managed stylesheet path handles ordering and deduplication through
 `precedence`.
 
+For page-mode CSS, App Router callers pass the leaf page entry, such as
+`src/app/dashboard/reports/page.tsx`. The helper expands that entry to the
+route's resolved App Router segment entries before reading the manifest:
+ancestor `layout`, `template`, `error`, `loading`, `not-found`, `forbidden`,
+`unauthorized`, and `default` files, plus direct parallel route slot
+`default.*` fallbacks. This is implemented in
+`@iconcat/adapter-utils/next-app-router` so extractor, adapters, tests, and
+future integrations reuse the same route-entry model.
+
+Next.js currently keeps the exact LoaderTree and CSS resource resolution behind
+private internals, so Iconcat's resolver is an external approximation. It is
+isolated behind the adapter-utils module; if Next exposes an official App
+Router route-tree API later, that module should switch to the official source
+without changing the rest of the loading pipeline.
+
+Active parallel slot pages cannot be derived exactly from one leaf page path
+without Next's private LoaderTree. Declare those slot pages as page entries too.
+Use the file-based page helpers when loading priority matters; href-only
+helpers are a convenience view over the ordered file metadata.
+
 ### Pages Router and Vite
 
 Pages Router uses Next's legacy document head pipeline. Next emits preload hints
@@ -428,16 +583,14 @@ outside that manifest. Iconcat keeps the loading model explicit and global:
 - `_document.tsx` wraps `Head` with `createIconcatDocumentHead`;
 - the wrapper preloads priority CSS, then appends stylesheet links for both
   priority and normal Iconcat CSS files;
-- individual pages only declare configurable icon whitelists in source code.
+- individual pages declare configurable icon whitelists in source code and use
+  page CSS file metadata from SSG or SSR props;
+- page-level priority files are preloaded before their page stylesheet links,
+  while non-priority page files are linked normally.
 
 ```tsx
 import { createIconcatDocumentHead } from '@iconcat/next/pages-router'
-import Document, {
-  Head,
-  Html,
-  Main,
-  NextScript,
-} from 'next/document'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
 
 const IconcatHead = createIconcatDocumentHead(Head)
 

@@ -52,6 +52,7 @@
     "typecheck": "tsgo --noEmit --rootDir ../.."
   },
   "dependencies": {
+    "@iconcat/adapter-utils": "workspace:*",
     "@iconcat/core": "workspace:*",
     "esbuild": "^0.24.0",
     "fast-glob": "^3.3.2",

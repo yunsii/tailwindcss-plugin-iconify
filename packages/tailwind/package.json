@@ -98,6 +98,7 @@
     "tailwindcss": ">=3"
   },
   "dependencies": {
+    "@iconcat/adapter-utils": "workspace:*",
     "@iconcat/core": "workspace:*",
     "@iconify/tools": "^4.1.2",
     "@iconify/types": "^2.0.0",

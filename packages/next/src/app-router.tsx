@@ -1,17 +1,11 @@
 /* eslint-disable node/prefer-global/process */
-import { getIconcatCSSHrefs } from '@iconcat/adapter-utils'
+import { getIconcatCSSHrefs, getIconcatNextAppRouterPageCSSFilesFromManifest, readIconcatManifestSync } from '@iconcat/adapter-utils'
 import { createElement } from 'react'
 
-import type { ReadIconcatManifestOptions } from '@iconcat/adapter-utils'
+import type { IconcatCSSManifestFile, ReadIconcatManifestOptions } from '@iconcat/adapter-utils'
 
 export interface IconcatAppRouterStylesheetsProps extends ReadIconcatManifestOptions {
   precedence?: string
-}
-
-interface ReactStylesheetProps {
-  href: string
-  precedence: string
-  rel: 'stylesheet'
 }
 
 export function IconcatAppRouterStylesheets(
@@ -33,8 +27,48 @@ export function IconcatAppRouterStylesheets(
           key: href,
           precedence,
           rel: 'stylesheet',
-        } satisfies ReactStylesheetProps & { key: string })
+        })
       ))}
     </>
   )
+}
+
+export interface IconcatAppRouterPageStylesheetsProps extends IconcatAppRouterStylesheetsProps {
+  page: string
+}
+
+export function IconcatAppRouterPageStylesheets(
+  { page, precedence = 'next', ...options }: IconcatAppRouterPageStylesheetsProps,
+) {
+  const files = process.env.NODE_ENV === 'production'
+    ? readIconcatPageCSSFiles(page, options)
+    : []
+
+  if (process.env.NODE_ENV !== 'production' || !files?.length) {
+    return null
+  }
+
+  return (
+    <>
+      {files.map((file) => (
+        createElement('link', {
+          href: file.href,
+          key: file.href,
+          precedence,
+          rel: 'stylesheet',
+        })
+      ))}
+    </>
+  )
+}
+
+function readIconcatPageCSSFiles(
+  page: string,
+  options: ReadIconcatManifestOptions,
+): IconcatCSSManifestFile[] {
+  try {
+    return getIconcatNextAppRouterPageCSSFilesFromManifest(readIconcatManifestSync(options), page)
+  } catch {
+    return []
+  }
 }

@@ -1,4 +1,6 @@
-import { assetPrefix } from './iconcat-public-path.mjs'
+import process from 'node:process'
+
+const assetPrefix = process.env.NEXT_PUBLIC_ASSET_PREFIX || ''
 
 const config = {
   transpilePackages: ['@iconcat/example-fixtures'],

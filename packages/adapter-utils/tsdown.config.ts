@@ -2,5 +2,5 @@ import { defineIconcatPackageConfig, packageDir } from '../../build/tsdown-packa
 
 export default defineIconcatPackageConfig({
   dirname: packageDir(import.meta.url),
-  entries: ['src/index.ts'],
+  entries: ['src/index.ts', 'src/next-app-router.ts'],
 })

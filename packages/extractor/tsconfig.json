@@ -6,6 +6,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
+      "@iconcat/adapter-utils/next-app-router": ["../adapter-utils/src/next-app-router.ts"],
+      "@iconcat/adapter-utils": ["../adapter-utils/src"],
       "@iconcat/core": ["../core/src"],
       "@iconcat/extractor": ["./src"],
       "@iconcat/presets": ["../presets/src"]

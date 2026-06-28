@@ -15,6 +15,16 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./next-app-router": {
+      "import": {
+        "types": "./dist/next-app-router.d.mts",
+        "default": "./dist/next-app-router.mjs"
+      },
+      "require": {
+        "types": "./dist/next-app-router.d.cts",
+        "default": "./dist/next-app-router.cjs"
+      }
     }
   },
   "main": "./dist/index.mjs",

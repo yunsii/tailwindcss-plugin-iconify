@@ -20,12 +20,18 @@ export interface IconcatPreset {
   name: string
   entries: string[]
   exclude?: string[]
+  next?: {
+    pageExtensions?: string[]
+  }
 }
 
 export interface IconcatConfigEntry {
   file: string
   priority?: boolean
+  scope?: IconcatEntryScope
 }
+
+export type IconcatEntryScope = 'global' | 'page'
 
 export interface IconcatExtractorOptions {
   classPrefixes?: string[]
@@ -55,6 +61,7 @@ export interface IconcatEntry {
   file: string
   modules: string[]
   priority?: boolean
+  scope?: IconcatEntryScope
 }
 
 export interface IconcatModule {
@@ -118,6 +125,7 @@ export interface EntryIconUsage {
   icons: import('@iconcat/core').IconcatCatalogIcons
   modules: string[]
   priority?: boolean
+  scope?: IconcatEntryScope
 }
 
 export interface ModuleIconUsage {

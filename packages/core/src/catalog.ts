@@ -11,7 +11,10 @@ export interface IconcatEntryCatalog {
   icons: IconcatCatalogIcons
   modules?: string[]
   priority?: boolean
+  scope?: IconcatEntryScope
 }
+
+export type IconcatEntryScope = 'global' | 'page'
 
 export type IconcatDiagnosticSeverity = 'warning' | 'error'
 
@@ -43,6 +46,7 @@ export function normalizeIconcatCatalog(
               icons: normalizeCatalogIcons(entry.icons),
               modules: entry.modules ? [...new Set(entry.modules)].sort() : undefined,
               priority: entry.priority || undefined,
+              scope: entry.scope === 'global' ? 'global' : undefined,
             },
           ]),
         )

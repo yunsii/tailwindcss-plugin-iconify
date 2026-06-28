@@ -6,7 +6,9 @@ import Document, {
   NextScript,
 } from 'next/document'
 
-const IconcatHead = createIconcatDocumentHead(Head)
+import { iconcatManifest } from '../page-static-props'
+
+const IconcatHead = createIconcatDocumentHead(Head, { manifest: iconcatManifest })
 
 export default class AppDocument extends Document {
   render() {

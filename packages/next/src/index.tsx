@@ -39,6 +39,7 @@ export function getNextIconcatCSSHref(
 
 export function createIconcatDocumentHead(
   BaseHead: NextDocumentHead,
+  options: ReadIconcatManifestOptions = {},
 ): NextDocumentHead {
   type Files = Parameters<Head['getCssLinks']>[0]
 
@@ -51,7 +52,7 @@ export function createIconcatDocumentHead(
       }
 
       try {
-        const manifest = readIconcatManifestSync()
+        const manifest = readIconcatManifestSync(options)
         const hrefs = getIconcatCSSHrefsFromManifest(manifest)
         const preloadHrefs = getIconcatPriorityCSSHrefsFromManifest(manifest)
 
@@ -101,4 +102,17 @@ export type {
   IconcatCSSManifestFile,
   InstallIconcatCSSOptions,
   ReadIconcatManifestOptions,
+} from '@iconcat/adapter-utils'
+
+export {
+  getIconcatNextAppRouterPageCSSFilesFromManifest,
+  getIconcatNextAppRouterPageCSSHrefsFromManifest,
+  getIconcatPageCSSFiles,
+  getIconcatPageCSSHrefs,
+  getNextAppRouterPageManifestEntries,
+  getNextAppRouterRouteEntriesFromCandidates,
+  isNextAppRouterPageEntry,
+  readIconcatManifestSync,
+  resolveNextAppRouterAncestorEntries,
+  resolveNextAppRouterPageEntries,
 } from '@iconcat/adapter-utils'
