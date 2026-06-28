@@ -101,6 +101,118 @@ points at a half-written stylesheet.
 - Development keeps using Tailwind's dynamic icon selectors and does not run
   catalog extraction on every page interaction.
 
+### Hashed CSS Handoff
+
+The stable handoff between extraction and the framework build is the iconcat
+manifest:
+
+```mermaid
+flowchart LR
+  A[Scan reachable modules] --> B[Generate icon CSS]
+  B --> C[Hash generated CSS content]
+  C --> D[Write iconcat.hash.css]
+  D --> E[Atomically write manifest.json last]
+  E --> F[Adapter reads href and file]
+  F --> G[Framework output receives CSS asset and link]
+```
+
+The hash is derived from the generated icon CSS content, not from a framework
+bundle id. This keeps icon CSS cache invalidation independent from application
+JavaScript and Tailwind output. A framework adapter should only read the
+manifest after extraction finishes.
+
+### Vite Build Integration
+
+Vite is the cleanest plugin boundary for Iconcat because it exposes both the
+build lifecycle and HTML transform hooks. `@iconcat/vite` intentionally returns
+two build-only plugins in order:
+
+1. `@iconcat/extractor/vite` runs `writeIconCatalog()` in `buildStart()` and
+   writes `.iconcat/catalog.json`, `.iconcat/iconcat.[hash].css`, and the
+   manifest.
+2. `iconcat-css` reads the manifest, emits the CSS in `generateBundle()`, and
+   injects a stylesheet link in `transformIndexHtml()`.
+
+That makes Vite integration serial inside `vite build`: extraction must finish
+before the CSS plugin can observe the final manifest. This is the desired
+behavior because the CSS file name is content-addressed and the HTML link must
+point at the exact emitted asset.
+
+The recommended Vite public path is:
+
+```ts
+import { createViteIconcatPublicPath, iconcat } from '@iconcat/vite'
+
+export default {
+  plugins: [
+    iconcat({
+      publicPath: createViteIconcatPublicPath('/', 'assets'),
+    }),
+  ],
+}
+```
+
+Use the app's configured Vite `base` and `build.assetsDir` values when calling
+`createViteIconcatPublicPath()`. The generated CSS is emitted through the Vite
+bundle, so it behaves like a build asset rather than a file copied into
+`public`.
+
+### Next.js Build Integration
+
+Next.js does not currently provide a Vite-like, cross-router plugin boundary
+that can both run a global dependency-tree extraction and inject an external
+stylesheet into App Router, Pages Router, and Turbopack builds with one stable
+API. Iconcat therefore keeps Next.js integration explicit and serial:
+
+```mermaid
+flowchart TD
+  A[iconcat extract] --> B[.iconcat manifest and hashed CSS]
+  B --> C[next build]
+  C --> D[installNextIconcatCSS copies CSS into .next/static/css]
+  D --> E[App Router layout or Pages Document reads manifest href]
+  E --> F[HTML links assetPrefix + /_next/static/css/iconcat.hash.css]
+```
+
+The recommended Next.js public path is:
+
+```ts
+import { createNextIconcatPublicPath } from '@iconcat/next'
+
+const publicPath = createNextIconcatPublicPath({
+  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX,
+})
+```
+
+The CSS should be installed into `.next/static/css` because Next's
+`assetPrefix` is designed around `/_next/static` assets. It should not be put
+under `public/iconcat` for production output: files in `public` require callers
+to add any CDN prefix themselves, while `/_next/static` matches the asset shape
+that users already configure for Next build artifacts.
+
+### Why Not Loader, SWC, or Turbopack Rules
+
+Iconcat extraction is a global build task:
+
+- start from framework entries;
+- traverse the reachable dependency graph;
+- merge icon references across modules;
+- generate one content-hashed CSS artifact;
+- write the manifest only after the CSS is complete;
+- inject or render the final stylesheet href.
+
+Webpack loaders, Turbopack rules, and SWC plugins are module transformation
+boundaries. They can transform the current file, but they are not the right
+owner for a whole-app graph traversal plus stable asset emission and HTML
+injection. This matters more for Next.js because App Router, Pages Router, and
+Turbopack have different rendering and build pipelines.
+
+For Turbopack specifically, `turbopack.rules` currently maps files to supported
+webpack loaders. That can cover single-file transforms, but it does not provide
+the same full plugin surface as Vite/Rollup for emitting a cross-route
+content-hashed CSS asset and injecting the final link. Keeping Next.js as
+`extract -> next build -> install -> render link` is simpler, deterministic,
+and works across both router implementations.
+
 ## CSS Injection Strategy
 
 Iconcat emits an independent icon stylesheet. It is not concatenated into the
