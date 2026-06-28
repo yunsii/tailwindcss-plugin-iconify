@@ -22,7 +22,6 @@
     "test:production-previews": "vitest run --config vitest.production-previews.config.ts",
     "verify:production-previews": "vitest run --config vitest.production-previews.config.ts",
     "verify:production-previews:update": "node scripts/verify-production-previews.mjs --update",
-    "ssg": "pnpm run build:docs",
     "changeset": "changeset",
     "changeset:publish": "changeset publish"
   },
