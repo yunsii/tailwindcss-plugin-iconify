@@ -14,7 +14,7 @@
     "dev:iconcat": "node scripts/dev/start.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "turbo run test --filter=@iconcat/core --filter=@iconcat/extractor --filter=@iconcat/tailwind",
+    "test": "turbo run test --filter=@iconcat/core --filter=@iconcat/extractor --filter=@iconcat/tailwind --filter=@iconcat/vite",
     "typecheck": "turbo run typecheck",
     "changeset": "changeset",
     "changeset:publish": "changeset publish"

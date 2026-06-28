@@ -25,6 +25,7 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsgo --noEmit --rootDir ../.."
   },
   "peerDependencies": {
@@ -35,7 +36,8 @@
     "@iconcat/extractor": "workspace:*"
   },
   "devDependencies": {
-    "vite": "^5.4.5"
+    "vite": "^5.4.5",
+    "vitest": "^2.1.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

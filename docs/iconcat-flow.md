@@ -87,12 +87,11 @@ app build
 
 ## Build Ordering
 
-The initial implementation keeps the critical boundary serial:
-`iconcat extract` completes before the framework build reads
-`.iconcat/manifest.json`. The CSS file name is content-hashed, and both CSS and
-manifest writes use same-directory temporary files followed by atomic rename.
-The manifest is written last, so the framework never observes a manifest that
-points at a half-written stylesheet.
+Iconcat keeps a deterministic manifest handoff even when a framework can run
+extraction in parallel with its own compilation. The CSS file name is
+content-hashed, and both CSS and manifest writes use same-directory temporary
+files followed by atomic rename. The manifest is written last, so the framework
+never observes a manifest that points at a half-written stylesheet.
 
 - Next.js examples link `assetPrefix + /_next/static/css/iconcat.[hash].css`
   and install the extracted CSS into `.next/static/css` after `next build`.
@@ -124,19 +123,20 @@ manifest after extraction finishes.
 ### Vite Build Integration
 
 Vite is the cleanest plugin boundary for Iconcat because it exposes both the
-build lifecycle and HTML transform hooks. `@iconcat/vite` intentionally returns
-two build-only plugins in order:
+build lifecycle and HTML transform hooks. `@iconcat/vite` starts
+`writeIconCatalog()` in `buildStart()` without awaiting it, allowing Iconcat
+dependency extraction to run in parallel with the Vite application bundle.
 
-1. `@iconcat/extractor/vite` runs `writeIconCatalog()` in `buildStart()` and
-   writes `.iconcat/catalog.json`, `.iconcat/iconcat.[hash].css`, and the
-   manifest.
-2. `iconcat-css` reads the manifest, emits the CSS in `generateBundle()`, and
-   injects a stylesheet link in `transformIndexHtml()`.
+The later Vite hooks are the synchronization barrier:
 
-That makes Vite integration serial inside `vite build`: extraction must finish
-before the CSS plugin can observe the final manifest. This is the desired
-behavior because the CSS file name is content-addressed and the HTML link must
-point at the exact emitted asset.
+1. `generateBundle()` awaits the extraction promise, reads the final manifest,
+   and emits `iconcat.[hash].css` as a Vite asset.
+2. `transformIndexHtml()` awaits the same promise, reads the same manifest, and
+   injects the stylesheet link into `index.html`.
+
+That makes Vite integration parallel during compilation but serial at the
+manifest handoff. The CSS file name remains content-addressed, and the HTML
+link always points at the exact emitted asset.
 
 The recommended Vite public path is:
 
@@ -162,7 +162,7 @@ bundle, so it behaves like a build asset rather than a file copied into
 Next.js does not currently provide a Vite-like, cross-router plugin boundary
 that can both run a global dependency-tree extraction and inject an external
 stylesheet into App Router, Pages Router, and Turbopack builds with one stable
-API. Iconcat therefore keeps Next.js integration explicit and serial:
+API. Iconcat therefore keeps Next.js integration explicit and serial for now:
 
 ```mermaid
 flowchart TD
@@ -188,6 +188,12 @@ The CSS should be installed into `.next/static/css` because Next's
 under `public/iconcat` for production output: files in `public` require callers
 to add any CDN prefix themselves, while `/_next/static` matches the asset shape
 that users already configure for Next build artifacts.
+
+TODO: investigate a Next.js build wrapper that starts Iconcat extraction in
+parallel with `next build`, then blocks manifest reads before App Router layout
+or Pages Router `_document` emits the stylesheet link. The wrapper must protect
+against stale manifests, expose a stable await boundary for both routers, and
+still install the final CSS into `.next/static/css`.
 
 ### Why Not Loader, SWC, or Turbopack Rules
 

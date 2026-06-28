@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { joinPublicPath, readIconcatManifestSync } from '@iconcat/adapter-utils'
-import { iconcat as extractIconcat } from '@iconcat/extractor/vite'
+import { writeIconCatalog } from '@iconcat/extractor'
 
 import type { ReadIconcatManifestOptions } from '@iconcat/adapter-utils'
 import type { IconcatConfig } from '@iconcat/extractor'
@@ -18,8 +18,7 @@ export interface IconcatViteOptions extends IconcatConfig {
 
 export function iconcat(options: IconcatViteOptions = {}): Plugin[] {
   return [
-    extractIconcat(options),
-    iconcatCSS(options),
+    createIconcatCSSPlugin(options, true),
   ]
 }
 
@@ -28,18 +27,35 @@ export function createViteIconcatPublicPath(base = '/', assetDir = 'assets') {
 }
 
 export function iconcatCSS(options: IconcatViteOptions = {}): Plugin {
+  return createIconcatCSSPlugin(options, false)
+}
+
+function createIconcatCSSPlugin(
+  options: IconcatViteOptions,
+  extract: boolean,
+): Plugin {
   const manifestOptions: ReadIconcatManifestOptions = {
+    cwd: options.cwd,
     manifest: options.manifest,
   }
   const sourceDir = options.sourceDir || '.iconcat'
   const assetDir = options.assetDir || 'assets'
   const exposeHrefGlobal = options.exposeHrefGlobal || '__ICONCAT_CSS_HREF__'
+  const cwd = options.cwd || process.cwd()
+  let extraction: Promise<void> | undefined
 
   return {
-    name: 'iconcat-css',
+    name: extract ? 'iconcat' : 'iconcat-css',
     apply: 'build',
-    transformIndexHtml() {
-      const manifest = readManifestIfExists(manifestOptions)
+    buildStart() {
+      if (!extract) {
+        return
+      }
+      extraction = writeIconCatalog(options).then(() => undefined)
+      void extraction.catch(() => {})
+    },
+    async transformIndexHtml() {
+      const manifest = await readManifestAfterExtraction(extraction, manifestOptions)
       if (!manifest) {
         return []
       }
@@ -60,13 +76,13 @@ export function iconcatCSS(options: IconcatViteOptions = {}): Plugin {
         },
       ]
     },
-    generateBundle() {
-      const manifest = readManifestIfExists(manifestOptions)
+    async generateBundle() {
+      const manifest = await readManifestAfterExtraction(extraction, manifestOptions)
       if (!manifest) {
         return
       }
 
-      const sourceFile = resolve(process.cwd(), sourceDir, manifest.file)
+      const sourceFile = resolve(cwd, sourceDir, manifest.file)
       this.emitFile({
         type: 'asset',
         fileName: `${assetDir.replace(/\/$/, '')}/${manifest.file}`,
@@ -74,6 +90,14 @@ export function iconcatCSS(options: IconcatViteOptions = {}): Plugin {
       })
     },
   }
+}
+
+async function readManifestAfterExtraction(
+  extraction: Promise<void> | undefined,
+  options: ReadIconcatManifestOptions,
+) {
+  await extraction
+  return readManifestIfExists(options)
 }
 
 function readManifestIfExists(options: ReadIconcatManifestOptions) {
