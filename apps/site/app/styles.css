@@ -251,8 +251,7 @@ a {
   background: var(--iconcat-blue);
 }
 
-.hero-preview pre,
-pre {
+.hero-preview pre {
   overflow: auto;
   margin: 0;
   border-radius: 0;
@@ -385,7 +384,7 @@ pre {
 }
 
 .code-list li,
-code {
+.prose :where(:not(pre) > code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   border-radius: 5px;
   background: color-mix(in oklab, var(--color-fd-accent) 72%, transparent);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -396,8 +395,179 @@ code {
   font-size: 13px;
 }
 
-code {
+.prose :where(:not(pre) > code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   padding: 2px 4px;
+}
+
+.prose :where(pre code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+figure.shiki :where(pre code .line) {
+  min-height: 1lh;
+}
+
+figure.iconcat-text-codeblock :where(pre) {
+  width: 100%;
+  min-width: 0;
+  white-space: pre-wrap;
+}
+
+figure.iconcat-text-codeblock :where(code) {
+  white-space: inherit;
+}
+
+figure.iconcat-text-codeblock :where(code .line) {
+  display: block;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+figure.iconcat-text-codeblock :where(code .line > span) {
+  display: inline;
+}
+
+.iconcat-text-codeblock-viewport {
+  overflow-x: hidden;
+}
+
+.mermaid-diagram {
+  position: relative;
+  overflow: hidden;
+  min-height: 358px;
+  margin: 22px 0;
+  border: 1px solid var(--iconcat-line);
+  border-radius: 8px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-fd-card) 92%, transparent),
+    color-mix(in oklab, var(--color-fd-accent) 28%, transparent)
+  );
+  padding: 18px;
+}
+
+.mermaid-preview-open {
+  overflow: hidden;
+}
+
+.mermaid-preview {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  background: color-mix(in oklab, var(--color-fd-background) 96%, transparent);
+  padding: 24px;
+}
+
+.mermaid-toolbar {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--iconcat-line);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--color-fd-card) 92%, transparent);
+  box-shadow: 0 10px 24px color-mix(in oklab, var(--color-fd-foreground) 10%, transparent);
+}
+
+.mermaid-action {
+  display: grid;
+  width: 34px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-right: 1px solid var(--iconcat-line);
+  background: transparent;
+  color: var(--color-fd-foreground);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mermaid-action:last-child {
+  border-right: 0;
+}
+
+.mermaid-action:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--color-fd-accent) 72%, transparent);
+}
+
+.mermaid-action:disabled {
+  color: var(--color-fd-muted-foreground);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.mermaid-action-wide {
+  width: 58px;
+  font-size: 12px;
+}
+
+.mermaid-action [class^='icon-'] {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+
+[class^='icon-'],
+[class*=' icon-'] {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  background-color: currentColor;
+  vertical-align: -0.125em;
+}
+
+.mermaid-viewport {
+  overflow: hidden;
+  min-height: 320px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.mermaid-viewport[data-dragging='true'] {
+  cursor: grabbing;
+}
+
+.mermaid-viewport *,
+.mermaid-viewport[data-dragging='true'] * {
+  user-select: none;
+}
+
+.mermaid-preview .mermaid-viewport {
+  height: calc(100dvh - 48px);
+  min-height: 0;
+}
+
+.mermaid-canvas {
+  min-width: 680px;
+  transform-origin: center center;
+  transition: transform 120ms ease;
+  will-change: transform;
+}
+
+.mermaid-viewport[data-dragging='true'] .mermaid-canvas {
+  transition: none;
+}
+
+.mermaid-canvas svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.mermaid-source {
+  min-height: 220px;
+  margin: 0;
+  background: transparent;
 }
 
 .flow {

@@ -11,13 +11,13 @@ Higher-priority user instructions still win.
 - Shared example fixtures live under `fixtures/*`; keep them out of
   `packages/*` so package orchestration only targets real packages.
 - Catalog extraction starts from framework entries and follows the reachable
-  dependency graph. Keep this behavior aligned with `docs/iconcat-flow.md`.
+  dependency graph. Keep this behavior aligned with `docs/concepts/iconcat-flow.md`.
 - UnoCSS compatibility is intentionally out of scope for the current phase.
 
 ## Build Tooling
 
 - Library packages use tsdown for JavaScript and declaration output. See
-  `docs/package-build.md`.
+  `docs/reference/package-build.md`.
 - Root build, test, and typecheck orchestration uses Turborepo.
 - Use `tsgo` for repository typecheck scripts. Keep `typescript` pinned only for
   lint/tooling ecosystem compatibility.

@@ -2,14 +2,9 @@
   "title": "Iconcat",
   "pages": [
     "index",
-    "iconcat-flow",
-    "framework-loading",
-    "next-app-router",
-    "next-pages-router",
-    "react-router-vite",
-    "performance",
-    "iconcat-tailwind-api-migration",
-    "package-build",
-    "commit-messages"
+    "concepts",
+    "frameworks",
+    "reference",
+    "project"
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "title": "Framework Guides",
+  "defaultOpen": true,
+  "pages": [
+    "next-app-router",
+    "next-pages-router",
+    "react-router-vite"
+  ]
+}

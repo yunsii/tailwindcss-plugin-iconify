@@ -30,11 +30,11 @@ export default function HomePage() {
         },
         {
           text: 'Frameworks',
-          url: '/docs/framework-loading',
+          url: '/docs/concepts/framework-loading',
         },
         {
           text: 'API',
-          url: '/docs/iconcat-tailwind-api-migration',
+          url: '/docs/reference/iconcat-tailwind-api-migration',
         },
       ]}
     >
@@ -58,7 +58,7 @@ export default function HomePage() {
             <Link className='button' href='/docs'>
               Read the docs
             </Link>
-            <Link className='button secondary' href='/docs/framework-loading'>
+            <Link className='button secondary' href='/docs/concepts/framework-loading'>
               Framework loading
             </Link>
           </div>
@@ -95,17 +95,17 @@ export default function HomePage() {
         </Cards>
         <Cards className='home-card-grid'>
           <Card
-            href='/docs/next-app-router'
+            href='/docs/frameworks/next-app-router'
             title='Next.js App Router'
             description='Automatic route entry discovery with layout-aware page CSS.'
           />
           <Card
-            href='/docs/next-pages-router'
+            href='/docs/frameworks/next-pages-router'
             title='Next.js Pages Router'
             description='Document head injection, SSG, and SSR page-mode examples.'
           />
           <Card
-            href='/docs/react-router-vite'
+            href='/docs/frameworks/react-router-vite'
             title='React Router on Vite'
             description='Build-time extraction and runtime page stylesheet loading.'
           />

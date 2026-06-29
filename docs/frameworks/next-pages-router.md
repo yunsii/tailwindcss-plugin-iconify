@@ -69,5 +69,5 @@ If the route is missing from `manifest.pageRoutes`, Iconcat throws during SSG or
 SSR so stale manifests and invalid route declarations do not silently ship
 missing icon styles.
 
-See [framework loading](./framework-loading.md) for link ordering details and
-[catalog extraction flow](./iconcat-flow.md) for the page-mode artifact model.
+See [framework loading](../concepts/framework-loading.md) for link ordering details and
+[catalog extraction flow](../concepts/iconcat-flow.md) for the page-mode artifact model.

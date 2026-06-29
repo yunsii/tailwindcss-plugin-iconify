@@ -1,6 +1,7 @@
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page'
 import { notFound } from 'next/navigation'
 
+import { mdxComponents } from '../../../mdx-components'
 import { source } from '../../../source'
 
 export default async function Page({ params }: PageProps<'/docs/[[...slug]]'>) {
@@ -18,7 +19,7 @@ export default async function Page({ params }: PageProps<'/docs/[[...slug]]'>) {
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX />
+        <MDX components={mdxComponents} />
       </DocsBody>
     </DocsPage>
   )

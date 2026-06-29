@@ -17,15 +17,17 @@ stays pinned for lint and the broader TypeScript-aware tooling ecosystem.
 
 This applies to publishable packages under `packages/*`:
 
-- `@iconcat/core`
-- `@iconcat/adapter-utils`
-- `@iconcat/extractor`
-- `@iconcat/presets`
-- `@iconcat/next`
-- `@iconcat/vite`
-- `iconcat`
-- `@iconcat/tailwind`
-- `tailwindcss-plugin-iconify`
+| Package                      | Role                                                                                                                          |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `@iconcat/core`              | Shared catalog types, icon parsing, and low-level utilities used by extractors and adapters.                                  |
+| `@iconcat/adapter-utils`     | Framework-agnostic helpers for reading manifests, resolving CSS assets, and producing stylesheet metadata.                    |
+| `@iconcat/extractor`         | Entry-driven dependency graph traversal and static icon catalog extraction. It owns the bundler-facing extraction primitives. |
+| `@iconcat/presets`           | Framework entry presets that translate common project layouts into Iconcat extraction entries.                                |
+| `@iconcat/next`              | Next.js App Router and Pages Router integration helpers for rendering generated Iconcat stylesheet links.                     |
+| `@iconcat/vite`              | Vite plugin integration that runs extraction during production builds and injects generated stylesheet assets.                |
+| `iconcat`                    | CLI package for running Iconcat extraction and exposing runtime helpers from a command-line entry.                            |
+| `@iconcat/tailwind`          | Tailwind adapter powered by Iconify. It generates dynamic, static, and catalog-driven icon CSS.                               |
+| `tailwindcss-plugin-iconify` | Compatibility package that re-exports the current Tailwind adapter under the legacy package name.                             |
 
 Vite remains in the repo for docs, examples, and Vitest. It is not used for
 library package bundling.

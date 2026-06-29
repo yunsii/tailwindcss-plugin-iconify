@@ -6,7 +6,7 @@
   "scripts": {
     "build": "turbo run build",
     "build:packages": "turbo run build --filter='./packages/*'",
-    "build:docs": "turbo run build --filter=@iconcat/site",
+    "build:docs": "turbo run build --filter=@iconcat/site...",
     "bench:extractor": "pnpm --filter @iconcat/extractor run bench",
     "bench:extractor:memory": "pnpm --filter @iconcat/extractor run bench:memory",
     "bench:extractor:persistent": "pnpm --filter @iconcat/extractor run bench:persistent",

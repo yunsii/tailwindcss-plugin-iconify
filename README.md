@@ -14,15 +14,15 @@ Use any SVG icon powered by Iconify for Tailwind CSS, easy to use local icons an
 
 ## Iconcat architecture
 
-See [Iconcat Catalog Extraction Flow](./docs/iconcat-flow.md) for the
+See [Iconcat Catalog Extraction Flow](./docs/concepts/iconcat-flow.md) for the
 entry-driven catalog extraction pipeline and the independent hashed icon CSS
 artifact flow.
 
-See [Iconcat Tailwind API Migration](./docs/iconcat-tailwind-api-migration.md)
+See [Iconcat Tailwind API Migration](./docs/reference/iconcat-tailwind-api-migration.md)
 for the new `icons`, `dynamicIcons`, `staticIcons`, and `catalogIcons` API
 names.
 
-See [Iconcat Package Build](./docs/package-build.md) for the Rolldown package
+See [Iconcat Package Build](./docs/reference/package-build.md) for the Rolldown package
 build pipeline and validation commands.
 
 ## About Figma icons

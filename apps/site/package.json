@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@iconcat/example-fixtures": "workspace:*",
+    "@iconcat/tailwind": "workspace:*",
     "fumadocs-mdx": "^15.0.13",
     "fumadocs-ui": "^16.10.6",
+    "mermaid": "^11.16.0",
     "next": "^16.2.9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
+    "@iconify-json/mdi-light": "^1.2.0",
     "@types/mdx": "^2.0.14",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3"

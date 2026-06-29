@@ -6,7 +6,12 @@ const withMDX = createMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@iconcat/example-fixtures'],
+  transpilePackages: [
+    '@iconcat/adapter-utils',
+    '@iconcat/core',
+    '@iconcat/example-fixtures',
+    '@iconcat/tailwind',
+  ],
 }
 
 export default withMDX(nextConfig)

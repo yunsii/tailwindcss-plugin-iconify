@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { resolve } from 'node:path'
+import process from 'node:process'
 
 import type { IconifyJSON } from '@iconify/types'
 
-const require = createRequire(import.meta.url)
+const packageRequire = createRequire(import.meta.url)
 
 /**
  * Callback for loading icon set
@@ -17,6 +19,8 @@ export interface IconifyPluginLoaderOptions {
   // Custom icon sets
   // Value can be loaded icon set or callback that loads icon set
   iconSets?: Record<string, IconifyJSON | string | IconifyJSONLoaderCallback>
+  // Directory used to resolve installed @iconify-json/* packages.
+  cwd?: string
 }
 
 /**
@@ -26,19 +30,37 @@ interface LocatedIconSet {
   main: string
   info?: string
 }
-export function locateIconSet(prefix: string): LocatedIconSet | undefined {
+function resolvePackagePath(id: string, cwd?: string): string | undefined {
+  const resolver = cwd
+    ? createRequire(resolve(cwd, 'package.json'))
+    : packageRequire
+
   try {
-    const main = require.resolve(`@iconify-json/${prefix}/icons.json`)
-    const info = require.resolve(`@iconify-json/${prefix}/info.json`)
-    return {
-      main,
-      info,
+    return resolver.resolve(id)
+  } catch {}
+}
+
+export function locateIconSet(prefix: string, cwd = process.cwd()): LocatedIconSet | undefined {
+  try {
+    const main = resolvePackagePath(`@iconify-json/${prefix}/icons.json`, cwd)
+      || resolvePackagePath(`@iconify-json/${prefix}/icons.json`)
+    const info = resolvePackagePath(`@iconify-json/${prefix}/info.json`, cwd)
+      || resolvePackagePath(`@iconify-json/${prefix}/info.json`)
+    if (main) {
+      return {
+        main,
+        info,
+      }
     }
   } catch {}
   try {
-    const main = require.resolve(`@iconify/json/json/${prefix}.json`)
-    return {
-      main,
+    const iconSetPath = ['@iconify/json/json/', prefix, '.json'].join('')
+    const main = resolvePackagePath(iconSetPath, cwd)
+      || resolvePackagePath(iconSetPath)
+    if (main) {
+      return {
+        main,
+      }
     }
   } catch {}
 }
@@ -88,7 +110,7 @@ export function loadIconSet(
     }
   } else {
     // Find icon set
-    filename = locateIconSet(prefix)
+    filename = locateIconSet(prefix, options.cwd)
   }
 
   if (!filename) {

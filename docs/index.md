@@ -12,22 +12,22 @@ framework-specific pages.
 
 ## Start Here
 
-- [Catalog extraction flow](./iconcat-flow.md): dependency graph extraction,
+- [Catalog extraction flow](./concepts/iconcat-flow.md): dependency graph extraction,
   catalog generation, CSS artifacts, framework build order, and page-mode
   loading.
-- [Framework loading](./framework-loading.md): Next.js App Router, Next.js Pages
+- [Framework loading](./concepts/framework-loading.md): Next.js App Router, Next.js Pages
   Router, React Router/Vite, hashed CSS installation, and SSR link rendering.
-- [Next.js App Router](./next-app-router.md): route-driven page CSS loading for
+- [Next.js App Router](./frameworks/next-app-router.md): route-driven page CSS loading for
   App Router applications.
-- [Next.js Pages Router](./next-pages-router.md): `_document`, SSG, and SSR page
+- [Next.js Pages Router](./frameworks/next-pages-router.md): `_document`, SSG, and SSR page
   CSS integration for Pages Router applications.
-- [React Router with Vite](./react-router-vite.md): Vite plugin extraction and
+- [React Router with Vite](./frameworks/react-router-vite.md): Vite plugin extraction and
   production stylesheet injection.
-- [Performance](./performance.md): extractor benchmarks, graph reuse, memory
+- [Performance](./concepts/performance.md): extractor benchmarks, graph reuse, memory
   notes, and persistent cache strategy.
-- [Tailwind API migration](./iconcat-tailwind-api-migration.md): migration from
+- [Tailwind API migration](./reference/iconcat-tailwind-api-migration.md): migration from
   the old `add*IconSelectors` API names to Iconcat's current Tailwind API.
-- [Package build](./package-build.md): tsdown package build contract and
+- [Package build](./reference/package-build.md): tsdown package build contract and
   repository typecheck conventions.
 
 ## Documentation Website
