@@ -2,6 +2,8 @@ import { Card, Cards } from 'fumadocs-ui/components/card'
 import { HomeLayout } from 'fumadocs-ui/layouts/home'
 import Link from 'next/link'
 
+import { HomeNavState } from '../components/home-nav-state'
+
 const extractPreview = [
   'iconcat extract',
   '',
@@ -59,7 +61,6 @@ export default function HomePage() {
       githubUrl='https://github.com/yunsii/tailwindcss-plugin-iconify'
       nav={{
         title: <BrandMark />,
-        transparentMode: 'top',
       }}
       links={[
         {
@@ -77,6 +78,7 @@ export default function HomePage() {
         },
       ]}
     >
+      <HomeNavState />
       <section className='hero'>
         <div className='hero-copy'>
           <p className='eyebrow'>Icon catalog extraction for modern routers</p>

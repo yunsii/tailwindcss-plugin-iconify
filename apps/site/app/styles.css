@@ -95,8 +95,10 @@ a {
   font-weight: 800;
 }
 
-.home-shell {
-  overflow: hidden;
+body:has(.home-shell) #nd-nav {
+  border-bottom: 1px solid transparent;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .hero {
