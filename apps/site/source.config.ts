@@ -21,12 +21,6 @@ function remarkTextCodeBlocks() {
   }
 }
 
-function remarkSoftLineBreaks() {
-  return (tree: MarkdownNode) => {
-    transformSoftLineBreaks(tree)
-  }
-}
-
 function transformTextCodeBlocks(node: MarkdownNode) {
   if (!node.children) {
     return
@@ -65,50 +59,6 @@ function transformTextCodeBlocks(node: MarkdownNode) {
   })
 }
 
-function visitMarkdownNodes(node: MarkdownNode, visitor: (node: MarkdownNode) => void) {
-  visitor(node)
-
-  for (const child of node.children ?? []) {
-    visitMarkdownNodes(child, visitor)
-  }
-}
-
-function transformSoftLineBreaks(node: MarkdownNode) {
-  if (!node.children) {
-    return
-  }
-
-  const children: MarkdownNode[] = []
-
-  for (const child of node.children) {
-    if (child.type === 'text' && child.value?.includes('\n')) {
-      const lines = child.value.split('\n')
-
-      for (let index = 0; index < lines.length; index++) {
-        const value = lines[index]
-
-        if (value) {
-          children.push({
-            ...child,
-            value,
-          })
-        }
-
-        if (index < lines.length - 1) {
-          children.push({ type: 'break' })
-        }
-      }
-
-      continue
-    }
-
-    transformSoftLineBreaks(child)
-    children.push(child)
-  }
-
-  node.children = children
-}
-
 export const docs = defineDocs({
   dir: '../../docs',
 })
@@ -118,7 +68,6 @@ export default defineConfig({
     remarkPlugins: (value) => [
       ...value,
       remarkTextCodeBlocks,
-      remarkSoftLineBreaks,
     ],
   },
 })
