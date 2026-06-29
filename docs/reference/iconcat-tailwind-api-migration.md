@@ -23,8 +23,9 @@ adapter, but adds a framework-level extraction pipeline:
 | ----- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | 1     | Keep `tailwindcss-plugin-iconify` if you only need Tailwind dynamic icon classes. | Lowest-risk compatibility path.                                                                      |
 | 2     | Switch imports to `@iconcat/tailwind`.                                            | Makes the package boundary explicit and unlocks catalog CSS helpers.                                 |
-| 3     | Add `iconcat` extraction for production builds.                                   | Extracts icons from reachable framework source instead of relying only on Tailwind content scanning. |
-| 4     | Add `@iconcat/next` or `@iconcat/vite`.                                           | Lets the framework render hashed Iconcat CSS files in production.                                    |
+| 3     | Move local and Figma icon import scripts to the new `@iconcat/tailwind` paths.    | Keeps custom Iconify JSON generation separate from Tailwind runtime plugins.                         |
+| 4     | Add `iconcat` extraction for production builds.                                   | Extracts icons from reachable framework source instead of relying only on Tailwind content scanning. |
+| 5     | Add `@iconcat/next` or `@iconcat/vite`.                                           | Lets the framework render hashed Iconcat CSS files in production.                                    |
 
 Do not migrate every layer at once unless the app already has a production
 stylesheet integration plan. The Tailwind adapter can move first; framework
@@ -92,6 +93,30 @@ export default {
   ],
 }
 ```
+
+## Move Figma And Local Icon Inputs
+
+The old package included helper entry points for local SVG directories and
+Figma imports. Those capabilities still exist, but they are icon-set input
+generation, not framework extraction itself.
+
+Compatibility imports still work through the legacy package:
+
+```ts
+import { loadFigmaIconSets } from 'tailwindcss-plugin-iconify/figma-icon-sets/node'
+import { getLocalIconSets } from 'tailwindcss-plugin-iconify/local-icon-sets'
+```
+
+Prefer the Iconcat package paths for new code:
+
+```ts
+import { loadFigmaIconSets } from '@iconcat/tailwind/figma-icon-sets/node'
+import { getLocalIconSets } from '@iconcat/tailwind/local-icon-sets'
+```
+
+Tailwind plugins are synchronous, so Figma imports should run before Tailwind or
+Iconcat extraction. See [Custom Icon Libraries](/docs/reference/custom-icon-libraries) for
+the full local SVG, local Iconify JSON, and Figma import flow.
 
 ## Add Framework Extraction
 

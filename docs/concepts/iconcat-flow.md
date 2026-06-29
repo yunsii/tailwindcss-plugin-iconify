@@ -10,7 +10,7 @@ from framework entries, traverse the reachable dependency graph, then emit a
 small catalog for the assets that are actually used.
 
 For framework-specific stylesheet loading and adapter integration details, see
-[Iconcat CSS Loading And Framework Integration](./framework-loading.md).
+[Iconcat CSS Loading And Framework Integration](/docs/concepts/framework-loading).
 
 ## Build Pipeline
 

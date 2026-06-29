@@ -2,6 +2,7 @@
   "title": "Reference",
   "defaultOpen": true,
   "pages": [
+    "custom-icon-libraries",
     "iconcat-tailwind-api-migration",
     "package-build"
   ]

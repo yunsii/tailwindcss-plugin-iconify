@@ -41,5 +41,5 @@ boundaries and globally injects the generated CSS through the Vite HTML output.
 More granular route-level loading can be layered on top of the same manifest
 helpers when a router-specific route manifest is available.
 
-See [framework loading](../concepts/framework-loading.md) for the Vite adapter loading
-model and [performance](../concepts/performance.md) for extraction benchmarks.
+See [framework loading](/docs/concepts/framework-loading) for the Vite adapter loading
+model and [performance](/docs/concepts/performance) for extraction benchmarks.

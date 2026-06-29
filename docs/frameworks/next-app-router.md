@@ -62,6 +62,6 @@ Development mode does not need page CSS extraction on every route interaction.
 The example app keeps Tailwind dynamic icon selectors active in development and
 uses Iconcat page-mode extraction for production builds.
 
-See [framework loading](../concepts/framework-loading.md) for the full App Router loading
-model and [catalog extraction flow](../concepts/iconcat-flow.md) for the end-to-end build
+See [framework loading](/docs/concepts/framework-loading) for the full App Router loading
+model and [catalog extraction flow](/docs/concepts/iconcat-flow) for the end-to-end build
 pipeline.
