@@ -18,9 +18,9 @@ See [Iconcat Catalog Extraction Flow](./docs/concepts/iconcat-flow.md) for the
 entry-driven catalog extraction pipeline and the independent hashed icon CSS
 artifact flow.
 
-See [Iconcat Tailwind API Migration](./docs/reference/iconcat-tailwind-api-migration.md)
-for the new `icons`, `dynamicIcons`, `staticIcons`, and `catalogIcons` API
-names.
+See [Iconcat Legacy Package Migration](./docs/reference/iconcat-tailwind-api-migration.md)
+for moving `tailwindcss-plugin-iconify` projects to the Iconcat package family,
+framework extraction, and the current Tailwind adapter API.
 
 See [Iconcat Package Build](./docs/reference/package-build.md) for the Rolldown package
 build pipeline and validation commands.

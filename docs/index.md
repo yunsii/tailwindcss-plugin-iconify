@@ -25,8 +25,9 @@ framework-specific pages.
   production stylesheet injection.
 - [Performance](./concepts/performance.md): extractor benchmarks, graph reuse, memory
   notes, and persistent cache strategy.
-- [Tailwind API migration](./reference/iconcat-tailwind-api-migration.md): migration from
-  the old `add*IconSelectors` API names to Iconcat's current Tailwind API.
+- [Legacy package migration](./reference/iconcat-tailwind-api-migration.md): migrate
+  `tailwindcss-plugin-iconify` projects to Iconcat packages, framework extraction,
+  and the current Tailwind adapter API.
 - [Package build](./reference/package-build.md): tsdown package build contract and
   repository typecheck conventions.
 
