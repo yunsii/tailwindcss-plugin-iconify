@@ -5,12 +5,36 @@ import 'fumadocs-ui/style.css'
 import 'fumadocs-ui/css/emerald.css'
 import './styles.css'
 
-const iconcatControlIconCSS = generateIconcatCSS({
+const iconcatIconCSS = generateIconcatCSS({
+  'line-md': [
+    'cloud',
+    'download',
+    'github',
+    'home',
+    'search',
+    'speedometer',
+  ],
+  'mdi': [
+    'cloud',
+    'database',
+    'github',
+    'layers',
+    'rocket',
+    'sitemap',
+  ],
   'mdi-light': [
     'fullscreen',
     'fullscreen-exit',
     'minus',
     'plus',
+  ],
+  'svg-spinners': [
+    '3-dots-bounce',
+    'bars-scale',
+    'blocks-wave',
+    'clock',
+    'pulse-rings-3',
+    'wifi',
   ],
 })
 
@@ -25,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <style
           data-iconcat-icons=''
-          dangerouslySetInnerHTML={{ __html: iconcatControlIconCSS }}
+          dangerouslySetInnerHTML={{ __html: iconcatIconCSS }}
         />
       </head>
       <body>

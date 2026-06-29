@@ -19,7 +19,10 @@
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
+    "@iconify-json/line-md": "^1.2.1",
+    "@iconify-json/mdi": "^1.2.0",
     "@iconify-json/mdi-light": "^1.2.0",
+    "@iconify-json/svg-spinners": "^1.2.0",
     "@types/mdx": "^2.0.14",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3"

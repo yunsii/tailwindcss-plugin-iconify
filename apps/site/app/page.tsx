@@ -13,6 +13,45 @@ const extractPreview = [
   'emit iconcat.83f2a4.css',
 ].join('\n')
 
+const iconLibraries = [
+  {
+    icons: [
+      'icon-[mdi--rocket]',
+      'icon-[mdi--sitemap]',
+      'icon-[mdi--database]',
+      'icon-[mdi--layers]',
+      'icon-[mdi--github]',
+      'icon-[mdi--cloud]',
+    ],
+    name: 'Material Design Icons',
+    prefix: 'mdi',
+  },
+  {
+    icons: [
+      'icon-[line-md--home]',
+      'icon-[line-md--search]',
+      'icon-[line-md--cloud]',
+      'icon-[line-md--github]',
+      'icon-[line-md--download]',
+      'icon-[line-md--speedometer]',
+    ],
+    name: 'Line MD',
+    prefix: 'line-md',
+  },
+  {
+    icons: [
+      'icon-[svg-spinners--3-dots-bounce]',
+      'icon-[svg-spinners--bars-scale]',
+      'icon-[svg-spinners--pulse-rings-3]',
+      'icon-[svg-spinners--wifi]',
+      'icon-[svg-spinners--clock]',
+      'icon-[svg-spinners--blocks-wave]',
+    ],
+    name: 'SVG Spinners',
+    prefix: 'svg-spinners',
+  },
+]
+
 export default function HomePage() {
   return (
     <HomeLayout
@@ -75,6 +114,35 @@ export default function HomePage() {
             <span>page CSS</span>
             <span>manifest</span>
           </div>
+        </div>
+      </section>
+
+      <section className='icon-library-section' aria-labelledby='icon-library-heading'>
+        <div className='icon-library-copy'>
+          <p className='eyebrow'>Iconify libraries</p>
+          <h2 id='icon-library-heading'>Render many icon sets as CSS.</h2>
+          <p>
+            Iconcat keeps the library prefix in the class name, extracts only the
+            icons reachable from source, and emits the final CSS artifact for the
+            framework adapter.
+          </p>
+        </div>
+        <div className='icon-library-grid'>
+          {iconLibraries.map((library) => (
+            <section className='icon-library-panel' key={library.prefix}>
+              <div className='icon-library-card-head'>
+                <span>{library.name}</span>
+                <code>{library.prefix}</code>
+              </div>
+              <div className='icon-showcase' aria-hidden='true'>
+                {library.icons.map((icon) => (
+                  <span className='icon-showcase-cell' key={icon}>
+                    <span className={icon} />
+                  </span>
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
       </section>
 

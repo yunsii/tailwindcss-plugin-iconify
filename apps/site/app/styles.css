@@ -295,6 +295,81 @@ a {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.icon-library-section {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+}
+
+.icon-library-copy h2 {
+  margin: 16px 0 12px;
+  color: var(--color-fd-foreground);
+  font-size: 36px;
+  line-height: 1.08;
+}
+
+.icon-library-copy p:last-child {
+  max-width: 760px;
+  margin: 0;
+  color: var(--color-fd-muted-foreground);
+  line-height: 1.6;
+}
+
+.icon-library-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.icon-library-panel {
+  display: grid;
+  gap: 18px;
+  border: 1px solid var(--iconcat-line);
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--color-fd-card) 86%, transparent);
+  padding: 18px;
+}
+
+.icon-library-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--color-fd-foreground);
+  font-weight: 780;
+}
+
+.icon-library-card-head code {
+  border: 1px solid var(--iconcat-line);
+  border-radius: 5px;
+  background: color-mix(in oklab, var(--color-fd-accent) 72%, transparent);
+  padding: 3px 6px;
+  color: var(--color-fd-primary);
+  font-size: 12px;
+}
+
+.icon-showcase {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.icon-showcase-cell {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, var(--color-fd-primary) 24%, var(--color-fd-border));
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--color-fd-primary) 10%, transparent), transparent 68%),
+    color-mix(in oklab, var(--color-fd-background) 56%, var(--color-fd-card));
+  color: var(--color-fd-primary);
+  font-size: 34px;
+}
+
 .panel,
 .strategy-grid > div,
 .flow-node {
@@ -508,14 +583,14 @@ figure.iconcat-text-codeblock :where(code .line > span) {
   font-size: 12px;
 }
 
-.mermaid-action [class^='icon-'] {
+.mermaid-action [class^='icon-['] {
   width: 16px;
   height: 16px;
   color: currentColor;
 }
 
-[class^='icon-'],
-[class*=' icon-'] {
+[class^='icon-['],
+[class*=' icon-['] {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -651,7 +726,8 @@ figure.iconcat-text-codeblock :where(code .line > span) {
   .layout,
   .grid-two,
   .grid-three,
-  .strategy-grid {
+  .strategy-grid,
+  .icon-library-section {
     grid-template-columns: 1fr;
   }
 
@@ -676,6 +752,10 @@ figure.iconcat-text-codeblock :where(code .line > span) {
   }
 
   .artifact-row {
+    grid-template-columns: 1fr;
+  }
+
+  .icon-library-grid {
     grid-template-columns: 1fr;
   }
 

@@ -99,7 +99,16 @@ importers:
         specifier: ^19.2.7
         version: 19.2.7(react@19.2.7)
     devDependencies:
+      '@iconify-json/line-md':
+        specifier: ^1.2.1
+        version: 1.2.1
+      '@iconify-json/mdi':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/mdi-light':
+        specifier: ^1.2.0
+        version: 1.2.0
+      '@iconify-json/svg-spinners':
         specifier: ^1.2.0
         version: 1.2.0
       '@types/mdx':
